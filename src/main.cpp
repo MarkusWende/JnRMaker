@@ -10,6 +10,7 @@
 #include "../include/events.h"
 #include "../include/gui.h"
 #include "../include/resource_manager.h"
+#include "../include/scene.h"
 
 
 int main()
@@ -26,10 +27,11 @@ int main()
   sf::CircleShape shape(100.f);
   shape.setFillColor(sf::Color::Green);
 
-  ResourceManager::LoadTexture("assets/tiles/keen4_tiles2.png", "face");
-
   // Create gui object
   Gui appGui;
+
+  // Create scene object
+  Scene appScene(800, 800);
 
   sf::Clock deltaClock;
   while (window.isOpen()) {

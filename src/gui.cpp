@@ -3,6 +3,8 @@
 #include "../include/imgui/imgui-SFML.h"
 #include "../include/resource_manager.h"
 
+#include <SFML/Graphics/Sprite.hpp>
+
 
 // PUBLIC
 Gui::Gui()
@@ -87,8 +89,23 @@ void Gui::Render()
 			if (ImGui::BeginTabItem("Viewport"))
 			{
 				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetTexture("face").getNativeHandle(), ImVec2(200, 200), ImVec2(400, 400));
-				//sf::Texture& tex = *ResourceManager::GetTexture("face");
-				ImGui::Image(*ResourceManager::GetTexture("face"));
+				sf::Texture& tex = *ResourceManager::GetTexture("face");
+				sf::Sprite spr;
+				spr.setTexture(tex);
+				spr.scale(2.0f, 2.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+				spr.setTextureRect(sf::IntRect(8*16,6*16,16,16));
+				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));ImGui::SameLine();
+				spr.setTextureRect(sf::IntRect(9*16,6*16,16,16));
+				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));ImGui::SameLine();
+				spr.setTextureRect(sf::IntRect(10*16,6*16,16,16));
+				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));
+				ImGui::PopStyleColor();
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
+
 				ImGui::EndTabItem();
 			}
 
@@ -137,16 +154,23 @@ void Gui::Render()
 		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
 																				ImGuiWindowFlags_NoResize |
 																				ImGuiWindowFlags_NoMove |
-																				ImGuiWindowFlags_NoCollapse);
+																				ImGuiWindowFlags_NoCollapse |
+																				ImGuiWindowFlags_HorizontalScrollbar);
 		//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").texID, ImVec2(0, 25), ImVec2(sceneWidth, sceneHeight + 25));
 		//ImGui::Image(ResourceManager::GetTexture("face"));
+		sf::Texture& tex = *ResourceManager::GetTexture("face");
+		sf::Sprite spr;
+		spr.setTexture(tex);
+		spr.scale(2.0f, 2.0f);
+		ImGui::Image(spr);
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	}
 
 	// Imgui Demo Window
-  //ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
 }
 
 

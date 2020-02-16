@@ -3,14 +3,19 @@
 
 #include <map>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/OpenGL.hpp>
 
 class ResourceManager
 {
 public:
-  static std::map<std::string, sf::Texture> Textures;
 
-  static void LoadTexture(const GLchar* file, std::string name);
+  static std::map<std::string, sf::Texture> Textures;
+  static std::map<std::string, sf::RenderTexture*> RenderTextures;
+
+  static void LoadTexture(const GLchar* file, sf::Color maskColor, std::string name);
+  static void CreateRenderTexture(GLuint width, GLuint height, std::string name);
   static sf::Texture* GetTexture(std::string name);
 
 private:
