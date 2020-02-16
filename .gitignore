@@ -3,3 +3,6 @@ build/
 
 # Ignore .gch files
 *.gch
+
+# Ignore tiles
+asset/tiles/
