@@ -4,6 +4,9 @@
 
 #include <SFML/OpenGL.hpp>
 
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+
 struct GuiWindow {
   GLuint w;
   GLuint h;

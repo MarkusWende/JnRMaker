@@ -21,7 +21,7 @@ public:
 	// Getters
 	Camera& GetCamera() { return this->CameraObj; };
 
-private:;
+private:
 
 };
 

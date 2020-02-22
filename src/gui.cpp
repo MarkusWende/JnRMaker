@@ -1,10 +1,9 @@
+#include <iostream>
+
 #include "../include/gui.h"
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui-SFML.h"
 #include "../include/resource_manager.h"
-
-#include <SFML/Graphics/Sprite.hpp>
-
 
 // PUBLIC
 Gui::Gui()
@@ -88,23 +87,6 @@ void Gui::Render()
 		{
 			if (ImGui::BeginTabItem("Viewport"))
 			{
-				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetTexture("face").getNativeHandle(), ImVec2(200, 200), ImVec2(400, 400));
-				sf::Texture& tex = *ResourceManager::GetTexture("face");
-				sf::Sprite spr;
-				spr.setTexture(tex);
-				spr.scale(2.0f, 2.0f);
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
-				spr.setTextureRect(sf::IntRect(8*16,6*16,16,16));
-				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));ImGui::SameLine();
-				spr.setTextureRect(sf::IntRect(9*16,6*16,16,16));
-				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));ImGui::SameLine();
-				spr.setTextureRect(sf::IntRect(10*16,6*16,16,16));
-				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-				ImGui::PopStyleVar();
 
 				ImGui::EndTabItem();
 			}
@@ -158,11 +140,32 @@ void Gui::Render()
 																				ImGuiWindowFlags_HorizontalScrollbar);
 		//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").texID, ImVec2(0, 25), ImVec2(sceneWidth, sceneHeight + 25));
 		//ImGui::Image(ResourceManager::GetTexture("face"));
-		sf::Texture& tex = *ResourceManager::GetTexture("face");
 		sf::Sprite spr;
+		sf::Texture& tex = *ResourceManager::GetTexture("tiles_keen4");
 		spr.setTexture(tex);
 		spr.scale(2.0f, 2.0f);
-		ImGui::Image(spr);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+		static GLuint PixelPerTile = 16;
+		ImVec2 textureSize = tex.getSize();
+		//std::cout << "Size: (" << textureSize.x << "|" << textureSize.y << ")" << std::endl;
+		GLuint numberOfColumns = textureSize.x / PixelPerTile;
+		//GLuint numberOfColumns = 10;
+		GLuint numberOfRows = textureSize.y / PixelPerTile;
+		//GLuint numberOfRows = 12;
+		for (GLuint row = 0; row < numberOfRows; row++) {
+			for (GLuint col = 0; col < numberOfColumns; col++) {
+				spr.setTextureRect(sf::IntRect(col*PixelPerTile,row*PixelPerTile,PixelPerTile,PixelPerTile));
+				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));
+				if (col < numberOfColumns-1)
+					ImGui::SameLine();
+			}
+		}
+
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 
 		ImGui::End();
 		ImGui::PopStyleVar();

@@ -21,7 +21,7 @@ int main()
   sf::RenderWindow window(sf::VideoMode(1800, 1024), "[NewProject.jrm] - JnRMaker");
   auto desktop = sf::VideoMode::getDesktopMode();
   window.setPosition(sf::Vector2i(desktop.width/2 - window.getSize().x/3, desktop.height/2 - window.getSize().y/2));
-  window.setFramerateLimit(120);
+  //window.setFramerateLimit(120);
   ImGui::SFML::Init(window);
 
   sf::CircleShape shape(100.f);
