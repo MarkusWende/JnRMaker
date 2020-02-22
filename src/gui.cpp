@@ -4,6 +4,7 @@
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui-SFML.h"
 #include "../include/resource_manager.h"
+#include "../include/message_manager.h"
 
 // PUBLIC
 Gui::Gui()
@@ -115,13 +116,61 @@ void Gui::Render()
 	{
 		ImGui::SetNextWindowSize(ImVec2(windowMessages_.w, windowMessages_.h));
 		ImGui::SetNextWindowPos(ImVec2(0, windowScene_.h));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
 		ImGui::Begin("Messages", NULL, 	ImGuiWindowFlags_NoTitleBar |
 																		ImGuiWindowFlags_NoResize |
 																		ImGuiWindowFlags_NoMove |
 																		ImGuiWindowFlags_NoCollapse);
 		//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").texID, ImVec2(0, 25), ImVec2(sceneWidth, sceneHeight + 25));
+
+		static float wrap_width = 1200.0f;
+		ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
+
+		ImGui::Separator();
+
+		// BeginChild: MessageList
+		ImGui::BeginChild("##MessageList", ImVec2(0, 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+		std::vector<Message>* ptrMessages;
+		ptrMessages = MessageManager::GetMessages();
+		if (ptrMessages->size() > 0)
+		{
+			for (auto it = ptrMessages->begin(); it != ptrMessages->end(); ++it)
+			{
+				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+				ImGui::TextColored(ImVec4(1, 1, 1, 1), it->timeinfo.c_str());
+				ImGui::SameLine(0, 2);
+				ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+
+				std::string word;
+				std::stringstream ss(it->msg);
+
+				ImGui::SameLine(0, 5);
+				if (it->type == message_t::ERROR)
+				{
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), it->msg.c_str());
+				}
+				else if (it->type == message_t::INFO)
+				{
+					ImGui::TextColored(ImVec4(0, 1, 0, 1), it->msg.c_str());
+				}
+				else if (it->type == message_t::WARNING)
+				{
+					ImGui::TextColored(ImVec4(1, 1, 0, 1), it->msg.c_str());
+				}
+				else
+				{
+					ImGui::Text("%s", it->msg.c_str());
+				}
+
+			}
+		}
+
+		ImGui::SetScrollHere(1.0f);
+		// EndChild: MessageList
+		ImGui::EndChild();
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
@@ -149,7 +198,6 @@ void Gui::Render()
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 		static GLuint PixelPerTile = 16;
 		ImVec2 textureSize = tex.getSize();
-		//std::cout << "Size: (" << textureSize.x << "|" << textureSize.y << ")" << std::endl;
 		GLuint numberOfColumns = textureSize.x / PixelPerTile;
 		//GLuint numberOfColumns = 10;
 		GLuint numberOfRows = textureSize.y / PixelPerTile;

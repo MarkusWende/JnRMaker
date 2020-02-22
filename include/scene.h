@@ -1,9 +1,13 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "../include/camera.h"
+#include <sstream>
 
 #include <SFML/OpenGL.hpp>
+
+#include "../include/camera.h"
+#include "../include/resource_manager.h"
+#include "../include/message_manager.h"
 
 class Scene
 {
