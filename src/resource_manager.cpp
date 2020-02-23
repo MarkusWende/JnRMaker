@@ -4,7 +4,7 @@
 #include "../include/resource_manager.h"
 
 std::map<std::string, sf::Texture> ResourceManager::Textures;
-std::map<std::string, sf::RenderTexture*> ResourceManager::RenderTextures;
+std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 
 
 void ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::string name)
@@ -30,14 +30,25 @@ void ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::
 
 void ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
 {
-  sf::RenderTexture rTexture;
-  if(!rTexture.create(width, height))
+  RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
+  sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
+  if(!rTexture->create(width, height))
   {
     std::cout << "Error!!" << std::endl;
     // error...
   }
+}
 
-  RenderTextures[name] = &rTexture;
+void ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::string name)
+{
+  RenderTextures.erase(name);
+  RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
+  sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
+  if(!rTexture->create(width, height))
+  {
+    std::cout << "Error!!" << std::endl;
+    // error..
+  }
 }
 
 sf::Texture* ResourceManager::GetTexture(std::string name)
@@ -45,6 +56,10 @@ sf::Texture* ResourceManager::GetTexture(std::string name)
 	return &Textures[name];
 }
 
+sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
+{
+	return RenderTextures.find(name)->second.get();
+}
 
 
 // PRIVATE:

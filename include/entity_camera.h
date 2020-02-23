@@ -1,9 +1,11 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include "scene_entity.h"
+
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
-class Camera
+class Camera : public SceneEntity
 {
 public:
 

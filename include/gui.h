@@ -2,10 +2,17 @@
 #ifndef GUI_H
 #define GUI_H
 
-#include <SFML/OpenGL.hpp>
+#include <iostream>
 
+#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+
+#include "../include/imgui/imgui.h"
+#include "../include/imgui/imgui-SFML.h"
+#include "../include/resource_manager.h"
+#include "../include/message_manager.h"
+#include "../include/scene.h"
 
 struct GuiWindow {
   GLuint w;
@@ -20,7 +27,7 @@ public:
   Gui();
 	~Gui();
 
-  void            Update(GLuint width, GLuint height);
+  void            Update(GLuint width, GLuint height, Scene &scene);
   void				    Render();
 
 private:

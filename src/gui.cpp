@@ -1,10 +1,4 @@
-#include <iostream>
-
 #include "../include/gui.h"
-#include "../include/imgui/imgui.h"
-#include "../include/imgui/imgui-SFML.h"
-#include "../include/resource_manager.h"
-#include "../include/message_manager.h"
 
 // PUBLIC
 Gui::Gui()
@@ -19,7 +13,7 @@ Gui::~Gui()
 }
 
 
-void Gui::Update(GLuint width, GLuint height)
+void Gui::Update(GLuint width, GLuint height, Scene &scene)
 {
 	// Check if application window size has been changed
 	if (width_ != width || height_ != height) {
@@ -34,6 +28,10 @@ void Gui::Update(GLuint width, GLuint height)
 
 		windowSideBarRight_.w = width_ * windowSideBarRight_.wPercent;
 		windowSideBarRight_.h = height_ * windowSideBarRight_.hPercent;
+
+		scene.SetSizeWidth(windowScene_.w);
+		scene.SetSizeHeight(windowScene_.h);
+		scene.Update();
 	}
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -86,9 +84,13 @@ void Gui::Render()
 
 		if (ImGui::BeginTabBar("SceneTabs", ImGuiTabBarFlags_None))
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 			if (ImGui::BeginTabItem("Viewport"))
 			{
-
+				sf::Sprite spr;
+				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
+				spr.setTexture(tex->getTexture());
+				ImGui::Image(spr);
 				ImGui::EndTabItem();
 			}
 
@@ -100,10 +102,9 @@ void Gui::Render()
 
 			if (ImGui::BeginTabItem("Wireframe"))
 			{
-
-
 				ImGui::EndTabItem();
 			}
+			ImGui::PopStyleVar();
 			ImGui::EndTabBar();
 		}
 
