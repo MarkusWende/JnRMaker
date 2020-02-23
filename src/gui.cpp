@@ -13,7 +13,7 @@ Gui::~Gui()
 }
 
 
-void Gui::Update(GLuint width, GLuint height, Scene &scene)
+GLvoid Gui::Update(GLuint width, GLuint height, Scene &scene)
 {
 	// Check if application window size has been changed
 	if (width_ != width || height_ != height) {
@@ -44,7 +44,7 @@ void Gui::Update(GLuint width, GLuint height, Scene &scene)
 	//	scene.mouseOverScene = false;
 }
 
-void Gui::Render()
+GLvoid Gui::Render()
 {
   // Main menu
   {
@@ -227,7 +227,7 @@ void Gui::Render()
 
 
 // PRIVATE
-void Gui::init_()
+GLvoid Gui::init_()
 {
 	windowScene_.wPercent = 0.8f;
 	windowScene_.hPercent = 0.9f;
@@ -241,7 +241,7 @@ void Gui::init_()
 	mainMenuBarHeight_ = 0 + 23;
 }
 
-void Gui::customGuiStyle_()
+GLvoid Gui::customGuiStyle_()
 {
 	// Custom style
 	// Font

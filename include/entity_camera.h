@@ -1,26 +1,47 @@
+/**
+ * JnRMaker - A tile editor and jump and run game maker
+ * See COPYRIGHT file at the top of the source tree.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the JnRMaker License Statement and
+ * the GNU General Public License along with this program.
+ *
+ */
+
+/**
+ * @file entity_camera.h
+ * @brief This file contains the camera entity class.
+ *
+ * @author Markus Wende
+ * https://github.com/MarkusWende
+ */
+
+
 #ifndef CAMERA_H
 #define CAMERA_H
 
 #include "scene_entity.h"
 
-
-// An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
+/**
+ * @brief Camera class represents a camera object.
+ */
 class Camera : public SceneEntity
 {
 public:
-
-    // Constructor with vectors
-    Camera()
-    {
-		    init();
-    }
+    Camera() { init(); }                                            //!< constructor
+    ~Camera() { };                                                  //!< destructor
 
 private:
-    // Calculates the front vector from the Camera's (updated) Euler Angles
-	void init()
-	{
-
-	}
+	GLvoid init() { };
 
 };
 #endif

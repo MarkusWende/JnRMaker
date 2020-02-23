@@ -7,7 +7,7 @@ std::map<std::string, sf::Texture> ResourceManager::Textures;
 std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 
 
-void ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::string name)
+GLvoid ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::string name)
 {
   sf::Image image;
   if (!image.loadFromFile(file))
@@ -28,7 +28,7 @@ void ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::
 	Textures[name] = texture;
 }
 
-void ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
+GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
 {
   RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
   sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
@@ -39,7 +39,7 @@ void ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::stri
   }
 }
 
-void ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::string name)
+GLvoid ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::string name)
 {
   RenderTextures.erase(name);
   RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
