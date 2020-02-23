@@ -31,7 +31,9 @@
 
 #include <map>
 #include <memory>
+#include <iostream>
 
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Color.hpp>
