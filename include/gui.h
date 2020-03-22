@@ -39,6 +39,7 @@
 #include "../include/imgui/imgui-SFML.h"
 #include "../include/resource_manager.h"
 #include "../include/message_manager.h"
+#include "../include/tilemap_manager.h"
 #include "../include/scene.h"
 
 
@@ -79,10 +80,11 @@ public:
 private:
   GLuint          width_;                     /**< Width of the application window. */
   GLuint          height_;                    /**< Height of the application window. */
-  GuiWindow       windowScene_;               /**< Scene window object. Holds the dimensions of this window. */
-  GuiWindow       windowMessages_;            /**< Messages window object. Holds the dimensions of this window. */
-  GuiWindow       windowSideBarRight_;        /**< Sidebar window object. Holds the dimensions of this window. */
-  GLuint          mainMenuBarHeight_;         /**< Main menu bar height. */
+  GuiWindow       window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
+  GuiWindow       window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
+  GuiWindow       window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
+  GLuint          main_menubar_height_;       /**< Main menu bar height. */
+  std::string     current_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
 
   /**
 	 * @brief Initialize all gui related default attributes.

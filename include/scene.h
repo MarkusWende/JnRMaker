@@ -39,6 +39,7 @@
 #include "entity_solid.h"
 #include "resource_manager.h"
 #include "message_manager.h"
+#include "tilemap_manager.h"
 #include "scene_entity.h"
 
 
@@ -78,9 +79,11 @@ public:
 	 */
 	GLvoid SetSizeHeight(GLuint height) { height_ = height; };
 
+	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
+
 private:
-	std::map<std::string, std::unique_ptr<Camera>> 	e_cameras_;	/**< All camera entities are stored in this map. */
-	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;	/**< All solid entities are stored in this map. */
+	std::map<std::string, std::unique_ptr<Camera>> 			e_cameras_;	/**< All camera entities are stored in this map. */
+	std::map<std::string, std::unique_ptr<Solid>> 			e_solids_;	/**< All solid entities are stored in this map. */
 
 	GLuint																					width_;			/**< Width of the rendered scene. */
 	GLuint																					height_;		/**< Height of the rendered scene. */

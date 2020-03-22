@@ -18,30 +18,26 @@
  */
 
 /**
- * @file entity_solid.h
- * @brief This file contains the solid entity class.
+ * @file tile_manager.cpp
+ * @brief This file contains the singleton tile manager class implementation.
  *
  * @author Markus Wende
  * https://github.com/MarkusWende
  */
 
+#include <sstream>
 
-#ifndef SOLID_H
-#define SOLID_H
+#include "../include/tilemap_manager.h"
 
-#include "scene_entity.h"
+std::map<std::string, Tilemap> TilemapManager::Tilemaps;
 
-/**
- * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
- */
-class Solid : public SceneEntity
+GLvoid TilemapManager::AddTilemap(std::string name, GLuint spriteWidth, GLuint spriteHeight, glm::vec2 scale)
 {
-public:
-    Solid() { };                                              //!< constructor
-    ~Solid() { };                                             //!< destructor
 
-private:
+  Tilemaps.insert(std::make_pair(name, Tilemap(name, spriteWidth, spriteHeight, scale)));
+}
 
-
-};
-#endif
+Tilemap* TilemapManager::GetTilemap(std::string name)
+{
+	return &Tilemaps[name];
+}

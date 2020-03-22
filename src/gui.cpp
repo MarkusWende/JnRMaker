@@ -46,22 +46,22 @@ GLvoid Gui::Update(GLuint width, GLuint height, Scene &scene)
 		width_ = width;
 		height_ = height;
 
-		windowScene_.w = width_ * windowScene_.wPercent;
-		windowScene_.h = height_ * windowScene_.hPercent;
+		window_scene_.w = width_ * window_scene_.wPercent;
+		window_scene_.h = height_ * window_scene_.hPercent;
 
-		windowMessages_.w = width_ * windowMessages_.wPercent;
-		windowMessages_.h = height_ * windowMessages_.hPercent;
+		window_messages_.w = width_ * window_messages_.wPercent;
+		window_messages_.h = height_ * window_messages_.hPercent;
 
-		windowSideBarRight_.w = width_ * windowSideBarRight_.wPercent;
-		windowSideBarRight_.h = height_ * windowSideBarRight_.hPercent;
+		window_sidebar_right_.w = width_ * window_sidebar_right_.wPercent;
+		window_sidebar_right_.h = height_ * window_sidebar_right_.hPercent;
 
-		scene.SetSizeWidth(windowScene_.w);
-		scene.SetSizeHeight(windowScene_.h);
+		scene.SetSizeWidth(window_scene_.w);
+		scene.SetSizeHeight(window_scene_.h);
 		scene.Update();
 	}
 
 	ImGuiStyle& style = ImGui::GetStyle();
-	style.DisplaySafeAreaPadding = ImVec2(0.0f, mainMenuBarHeight_ - 23);
+	style.DisplaySafeAreaPadding = ImVec2(0.0f, main_menubar_height_ - 23);
 
 	// Check if mouse is over scene window
 	//if (ImGui::IsWindowHovered())
@@ -96,10 +96,11 @@ GLvoid Gui::Render()
 
 	// Scene Render Window
 	{
-		ImGui::SetNextWindowSize(ImVec2(windowScene_.w, windowScene_.h - mainMenuBarHeight_));
-		ImGui::SetNextWindowPos(ImVec2(0, mainMenuBarHeight_));
+		ImGui::SetNextWindowSize(ImVec2(window_scene_.w, window_scene_.h - main_menubar_height_));
+		ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height_));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 		ImGui::Begin("Rendering", NULL,	ImGuiWindowFlags_NoTitleBar |
 																		ImGuiWindowFlags_NoResize |
 																		ImGuiWindowFlags_NoMove |
@@ -110,7 +111,6 @@ GLvoid Gui::Render()
 
 		if (ImGui::BeginTabBar("SceneTabs", ImGuiTabBarFlags_None))
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 			if (ImGui::BeginTabItem("Viewport"))
 			{
 				sf::Sprite spr;
@@ -130,19 +130,19 @@ GLvoid Gui::Render()
 			{
 				ImGui::EndTabItem();
 			}
-			ImGui::PopStyleVar();
 			ImGui::EndTabBar();
 		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
 	}
 
 	// Messages Window
 	{
-		ImGui::SetNextWindowSize(ImVec2(windowMessages_.w, windowMessages_.h));
-		ImGui::SetNextWindowPos(ImVec2(0, windowScene_.h));
+		ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
+		ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
 		ImGui::Begin("Messages", NULL, 	ImGuiWindowFlags_NoTitleBar |
@@ -205,8 +205,8 @@ GLvoid Gui::Render()
 
 	// Side Bar Right Window
 	{
-		ImGui::SetNextWindowSize(ImVec2(windowSideBarRight_.w, windowSideBarRight_.h - mainMenuBarHeight_));
-		ImGui::SetNextWindowPos(ImVec2(windowScene_.w, mainMenuBarHeight_));
+		ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w, window_sidebar_right_.h - main_menubar_height_));
+		ImGui::SetNextWindowPos(ImVec2(window_scene_.w, main_menubar_height_));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
 		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
@@ -214,27 +214,30 @@ GLvoid Gui::Render()
 																				ImGuiWindowFlags_NoMove |
 																				ImGuiWindowFlags_NoCollapse |
 																				ImGuiWindowFlags_HorizontalScrollbar);
-		//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").texID, ImVec2(0, 25), ImVec2(sceneWidth, sceneHeight + 25));
-		//ImGui::Image(ResourceManager::GetTexture("face"));
-		sf::Sprite spr;
-		sf::Texture& tex = *ResourceManager::GetTexture("tiles_keen4");
-		spr.setTexture(tex);
-		spr.scale(2.0f, 2.0f);
+
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
-		static GLuint PixelPerTile = 16;
-		ImVec2 textureSize = tex.getSize();
-		GLuint numberOfColumns = textureSize.x / PixelPerTile;
-		//GLuint numberOfColumns = 10;
-		GLuint numberOfRows = textureSize.y / PixelPerTile;
-		//GLuint numberOfRows = 12;
-		for (GLuint row = 0; row < numberOfRows; row++) {
-			for (GLuint col = 0; col < numberOfColumns; col++) {
-				spr.setTextureRect(sf::IntRect(col*PixelPerTile,row*PixelPerTile,PixelPerTile,PixelPerTile));
-				ImGui::ImageButton(spr, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255));
-				if (col < numberOfColumns-1)
+
+		Tilemap* tilemap = TilemapManager::GetTilemap("tiles_keen4");
+
+		GLuint i = 0;
+		for (GLuint row = 0; row < tilemap->NumRows(); row++) {
+			for (GLuint col = 0; col < tilemap->NumCols(); col++) {
+				std::stringstream sprKey;
+				sprKey << "r" << row << "c" << col;
+				sf::Sprite* sprValue = tilemap->GetSprite(sprKey.str());
+				ImGui::PushID(i);
+				if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
+				{
+					std::stringstream msg;
+					msg << "Key: " << sprKey.str();
+					MessageManager::AddMessage(msg, message_t::INFO);
+				}
+				ImGui::PopID();
+				if (col < tilemap->NumCols()-1)
 					ImGui::SameLine();
+				i++;
 			}
 		}
 
@@ -255,16 +258,16 @@ GLvoid Gui::Render()
 // PRIVATE
 GLvoid Gui::init_()
 {
-	windowScene_.wPercent = 0.8f;
-	windowScene_.hPercent = 0.9f;
+	window_scene_.wPercent = 0.8f;
+	window_scene_.hPercent = 0.9f;
 
-	windowMessages_.wPercent = 1.0f;
-	windowMessages_.hPercent = 0.1f;
+	window_messages_.wPercent = 1.0f;
+	window_messages_.hPercent = 0.1f;
 
-	windowSideBarRight_.wPercent = 0.2f;
-	windowSideBarRight_.hPercent = 0.9f;
+	window_sidebar_right_.wPercent = 0.2f;
+	window_sidebar_right_.hPercent = 0.9f;
 
-	mainMenuBarHeight_ = 0 + 23;
+	main_menubar_height_ = 0 + 23;
 }
 
 GLvoid Gui::customGuiStyle_()
