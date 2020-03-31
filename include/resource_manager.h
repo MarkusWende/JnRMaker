@@ -55,7 +55,7 @@ public:
    * @param name The name of the texture. The name is also the key in the map.
 	 * @return GLvoid.
 	 */
-  static GLvoid LoadTexture(const GLchar* file, sf::Color maskColor, std::string name);
+  static GLvoid LoadTexture(const char* file, sf::Color maskColor, std::string name);
 
   /**
 	 * @brief Create an empty SFML render texture.
@@ -99,7 +99,7 @@ private:
    * @param file The path and filename to the image.
 	 * @return The SFML texture.
 	 */
-  static sf::Texture loadTextureFromFile(const GLchar* file);
+  static sf::Texture loadTextureFromFile(const char* file);
 };
 
 #endif

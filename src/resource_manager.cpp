@@ -32,7 +32,7 @@ std::map<std::string, sf::Texture> ResourceManager::Textures;
 std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 
 
-GLvoid ResourceManager::LoadTexture(const GLchar* file, sf::Color maskColor, std::string name)
+GLvoid ResourceManager::LoadTexture(const char* file, sf::Color maskColor, std::string name)
 {
   sf::Image image;
   if (!image.loadFromFile(file))
@@ -89,7 +89,7 @@ sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 
 // PRIVATE:
 ////////////////////////////////////////////////////////////////////////////
-sf::Texture ResourceManager::loadTextureFromFile(const GLchar* file)
+sf::Texture ResourceManager::loadTextureFromFile(const char* file)
 {
 	// Create Texture object
 	sf::Texture texture;

@@ -178,7 +178,7 @@ GLvoid Gui::Render(Scene &scene)
 				std::stringstream ss(it->msg);
 
 				ImGui::SameLine(0, 5);
-				if (it->type == message_t::ERROR)
+				if (it->type == message_t::ERROR_T)
 				{
 					ImGui::TextColored(ImVec4(1, 0, 0, 1), it->msg.c_str());
 				}
@@ -255,7 +255,7 @@ GLvoid Gui::Render(Scene &scene)
 	}
 
 	// Imgui Demo Window
-  //ImGui::ShowDemoWindow();
+  ImGui::ShowDemoWindow();
 }
 
 
@@ -288,7 +288,7 @@ GLvoid Gui::customGuiStyle_()
 	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
 	// - Read 'misc/fonts/README.txt' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash
-	io.Fonts->AddFontFromFileTTF("../assets/fonts/ProggyTiny.ttf", 6.0f);
+	io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 6.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Roboto-Medium.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Cousine-Regular.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/DroidSans.ttf", 12.0f);

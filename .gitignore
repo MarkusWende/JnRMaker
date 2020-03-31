@@ -1,11 +1,22 @@
-# Ignore build folder and build script
+# build folder and build script
 build/
 clean.sh
 build_and_run.sh
 
-# Ignore .gch files
+# VS project files
+.vs/
+*.sln
+*.vcxproj*
+
+# imgui.ini
+imgui.ini
+
+# VS build dir
+x64/
+
+# .gch files
 *.gch
 
-# Ignore tiles and textures
+# tiles and textures
 assets/tiles/*.*
 assets/textures/*.*

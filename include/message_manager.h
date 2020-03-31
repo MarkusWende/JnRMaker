@@ -43,7 +43,7 @@
  * @brief Enumeration for message types.
  */
 enum class message_t {
-  ERROR = 0,                            /**< Error message. */
+  ERROR_T = 0,                            /**< Error message. */
   WARNING = 1,                          /**< Warning message. */
   INFO = 2,                             /**< Info message. */
 };
