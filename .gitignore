@@ -1,7 +1,7 @@
 # Ignore build folder and build script
 build/
-clean
-build_and_run
+clean.sh
+build_and_run.sh
 
 # Ignore .gch files
 *.gch
