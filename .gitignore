@@ -1,5 +1,7 @@
-# Ignore build folder
+# Ignore build folder and build script
 build/
+clean
+build_and_run
 
 # Ignore .gch files
 *.gch
