@@ -75,7 +75,7 @@ public:
 	 * @brief Render all gui related entities, that are displayed in the application.
 	 * @return GLvoid.
 	 */
-  GLvoid Render();
+  GLvoid Render(Scene &scene);
 
 private:
   GLuint          width_;                     /**< Width of the application window. */
@@ -85,6 +85,7 @@ private:
   GuiWindow       window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
   GLuint          main_menubar_height_;       /**< Main menu bar height. */
   std::string     current_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
+  std::string     current_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
 
   /**
 	 * @brief Initialize all gui related default attributes.

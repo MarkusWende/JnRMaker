@@ -79,14 +79,21 @@ public:
 	 */
 	GLvoid SetSizeHeight(GLuint height) { height_ = height; };
 
+	GLvoid SetCurrentTilemap(std::string name) { current_tilemap_name_ = name; };
+	GLvoid SetCurrentSprite(std::string name) { current_sprite_name_ = name; };
+
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
-	std::map<std::string, std::unique_ptr<Camera>> 			e_cameras_;	/**< All camera entities are stored in this map. */
-	std::map<std::string, std::unique_ptr<Solid>> 			e_solids_;	/**< All solid entities are stored in this map. */
+	GLvoid generateGrid();
 
-	GLuint																					width_;			/**< Width of the rendered scene. */
-	GLuint																					height_;		/**< Height of the rendered scene. */
+	std::map<std::string, std::unique_ptr<Camera>> 	e_cameras_;							/**< All camera entities are stored in this map. */
+	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;							/**< All solid entities are stored in this map. */
+	GLuint																					width_;									/**< Width of the rendered scene. */
+	GLuint																					height_;								/**< Height of the rendered scene. */
+	std::string     																current_tilemap_name_;	/**< Name of the tilemap which is currently displayed. */
+  std::string     																current_sprite_name_;   /**< Name (key) of the sprite which is currently selected. */
+	std::vector<sf::Vertex> 												grid_;
 
 };
 

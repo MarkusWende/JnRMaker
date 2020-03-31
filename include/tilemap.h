@@ -88,6 +88,9 @@ public:
 	 */
   sf::Sprite* GetSprite(std::string spriteName) { return &tilemap_[spriteName]; };
 
+  glm::vec2 GetSpriteSize() { return {sprite_with_, sprite_height_}; };
+  glm::vec2 GetSpriteScale() { return {sprite_scale_.x, sprite_scale_.y}; };
+
   /**
 	 * @brief Get the number of rows of the tilemap.
    * @return The number of rows as a GLuint.

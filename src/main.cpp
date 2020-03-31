@@ -63,7 +63,7 @@ int main()
       appGui.Update(window->getSize().x, window->getSize().y, appScene);
 
     // Render Gui
-    appGui.Render();
+    appGui.Render(appScene);
     // Render Scene
     appScene.Render();
     // Clear window and render it

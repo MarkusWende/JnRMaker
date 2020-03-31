@@ -32,6 +32,9 @@ Gui::Gui()
 {
 	init_();
 	customGuiStyle_();
+
+	current_tilemap_name_ = "tiles_keen4";
+	current_sprite_name_ = "r0c0";
 }
 
 Gui::~Gui()
@@ -70,7 +73,7 @@ GLvoid Gui::Update(GLuint width, GLuint height, Scene &scene)
 	//	scene.mouseOverScene = false;
 }
 
-GLvoid Gui::Render()
+GLvoid Gui::Render(Scene &scene)
 {
   // Main menu
   {
@@ -116,6 +119,7 @@ GLvoid Gui::Render()
 				sf::Sprite spr;
 				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
 				spr.setTexture(tex->getTexture());
+				spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
 				ImGui::Image(spr);
 				ImGui::EndTabItem();
 			}
@@ -219,7 +223,7 @@ GLvoid Gui::Render()
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 
-		Tilemap* tilemap = TilemapManager::GetTilemap("tiles_keen4");
+		Tilemap* tilemap = TilemapManager::GetTilemap(current_tilemap_name_);
 
 		GLuint i = 0;
 		for (GLuint row = 0; row < tilemap->NumRows(); row++) {
@@ -230,9 +234,9 @@ GLvoid Gui::Render()
 				ImGui::PushID(i);
 				if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
 				{
-					std::stringstream msg;
-					msg << "Key: " << sprKey.str();
-					MessageManager::AddMessage(msg, message_t::INFO);
+					current_sprite_name_ = sprKey.str();
+					scene.SetCurrentTilemap(current_tilemap_name_);
+					scene.SetCurrentSprite(current_sprite_name_);
 				}
 				ImGui::PopID();
 				if (col < tilemap->NumCols()-1)
@@ -251,7 +255,7 @@ GLvoid Gui::Render()
 	}
 
 	// Imgui Demo Window
-  ImGui::ShowDemoWindow();
+  //ImGui::ShowDemoWindow();
 }
 
 

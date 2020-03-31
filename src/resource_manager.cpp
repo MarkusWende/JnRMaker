@@ -57,7 +57,7 @@ GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::st
 {
   RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
   sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
-  if(!rTexture->create(width, height))
+  if(!rTexture->create(width, -height))
   {
     std::cout << "Error!!" << std::endl;
     // error...
