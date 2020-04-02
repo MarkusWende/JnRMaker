@@ -41,11 +41,15 @@ class JnRWindow
 public:
 	JnRWindow()														//!< constructor
 	{
-		window_.create(sf::VideoMode(1800, 1024), "[NewProject.jrm] - JnRMaker");
-	  auto desktop = sf::VideoMode::getDesktopMode();
-	  window_.setPosition(sf::Vector2i(desktop.width/2 - window_.getSize().x/3, desktop.height/2 - window_.getSize().y/2));
-	  //window_.setFramerateLimit(60);
-	  ImGui::SFML::Init(window_);
+        window_.create(sf::VideoMode(1800, 1024), "[NewProject.jrm] - JnRMaker");
+        auto desktop = sf::VideoMode::getDesktopMode();
+        window_.setPosition(sf::Vector2i(desktop.width/2 - window_.getSize().x/2, desktop.height/2 - window_.getSize().y/2));
+#ifdef _WIN32
+        ShowWindow(window_.getSystemHandle(), SW_MAXIMIZE);
+#endif // _WIN64
+
+        //window_.setFramerateLimit(60);
+        ImGui::SFML::Init(window_);
 	}
 
 	~JnRWindow()

@@ -219,35 +219,48 @@ GLvoid Gui::Render(Scene &scene)
 																				ImGuiWindowFlags_NoCollapse |
 																				ImGuiWindowFlags_HorizontalScrollbar);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+		if (ImGui::CollapsingHeader("Tilemaps"))
+		{
+			//ImGui::BeginChildFrame(ImGui::GetID("cfginfos"), ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18), ImGuiWindowFlags_NoMove);
 
-		Tilemap* tilemap = TilemapManager::GetTilemap(current_tilemap_name_);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 
-		GLuint i = 0;
-		for (GLuint row = 0; row < tilemap->NumRows(); row++) {
-			for (GLuint col = 0; col < tilemap->NumCols(); col++) {
-				std::stringstream sprKey;
-				sprKey << "r" << row << "c" << col;
-				sf::Sprite* sprValue = tilemap->GetSprite(sprKey.str());
-				ImGui::PushID(i);
-				if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
+			Tilemap* tilemap = TilemapManager::GetTilemap(current_tilemap_name_);
+
+			GLuint i = 0;
+			ImGuiListClipper clipper(tilemap->NumRows());
+			while (clipper.Step())
+			{
+				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
 				{
-					current_sprite_name_ = sprKey.str();
-					scene.SetCurrentTilemap(current_tilemap_name_);
-					scene.SetCurrentSprite(current_sprite_name_);
+					for (GLuint col = 0; col < tilemap->NumCols(); col++)
+					{
+						std::stringstream sprKey;
+						sprKey << "r" << row << "c" << col;
+						sf::Sprite* sprValue = tilemap->GetSprite(sprKey.str());
+						ImGui::PushID(i);
+						if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
+						{
+							current_sprite_name_ = sprKey.str();
+							scene.SetCurrentTilemap(current_tilemap_name_);
+							scene.SetCurrentSprite(current_sprite_name_);
+						}
+						ImGui::PopID();
+						if (col < tilemap->NumCols() - 1)
+							ImGui::SameLine();
+						i++;
+					}
 				}
-				ImGui::PopID();
-				if (col < tilemap->NumCols()-1)
-					ImGui::SameLine();
-				i++;
 			}
-		}
 
-		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
-		ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();
+
+			//ImGui::EndChildFrame();
+		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
