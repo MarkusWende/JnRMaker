@@ -57,7 +57,8 @@ public:
 		window_.close();
 	};
 
-	sf::RenderWindow* Get() { return &window_; };
+	sf::RenderWindow*   Get() { return &window_; };
+    sf::Vector2i        GetMousePosition() { return sf::Mouse::getPosition(window_); };
 
 private:
 	sf::RenderWindow window_;

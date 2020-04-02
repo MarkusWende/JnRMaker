@@ -32,13 +32,14 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include "../include/imgui/imgui-SFML.h"
+#include "imgui/imgui-SFML.h"
+#include "scene.h"
 
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(sf::RenderWindow &window)
+void processEvents(sf::RenderWindow &window, Scene &scene)
 {
   sf::Event event;
   while (window.pollEvent(event)) {
@@ -58,6 +59,14 @@ void processEvents(sf::RenderWindow &window)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
     {
         window.close();
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        if (scene.IsMouseOverScene())
+        {
+            scene.SetAddSpriteFlag();
+        }
     }
   }
 }

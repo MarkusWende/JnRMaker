@@ -27,6 +27,8 @@
 
  #include <iostream>
 
+#include <SFML/Window/Mouse.hpp>
+
  #include "../include/events.h"
  #include "../include/gui.h"
  #include "../include/resource_manager.h"
@@ -55,7 +57,7 @@ int main()
 
   // Main Loop
   while (window->isOpen()) {
-    processEvents(*window);
+    processEvents(*window, appScene);
 
     ImGui::SFML::Update(*window, deltaClock.restart());
     // If the window size change, update gui and scene
@@ -65,7 +67,8 @@ int main()
     // Render Gui
     appGui.Render(appScene);
     // Render Scene
-    appScene.Render();
+    
+    appScene.Render(appWindow.GetMousePosition());
     // Clear window and render it
     window->clear();
     ImGui::SFML::Render(*window);

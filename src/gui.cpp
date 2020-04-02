@@ -33,8 +33,8 @@ Gui::Gui()
 	init_();
 	customGuiStyle_();
 
-	current_tilemap_name_ = "tiles_keen4";
-	current_sprite_name_ = "r0c0";
+	active_tilemap_name_ = "tiles_keen4";
+	active_sprite_name_ = "r0c0";
 }
 
 Gui::~Gui()
@@ -119,8 +119,9 @@ GLvoid Gui::Render(Scene &scene)
 				sf::Sprite spr;
 				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
 				spr.setTexture(tex->getTexture());
-				spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-				ImGui::Image(spr);
+				//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
+				ImGui::SetCursorPos(ImVec2(20.f, 50.f));
+				ImGui::Image(tex->getTexture(), sf::FloatRect(0, 650, 1000, -650), sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
 				ImGui::EndTabItem();
 			}
 
@@ -137,6 +138,11 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::EndTabBar();
 		}
 
+		if (ImGui::IsWindowHovered())
+			scene.SetMouseOverScene(true);
+		else
+			scene.SetMouseOverScene(false);
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
@@ -144,6 +150,7 @@ GLvoid Gui::Render(Scene &scene)
 	}
 
 	// Messages Window
+	//if (false)
 	{
 		ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
 		ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h));
@@ -227,7 +234,7 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 
-			Tilemap* tilemap = TilemapManager::GetTilemap(current_tilemap_name_);
+			Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
 
 			GLuint i = 0;
 			ImGuiListClipper clipper(tilemap->NumRows());
@@ -243,9 +250,9 @@ GLvoid Gui::Render(Scene &scene)
 						ImGui::PushID(i);
 						if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
 						{
-							current_sprite_name_ = sprKey.str();
-							scene.SetCurrentTilemap(current_tilemap_name_);
-							scene.SetCurrentSprite(current_sprite_name_);
+							active_sprite_name_ = sprKey.str();
+							scene.SetCurrentTilemap(active_tilemap_name_);
+							scene.SetCurrentSprite(active_sprite_name_);
 						}
 						ImGui::PopID();
 						if (col < tilemap->NumCols() - 1)
@@ -268,7 +275,7 @@ GLvoid Gui::Render(Scene &scene)
 	}
 
 	// Imgui Demo Window
-  ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 }
 
 

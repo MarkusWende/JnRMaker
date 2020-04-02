@@ -84,8 +84,8 @@ private:
   GuiWindow       window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
   GuiWindow       window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
   GLuint          main_menubar_height_;       /**< Main menu bar height. */
-  std::string     current_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
-  std::string     current_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
+  std::string     active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
+  std::string     active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
 
   /**
 	 * @brief Initialize all gui related default attributes.
