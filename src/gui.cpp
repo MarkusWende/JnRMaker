@@ -58,9 +58,9 @@ GLvoid Gui::Update(GLuint width, GLuint height, Scene &scene)
 		window_sidebar_right_.w = width_ * window_sidebar_right_.wPercent;
 		window_sidebar_right_.h = height_ * window_sidebar_right_.hPercent;
 
-		scene.SetSizeWidth(window_scene_.w);
-		scene.SetSizeHeight(window_scene_.h);
-		scene.Update();
+		//scene.SetWidth(window_scene_.w-6);
+		//scene.SetHeight(window_scene_.h-51);
+		//scene.Update();
 	}
 
 	ImGuiStyle& style = ImGui::GetStyle();
@@ -116,12 +116,34 @@ GLvoid Gui::Render(Scene &scene)
 		{
 			if (ImGui::BeginTabItem("Viewport"))
 			{
-				sf::Sprite spr;
-				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
-				spr.setTexture(tex->getTexture());
-				//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-				ImGui::SetCursorPos(ImVec2(20.f, 50.f));
-				ImGui::Image(tex->getTexture(), sf::FloatRect(0, 650, 1000, -650), sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
+				if (!scene.IsMapNull())
+				{
+					//sf::Sprite spr;
+					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
+					//spr.setTexture(tex->getTexture());
+					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
+					ImGui::SetCursorPos(ImVec2(2.f, 24.f));
+
+					ImGui::Image(tex->getTexture(),
+						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
+						sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+						sf::Color(255, 255, 255, 255),
+						sf::Color(0, 255, 0, 255));
+
+					sf::RenderTexture* texBg = ResourceManager::GetRenderTexture("tex_background");
+					//spr.setTexture(tex->getTexture());
+					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
+					ImGui::SetCursorPos(ImVec2(800.f, 24.f));
+					
+					ImGui::Image(texBg->getTexture(),
+						sf::Vector2f(32, texBg->getSize().y),
+						sf::FloatRect(0, (float)texBg->getSize().y, (float)texBg->getSize().x, -(float)texBg->getSize().y),
+						sf::Color(255, 255, 255, 255),
+						sf::Color(0, 255, 0, 255));
+						
+					//ImGui::Image(texBg->getTexture());
+				}
+
 				ImGui::EndTabItem();
 			}
 
@@ -221,18 +243,43 @@ GLvoid Gui::Render(Scene &scene)
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
 		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
-																				ImGuiWindowFlags_NoResize |
-																				ImGuiWindowFlags_NoMove |
-																				ImGuiWindowFlags_NoCollapse |
-																				ImGuiWindowFlags_HorizontalScrollbar);
+											ImGuiWindowFlags_NoResize |
+											ImGuiWindowFlags_NoMove |
+											ImGuiWindowFlags_NoCollapse);
 
-		if (ImGui::CollapsingHeader("Tilemaps"))
+		if (!scene.IsMapNull())
 		{
-			//ImGui::BeginChildFrame(ImGui::GetID("cfginfos"), ImVec2(0, ImGui::GetTextLineHeightWithSpacing() * 18), ImGuiWindowFlags_NoMove);
+			ImGui::SetCursorPos(ImVec2(15.f, 5.f));
+			GLuint width = scene.GetMapWidth();
+			GLuint height = scene.GetMapHeight();
+			height = (int)((350.0f / (float)width) * (float)height);
+			ImGui::BeginChild("Minimap", ImVec2(400, height + 30));
+			ImGui::Text("Minimap");
+		
+			sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
+			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+			ImGui::Image(tex->getTexture(),
+				sf::Vector2f(350, height),
+				sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+				sf::Color(255, 255, 255, 255),
+				sf::Color(0, 255, 0, 255));
+			ImGui::EndChild();
+		}
+		
+
+		if (ImGui::CollapsingHeader("Map"))
+		{
+			if (ImGui::Button("Create"))
+			{
+				scene.CreateMap(16, 8, { 16, 16 }, {2.0f, 2.0f});
+			}
+		}
+
+		if (ImGui::CollapsingHeader("Tiles"))
+		{
+			ImGui::BeginChild("TileSelector", ImVec2(0, 500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 
 			Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
 
@@ -248,12 +295,15 @@ GLvoid Gui::Render(Scene &scene)
 						sprKey << "r" << row << "c" << col;
 						sf::Sprite* sprValue = tilemap->GetSprite(sprKey.str());
 						ImGui::PushID(i);
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 						if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
 						{
 							active_sprite_name_ = sprKey.str();
 							scene.SetCurrentTilemap(active_tilemap_name_);
 							scene.SetCurrentSprite(active_sprite_name_);
 						}
+						ImGui::PopStyleColor(2);
 						ImGui::PopID();
 						if (col < tilemap->NumCols() - 1)
 							ImGui::SameLine();
@@ -262,11 +312,15 @@ GLvoid Gui::Render(Scene &scene)
 				}
 			}
 
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
 			ImGui::PopStyleVar();
 
 			//ImGui::EndChildFrame();
+			ImGui::EndChild();
+		}
+
+		if (ImGui::CollapsingHeader("Sprites"))
+		{
+
 		}
 
 		ImGui::End();
@@ -275,7 +329,7 @@ GLvoid Gui::Render(Scene &scene)
 	}
 
 	// Imgui Demo Window
-	//ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 }
 
 

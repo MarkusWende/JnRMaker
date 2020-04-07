@@ -35,62 +35,122 @@ Scene::Scene(GLuint width, GLuint height)
 
   add_sprite_flag_ = false;
   mouse_over_scene_ = false;
+  map_is_null_ = true;
+  map_height_ = 0;
+  map_width_ = 0;
 
   // Load tilemap
   active_tilemap_name_ = "tiles_keen4";
   active_sprite_name_ = "r4c3";
-  ResourceManager::LoadTexture("assets/tiles/keen4_tiles.png", sf::Color(186 ,254, 202, 255), active_tilemap_name_);
+  ResourceManager::LoadTexture("assets/tiles/keen4_tiles_red.png", sf::Color(186 ,254, 202, 255), active_tilemap_name_);
   TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
 
   // Create framebuffers
   //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-  ResourceManager::CreateRenderTexture(1000, 650, "viewport");
+  ResourceManager::CreateRenderTexture(width_, height_, "viewport");
+  ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+  ResourceManager::CreateRenderTexture(0, 0, "tex_background");
 
-  generateGrid();
+  //generateGrid();
 }
 
 Scene::~Scene() { }
 
+GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf::Vector2f spriteScale)
+{
+    map_is_null_ = false;
+    map_width_ = width;
+    map_height_ = height;
+    generateGrid();
+    width_ = map_width_ * spriteSize.x * spriteScale.x;
+    height_ = map_height_ * spriteSize.y * spriteScale.y;
+    Update();
+}
+
 GLvoid Scene::Update()
 {
-  //ResourceManager::UpdateRenderTexture(width_, height_, "viewport");
-  ResourceManager::UpdateRenderTexture(1000, 650, "viewport");
-  generateGrid();
+    ResourceManager::UpdateRenderTexture(width_, height_, "viewport");
+    ResourceManager::UpdateRenderTexture(width_, height_, "minimap");
 }
 
 GLvoid Scene::Render(sf::Vector2i posMouse)
 {
-  sf::RenderTexture* texViewport = ResourceManager::GetRenderTexture("viewport");
-  texViewport->clear(sf::Color::Black);
+    if (!map_is_null_)
+    {
+        sf::RenderTexture* texViewport = ResourceManager::GetRenderTexture("viewport");
+        sf::RenderTexture* texMinimap = ResourceManager::GetRenderTexture("minimap");
+        texViewport->clear(sf::Color::Black);
+        texMinimap->clear(sf::Color::Black);
 
-  glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
-  glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
+        glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
+        glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
 
-  texViewport->draw(&grid_[0], grid_.size(), sf::Lines);
+        texViewport->draw(&grid_[0], grid_.size(), sf::Lines);
 
+        sf::Sprite* spr = TilemapManager::GetTilemap(active_tilemap_name_)->GetSprite(active_sprite_name_);
+        sf::RectangleShape rectangle(sf::Vector2f(32, 32));
+        rectangle.setFillColor(sf::Color(0, 0, 0, 0));
+        rectangle.setOutlineColor(sf::Color::Green);
+        rectangle.setOutlineThickness(2);
 
-  sf::Sprite* spr = TilemapManager::GetTilemap(active_tilemap_name_)->GetSprite(active_sprite_name_);
-  if (mouse_over_scene_)
-  {
-      if (add_sprite_flag_)
-      {
-          sf::Vector2i sprPos(posMouse.x - 30, posMouse.y - 86);
-          sf::Vector2i clippedPos;
-          clippedPos.x = (int)(sprPos.x / 32) * 32 + 8;
-          clippedPos.y = (int)(sprPos.y / 32) * 32 + 10;
-          spr->setPosition(sf::Vector2f(clippedPos.x, clippedPos.y));
+        if (mouse_over_scene_)
+        {
+            sf::Vector2i sprPos(posMouse.x, posMouse.y - 48);
 
-          add_sprite_flag_ = false;
-      }
-  }
-  else
-  {
-      spr->setPosition(sf::Vector2f(0, 0));
-  }
-  texViewport->draw(*spr);
+            //std::stringstream msg;
+            //msg << "x: " << (width_ % 32) << "\ty: " << (height_ % 32);
+            //MessageManager::AddMessage(msg, message_t::INFO);
 
+            GLuint row = sprPos.y / (sprSize.y * sprScale.y);
+            GLuint col = sprPos.x / (sprSize.x * sprScale.x);
 
-  texViewport->display();
+            GLuint y = row * (sprSize.y * sprScale.y);
+            GLuint x = col * (sprSize.x * sprScale.x);
+
+            if (add_sprite_flag_)
+            {
+                std::string hash = getNameHash(active_tilemap_name_, active_sprite_name_);
+                spr->setPosition(sf::Vector2f(0, e_solids_.size() * 32));
+                e_solids_.insert(std::make_pair(active_sprite_name_, new Solid(active_sprite_name_, *spr, layer_t::BACK)));
+
+                std::stringstream msg;
+                msg << "hash: " << hash;
+                MessageManager::AddMessage(msg, message_t::INFO);
+
+                ResourceManager::UpdateRenderTexture(32, e_solids_.size() * 32, "tex_background");
+                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
+                texBackground->clear(sf::Color::Black);
+                for (auto const& it : e_solids_)
+                {
+                    texBackground->draw(*it.second->GetSprite());
+                }
+
+                //texViewport->draw(*spr);
+
+                add_sprite_flag_ = false;
+            }
+
+            spr->setPosition(sf::Vector2f(x, y));
+            rectangle.setPosition(sf::Vector2f(x, y));
+        }
+        else
+        {
+            spr->setPosition(sf::Vector2f(0, 0));
+        }
+
+        texViewport->draw(*spr);
+        //texViewport->draw(rectangle);
+        texMinimap->draw(*spr);
+        //texMinimap->draw(rectangle);
+
+        for (auto const& it : e_solids_)
+        {
+            //texViewport->draw(*it.second->GetSprite());
+            //texMinimap->draw(*it.second->GetSprite());
+        }
+     
+        texViewport->display();
+    }
 }
 
 GLvoid Scene::generateGrid()
@@ -102,23 +162,30 @@ GLvoid Scene::generateGrid()
 
   // Draw a grid
   {
-    sf::Color gridColor = {10, 10, 10, 255};
+    sf::Color gridColor = {255, 255, 255, 50};
     // Push grid rows to vertex vector
-    for (size_t row = 650 / (sprSize.x * sprScale.x); row != 0;)
+    GLuint numRows = map_height_;
+    for (size_t row = 0; row < numRows; row++)
     {
-      //GLuint rowY = row * (sprSize.x * sprScale.x) - height_ % (GLuint)(sprSize.x * sprScale.x) + 1;
-      GLuint rowY = row * (sprSize.x * sprScale.x) - ((sprSize.x * sprScale.x) -  (650 - ((sprSize.x * sprScale.x) * (int)(650 / (sprSize.x * sprScale.x)))));
-      grid_.push_back(sf::Vertex(sf::Vector2f(0, rowY), gridColor));
-      grid_.push_back(sf::Vertex(sf::Vector2f(1000, rowY), gridColor));
-
-      row--;
+      GLuint rowPixel = row * (sprSize.y * sprScale.y);
+      grid_.push_back(sf::Vertex(sf::Vector2f(0, rowPixel), gridColor));
+      grid_.push_back(sf::Vertex(sf::Vector2f(map_width_ * (sprSize.y * sprScale.y), rowPixel), gridColor));
     }
     // Push grid columns to vertex vector
-    for (size_t col = 0; col < 1000 / (sprSize.y * sprScale.y); col++)
+    GLuint numCols = map_width_;
+    for (size_t col = 0; col < numCols; col++)
     {
-      GLuint colX = col * (sprSize.y * sprScale.y) - ((sprSize.y * sprScale.y) - (1000 - ((sprSize.y * sprScale.y) * (int)(1000 / (sprSize.y * sprScale.y))))) - 1;
-      grid_.push_back(sf::Vertex(sf::Vector2f(colX, 0), gridColor));
-      grid_.push_back(sf::Vertex(sf::Vector2f(colX, 650), gridColor));
+      GLuint colPixel = col * (sprSize.x * sprScale.x);
+      grid_.push_back(sf::Vertex(sf::Vector2f(colPixel, 0), gridColor));
+      grid_.push_back(sf::Vertex(sf::Vector2f(colPixel, map_height_ * (sprSize.x * sprScale.x)), gridColor));
     }
   }
+}
+
+std::string Scene::getNameHash(std::string tilesetName, std::string tileName)
+{
+    std::stringstream hash;
+
+    hash << tilesetName << ":" << tileName;
+    return hash.str();
 }

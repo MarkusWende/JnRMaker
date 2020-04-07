@@ -39,11 +39,15 @@
 class SceneEntity
 {
 public:
-  SceneEntity() : position(sf::Vector3<GLfloat>(0.0f, 0.0f, 0.0f)) { };     //!< constructor
+  SceneEntity() : position(sf::Vector2f(0.0f, 0.0f)) { };     //!< constructor
   ~SceneEntity() { };                                                       //!< destructor
 
+  GLvoid SetPosition(sf::Vector2f pos) { position = pos; };
+
+  sf::Vector2f GetPosition(sf::Vector2f pos) { return position; };
+
 protected:
-  sf::Vector3<GLfloat> position;                                            /**< Position of the entity in a 3D coordinate system. */
+  sf::Vector2f position;                                            /**< Position of the entity in a 3D coordinate system. */
 
 private:
 

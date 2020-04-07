@@ -34,9 +34,12 @@
 
 #include <SFML/OpenGL.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include "entity_camera.h"
 #include "entity_solid.h"
+#include "entity_object.h"
+#include "entity_player.h"
 #include "resource_manager.h"
 #include "message_manager.h"
 #include "tilemap_manager.h"
@@ -50,7 +53,13 @@ class Scene
 {
 public:
 	Scene(GLuint width, GLuint height);														//!< constructor
-	~Scene();																											//!< destructor
+	~Scene();																				//!< destructor
+
+	/**
+	 * @brief Create a new map.
+	 * @return GLvoid.
+	 */
+	GLvoid CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf::Vector2f spriteScale);
 
 	/**
 	 * @brief Update the scene, when the window size changes.
@@ -70,28 +79,38 @@ public:
 	 * @param width New width of the scene.
 	 * @return GLvoid.
 	 */
-	GLvoid SetSizeWidth(GLuint width) { width_ = width; };
+	GLvoid SetWidth(GLuint width) { width_ = width; };
 
 	/**
 	 * @brief Set the height of the scene.
 	 * @param height New height of the scene.
 	 * @return GLvoid.
 	 */
-	GLvoid SetSizeHeight(GLuint height) { height_ = height; };
+	GLvoid SetHeight(GLuint height) { height_ = height; };
+
 	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
 	GLvoid SetCurrentTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetCurrentSprite(std::string name) { active_sprite_name_ = name; };
 	GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
+	GLboolean IsMapNull() { return map_is_null_; };
+
+	GLuint	GetWidth() { return width_; };
+	GLuint	GetHeight() { return height_; };
+	GLuint	GetMapWidth() { return map_width_; };
+	GLuint	GetMapHeight() { return map_height_; };
 
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
 	GLvoid generateGrid();
+	std::string getNameHash(std::string tilesetName, std::string tileName);
 
 	std::map<std::string, std::unique_ptr<Camera>> 	e_cameras_;					/**< All camera entities are stored in this map. */
-	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;					/**< All solid entities are stored in this map. */
+	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;					/**< All static entities that are in 3 layers (background, playerground and foreground). */
+	std::map<std::string, std::unique_ptr<Object>> 	e_objects_;					/**< All moving and interactable objects. */
+	Player											e_player_;
 	GLuint											width_;						/**< Width of the rendered scene. */
 	GLuint											height_;					/**< Height of the rendered scene. */
 	std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
@@ -99,6 +118,10 @@ private:
 	std::vector<sf::Vertex> 						grid_;
 	GLboolean										add_sprite_flag_;
 	GLboolean										mouse_over_scene_;
+	GLboolean										map_is_null_;
+	GLuint											map_width_;					/**< Width of the map. */
+	GLuint											map_height_;				/**< Height of the map. */
+	sf::VertexArray									map_bg_vao_;
 
 };
 

@@ -29,7 +29,18 @@
 #ifndef SOLID_H
 #define SOLID_H
 
+#include <SFML/Graphics/Sprite.hpp>
+
 #include "scene_entity.h"
+
+ /**
+  * @brief Enumeration for layer types.
+  */
+enum class layer_t {
+    FORE,                            /**< Background layer. */
+    PLAYER,                          /**< player ground layer. */
+    BACK,                            /**< foreground layer. */
+};
 
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
@@ -37,10 +48,29 @@
 class Solid : public SceneEntity
 {
 public:
-    Solid() { };                                              //!< constructor
-    ~Solid() { };                                             //!< destructor
+    Solid()
+    {
+        id_ = "NULL";
+        spr_ = sf::Sprite();
+        layer_ = layer_t::FORE;
+    };
+
+    Solid(std::string id, sf::Sprite spr, layer_t layer)                            //!< constructor
+    {
+        layer_ = layer;
+        id_ = id;
+        spr_ = spr;
+    };
+
+    ~Solid() { };                                               //!< destructor
+
+    sf::Sprite* GetSprite() { return &spr_; };
 
 private:
+    layer_t                 layer_;                               /**< foreground layer. */
+    sf::Sprite              spr_;
+    std::string             id_;
+
 
 
 };

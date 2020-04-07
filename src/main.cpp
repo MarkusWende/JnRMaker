@@ -45,7 +45,7 @@ int main()
   // Create gui object
   Gui appGui;
   // Create default scene object
-  Scene appScene(800, 800);
+  Scene appScene(640, 480);
   // Update Gui to display the windows
   appGui.Update(window->getSize().x, window->getSize().y, appScene);
 

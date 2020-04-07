@@ -17,36 +17,31 @@
  *
  */
 
-/**
- * @file time_helper.h
- * @brief This file contains time formating helper functions.
- *
- * @author Markus Wende
- * https://github.com/MarkusWende
- */
+ /**
+  * @file entity_object.h
+  * @brief This file contains the object entity class.
+  *
+  * @author Markus Wende
+  * https://github.com/MarkusWende
+  */
 
 
-#ifndef TIME_HELPER_H
-#define TIME_HELPER_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
-#include <ctime>       /* time_t, struct tm, time, localtime */
-#include <string>
-#include <sstream>
-#include <iomanip>
+#include "scene_entity.h"
 
-namespace time_helper
-{
   /**
-	 * @brief Get the local time as a string.
-	 * @return Return the formnated local time as a string.
-	 */
-  inline std::string GetTimeinfo()
-  {
-    std::time_t t = std::time(nullptr);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&t), "%c");
-  	return ss.str();
-  }
-}
+   * @brief Object class represents an general object.
+   */
+class Object : public SceneEntity
+{
+public:
+    Object() { init(); }                                            //!< constructor
+    ~Object() { };                                                  //!< destructor
 
-#endif	// TIME_HELPER_H
+private:
+    GLvoid init() { };
+
+};
+#endif  // OBJECT_H

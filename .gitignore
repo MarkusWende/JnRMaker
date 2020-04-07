@@ -20,3 +20,5 @@ x64/
 # tiles and textures
 assets/tiles/*.*
 assets/textures/*.*
+assets/sprites/*.*
+assets/icons/*.*
