@@ -79,15 +79,15 @@ public:
         }
 #endif // _WIN32
 #ifdef __linux__
-				stream = fopen("./log.txt", "w");
-				fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
-				fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
-				fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
-				fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
-				fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
-				fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+			stream = fopen("./log.txt", "w");
+			fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+			fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+			fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+			fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+			fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+			fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
 #endif // __linux__
-				fclose(stream);
+			fclose(stream);
 
 	}
 

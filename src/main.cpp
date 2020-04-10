@@ -70,7 +70,7 @@ int main()
         // Render Gui
         appGui.Render(appScene);
         // Render Scene
-    
+
         appScene.Render(appWindow.GetMousePosition());
         // Clear window and render it
         window->clear();

@@ -167,13 +167,13 @@ GLvoid Gui::Render(Scene &scene)
 					//spr.setTexture(tex->getTexture());
 					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
 					ImGui::SetCursorPos(ImVec2(2.f, 850.f));
-					
+
 					ImGui::Image(texBg->getTexture(),
 						sf::Vector2f(texBg->getSize().x, texBg->getSize().y),
 						sf::FloatRect(0, (float)texBg->getSize().y, (float)texBg->getSize().x, -(float)texBg->getSize().y),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
-						
+
 					//ImGui::Image(texBg->getTexture());
 				}
 
@@ -288,7 +288,7 @@ GLvoid Gui::Render(Scene &scene)
 			height = (int)((350.0f / (float)width) * (float)height);
 			ImGui::BeginChild("Minimap", ImVec2(400, height + 30));
 			ImGui::Text("Minimap");
-		
+
 			sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
 			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
 			ImGui::Image(tex->getTexture(),
@@ -298,7 +298,7 @@ GLvoid Gui::Render(Scene &scene)
 				sf::Color(0, 255, 0, 255));
 			ImGui::EndChild();
 		}
-		
+
 
 		if (ImGui::CollapsingHeader("Map"))
 		{
@@ -322,7 +322,7 @@ GLvoid Gui::Render(Scene &scene)
 						ResourceManager::LoadTexture(active_tilemap_name_.c_str(), sf::Color(186, 254, 202, 255), active_tilemap_name_);
 						TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
 					}
-						
+
 					ImGui::PopID();
 				}
 				ImGui::EndCombo();

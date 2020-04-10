@@ -129,7 +129,7 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
                     e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, *spr, layer_t::BACK)));
                     ResourceManager::UpdateRenderTexture(e_solids_.size() * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_background");
                     sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
-                    
+
                     texBackground->clear(sf::Color::Black);
 
                     for (auto const& it : e_solids_)
@@ -180,7 +180,7 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
         states.texture = &ResourceManager::GetRenderTexture("tex_background")->getTexture();
         texViewport->draw(map_bg_vao_, states);
         texMinimap->draw(map_bg_vao_, states);
-     
+
         texViewport->display();
     }
 }
