@@ -34,6 +34,7 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include "../include/imgui/imgui.h"
 #include "../include/imgui/imgui-SFML.h"
@@ -53,6 +54,11 @@ struct GuiWindow {
   GLfloat hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
 };
 
+enum class gui_state_t {
+    GUI_ACTIVE = 1,
+    GUI_CLOSE = 0
+};
+
 
 /**
  * @brief The gui class holds all ImGui related attributes andd methods. Like displaying gui windows, tabs, buttons etc.
@@ -65,11 +71,10 @@ public:
 
   /**
 	 * @brief Update the gui window dimensions if the application window size changed.
-   * @param width The application width.
-   * @param height The application height.
+   * @param window Render window.
 	 * @return GLvoid.
 	 */
-  GLvoid Update(GLuint width, GLuint height, Scene &scene);
+  GLvoid Update(GLuint width, GLuint height, Scene& scene);
 
   /**
 	 * @brief Render all gui related entities, that are displayed in the application.
@@ -77,27 +82,32 @@ public:
 	 */
   GLvoid Render(Scene &scene);
 
+  GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
+  GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
+
 private:
-  GLuint          width_;                     /**< Width of the application window. */
-  GLuint          height_;                    /**< Height of the application window. */
-  GuiWindow       window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
-  GuiWindow       window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
-  GuiWindow       window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
-  GLuint          main_menubar_height_;       /**< Main menu bar height. */
-  std::string     active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
-  std::string     active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
+    GLuint                      width_;                     /**< Width of the application window. */
+    GLuint                      height_;                    /**< Height of the application window. */
+    GuiWindow                   window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
+    GuiWindow                   window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
+    GuiWindow                   window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
+    GLuint                      main_menubar_height_;       /**< Main menu bar height. */
+    std::string                 active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
+    std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
+    std::vector<std::string>    tilemap_list_;
+    gui_state_t                 state_;
 
-  /**
-	 * @brief Initialize all gui related default attributes.
-	 * @return GLvoid.
-	 */
-  GLvoid init_();
+    /**
+	    * @brief Initialize all gui related default attributes.
+	    * @return GLvoid.
+	    */
+    GLvoid init_();
 
-  /**
-	 * @brief Set the custom gui style attributes.
-	 * @return GLvoid.
-	 */
-  GLvoid customGuiStyle_();
+    /**
+	    * @brief Set the custom gui style attributes.
+	    * @return GLvoid.
+	    */
+    GLvoid customGuiStyle_();
 };
 
 #endif	// GUI_H

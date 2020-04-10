@@ -89,9 +89,9 @@ public:
 	GLvoid SetHeight(GLuint height) { height_ = height; };
 
 	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
-	GLvoid SetCurrentTilemap(std::string name) { active_tilemap_name_ = name; };
-	GLvoid SetCurrentSprite(std::string name) { active_sprite_name_ = name; };
 	GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
+	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
+	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };

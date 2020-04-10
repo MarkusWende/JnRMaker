@@ -34,19 +34,20 @@
 
 #include "imgui/imgui-SFML.h"
 #include "scene.h"
+#include "gui.h"
 
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(sf::RenderWindow &window, Scene &scene)
+void processEvents(sf::RenderWindow &window, Scene &scene, Gui& gui)
 {
   sf::Event event;
   while (window.pollEvent(event)) {
     ImGui::SFML::ProcessEvent(event);
 
     if (event.type == sf::Event::Closed) {
-        window.close();
+        gui.Close();
     }
 
     if (event.type == sf::Event::Resized)
@@ -58,7 +59,7 @@ void processEvents(sf::RenderWindow &window, Scene &scene)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
     {
-        window.close();
+        gui.Close();
     }
 
     if (event.type == sf::Event::MouseButtonPressed)

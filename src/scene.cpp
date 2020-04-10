@@ -40,17 +40,11 @@ Scene::Scene(GLuint width, GLuint height)
   map_width_ = 0;
 
   // Load tilemap
-  active_tilemap_name_ = "tiles_keen4";
-  active_sprite_name_ = "r4c3";
-  ResourceManager::LoadTexture("assets/tiles/keen4_tiles_red.png", sf::Color(186 ,254, 202, 255), active_tilemap_name_);
-  TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
+  active_tilemap_name_ = "";
+  active_sprite_name_ = "";
 
   // Create framebuffers
   //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-  ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-  ResourceManager::CreateRenderTexture(width_, height_, "minimap");
-  ResourceManager::CreateRenderTexture(0, 0, "tex_background");
-
   //generateGrid();
 }
 
@@ -58,12 +52,21 @@ Scene::~Scene() { }
 
 GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf::Vector2f spriteScale)
 {
+    ResourceManager::CreateRenderTexture(width_, height_, "viewport");
+    ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+    ResourceManager::CreateRenderTexture(32, 32, "tex_background");
+
     map_is_null_ = false;
     map_width_ = width;
     map_height_ = height;
     generateGrid();
     width_ = map_width_ * spriteSize.x * spriteScale.x;
     height_ = map_height_ * spriteSize.y * spriteScale.y;
+
+    map_bg_vao_.clear();
+    map_bg_vao_.setPrimitiveType(sf::Quads);
+    map_bg_vao_.resize(map_width_ * map_height_* 4);
+
     Update();
 }
 
@@ -107,25 +110,53 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
             GLuint y = row * (sprSize.y * sprScale.y);
             GLuint x = col * (sprSize.x * sprScale.x);
 
+            spr->setPosition(sf::Vector2f(e_solids_.size() * (sprSize.y * sprScale.y), 0));
+
             if (add_sprite_flag_)
             {
-                std::string hash = getNameHash(active_tilemap_name_, active_sprite_name_);
-                spr->setPosition(sf::Vector2f(0, e_solids_.size() * 32));
-                e_solids_.insert(std::make_pair(active_sprite_name_, new Solid(active_sprite_name_, *spr, layer_t::BACK)));
+                std::string hashSolid = getNameHash(active_tilemap_name_, active_sprite_name_);
+                std::map<std::string, std::unique_ptr<Solid>>::iterator itSolid;
+                itSolid = e_solids_.find(hashSolid);
+                GLuint idSolid = 0;
 
-                std::stringstream msg;
-                msg << "hash: " << hash;
-                MessageManager::AddMessage(msg, message_t::INFO);
-
-                ResourceManager::UpdateRenderTexture(32, e_solids_.size() * 32, "tex_background");
-                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
-                texBackground->clear(sf::Color::Black);
-                for (auto const& it : e_solids_)
+                if (itSolid != e_solids_.end())
                 {
-                    texBackground->draw(*it.second->GetSprite());
+                    idSolid = e_solids_.find(hashSolid)->second.get()->GetId();
+                }
+                else
+                {
+                    idSolid = e_solids_.size();
+                    e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, *spr, layer_t::BACK)));
+                    ResourceManager::UpdateRenderTexture(e_solids_.size() * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_background");
+                    sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
+                    
+                    texBackground->clear(sf::Color::Black);
+
+                    for (auto const& it : e_solids_)
+                    {
+                        texBackground->draw(*it.second->GetSprite());
+                    }
+
+                    std::stringstream msg;
+                    msg << "hash: " << hashSolid;
+                    MessageManager::AddMessage(msg, message_t::INFO);
                 }
 
-                //texViewport->draw(*spr);
+                sf::Vertex* quad = &map_bg_vao_[(col + row * map_width_) * 4];
+
+                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
+                GLuint tu = idSolid % (GLuint)(texBackground->getSize().x / (sprSize.x * sprScale.x));
+                GLuint tv = idSolid / (texBackground->getSize().x / (sprSize.x * sprScale.x));
+
+                quad[0].position = sf::Vector2f(x, y);
+                quad[1].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y);
+                quad[2].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y + (sprSize.y * sprScale.y));
+                quad[3].position = sf::Vector2f(x, y + (sprSize.y * sprScale.y));
+
+                quad[3].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
+                quad[2].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
+                quad[1].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
+                quad[0].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
 
                 add_sprite_flag_ = false;
             }
@@ -143,11 +174,12 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
         texMinimap->draw(*spr);
         //texMinimap->draw(rectangle);
 
-        for (auto const& it : e_solids_)
-        {
-            //texViewport->draw(*it.second->GetSprite());
-            //texMinimap->draw(*it.second->GetSprite());
-        }
+        // Draw background
+        sf::RenderStates states;
+        states.transform = sf::Transform::Identity;
+        states.texture = &ResourceManager::GetRenderTexture("tex_background")->getTexture();
+        texViewport->draw(map_bg_vao_, states);
+        texMinimap->draw(map_bg_vao_, states);
      
         texViewport->display();
     }
@@ -185,7 +217,8 @@ GLvoid Scene::generateGrid()
 std::string Scene::getNameHash(std::string tilesetName, std::string tileName)
 {
     std::stringstream hash;
-
-    hash << tilesetName << ":" << tileName;
+    std::hash<std::string> hash_fn;
+    size_t str_hash = hash_fn(tilesetName);
+    hash << str_hash << ":" << tileName;
     return hash.str();
 }

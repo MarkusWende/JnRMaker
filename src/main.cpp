@@ -25,7 +25,9 @@
  * https://github.com/MarkusWende
 **/
 
- #include <iostream>
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <iostream>
 
 #include <SFML/Window/Mouse.hpp>
 
@@ -37,49 +39,51 @@
 
 int main()
 {
-  //glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  JnRWindow appWindow;
-  sf::RenderWindow* window = appWindow.Get();
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    JnRWindow appWindow;
+    sf::RenderWindow* window = appWindow.Get();
 
-  // Create gui object
-  Gui appGui;
-  // Create default scene object
-  Scene appScene(640, 480);
-  // Update Gui to display the windows
-  appGui.Update(window->getSize().x, window->getSize().y, appScene);
+    // Create gui object
+    Gui appGui;
+    // Create default scene object
+    Scene appScene(640, 480);
+    // Update Gui to display the windows
+    appGui.Update(window->getSize().x, window->getSize().y, appScene);
 
-  sf::Clock deltaClock;
+    sf::Clock deltaClock;
 
-  // Always save the window size each loop cycle
-  unsigned int oldWidth = window->getSize().x;
-  unsigned int oldHeight = window->getSize().y;
+    // Always save the window size each loop cycle
+    GLuint oldWidth = window->getSize().x;
+    GLuint oldHeight = window->getSize().y;
 
-  // Main Loop
-  while (window->isOpen()) {
-    processEvents(*window, appScene);
+    // Main Loop
+    while (appGui.IsOpen())
+    {
+        processEvents(*window, appScene, appGui);
 
-    ImGui::SFML::Update(*window, deltaClock.restart());
-    // If the window size change, update gui and scene
-    if (oldWidth != window->getSize().x || oldHeight != window->getSize().y)
-      appGui.Update(window->getSize().x, window->getSize().y, appScene);
+        ImGui::SFML::Update(*window, deltaClock.restart());
+        // If the window size change, update gui and scene
+        if (oldWidth != window->getSize().x || oldHeight != window->getSize().y)
+            appGui.Update(window->getSize().x, window->getSize().y, appScene);
 
-    // Render Gui
-    appGui.Render(appScene);
-    // Render Scene
+        // Render Gui
+        appGui.Render(appScene);
+        // Render Scene
     
-    appScene.Render(appWindow.GetMousePosition());
-    // Clear window and render it
-    window->clear();
-    ImGui::SFML::Render(*window);
-    window->display();
-    // Save old window size
-    oldWidth = window->getSize().x;
-    oldHeight = window->getSize().y;
-  }
+        appScene.Render(appWindow.GetMousePosition());
+        // Clear window and render it
+        window->clear();
+        ImGui::SFML::Render(*window);
+        window->display();
+        // Save old window size
+        oldWidth = window->getSize().x;
+        oldHeight = window->getSize().y;
+    }
 
-  window = nullptr;
-  ImGui::SFML::Shutdown();
+    window->close();
+    window = nullptr;
+    ImGui::SFML::Shutdown();
 
-  return 0;
+    return 0;
 }

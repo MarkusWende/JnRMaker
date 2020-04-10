@@ -27,6 +27,7 @@
 
 
 #include "../include/resource_manager.h"
+#include "../include/message_manager.h"
 
 std::map<std::string, sf::Texture> ResourceManager::Textures;
 std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
@@ -37,8 +38,9 @@ GLvoid ResourceManager::LoadTexture(const char* file, sf::Color maskColor, std::
   sf::Image image;
   if (!image.loadFromFile(file))
   {
-    std::cout << "Error!!" << std::endl;
-    // error...
+      std::stringstream msg;
+      msg << "Loading image file.";
+      MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 
   image.createMaskFromColor(maskColor);
@@ -46,8 +48,9 @@ GLvoid ResourceManager::LoadTexture(const char* file, sf::Color maskColor, std::
   sf::Texture texture;
   if (!texture.loadFromImage(image))
   {
-    std::cout << "Error!!" << std::endl;
-    // error...
+      std::stringstream msg;
+      msg << "Loading texture from image.";
+      MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 
 	Textures[name] = texture;
@@ -59,8 +62,9 @@ GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::st
   sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
   if(!rTexture->create(width, height))
   {
-    std::cout << "Error!!" << std::endl;
-    // error...
+      std::stringstream msg;
+      msg << "Creating render texture.";
+      MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 }
 
@@ -71,8 +75,9 @@ GLvoid ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::st
   sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
   if(!rTexture->create(width, height))
   {
-    std::cout << "Error!!" << std::endl;
-    // error..
+      std::stringstream msg;
+      msg << "Updating render texture.";
+      MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 }
 
@@ -96,8 +101,9 @@ sf::Texture ResourceManager::loadTextureFromFile(const char* file)
 
   if (!texture.loadFromFile(file))
   {
-    std::cout << "Error!!" << std::endl;
-    // error...
+      std::stringstream msg;
+      msg << "Loading texture from file.";
+      MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 
 	return texture;

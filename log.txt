@@ -1,0 +1,6 @@
+04/10/20 14:18:57	Successful initialized OpenGL...
+					GL Vendor		: ATI Technologies Inc.
+					GL Renderer		: AMD Radeon HD 5800 Series
+					GL Version (string)	: 4.5.13399 Compatibility Profile Context 15.201.1151.1008
+					GL Version (integer)	: 4.5
+					GLSL Version		: 4.40

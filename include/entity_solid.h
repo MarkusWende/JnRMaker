@@ -50,28 +50,26 @@ class Solid : public SceneEntity
 public:
     Solid()
     {
-        id_ = "NULL";
-        spr_ = sf::Sprite();
-        layer_ = layer_t::FORE;
+        Solid(0, "NULL", sf::Sprite(), layer_t::FORE);
     };
 
-    Solid(std::string id, sf::Sprite spr, layer_t layer)                            //!< constructor
+    Solid(GLuint id, std::string name, sf::Sprite spr, layer_t layer)                            //!< constructor
     {
         layer_ = layer;
-        id_ = id;
+        name_ = name;
         spr_ = spr;
+        id_ = id;
     };
 
     ~Solid() { };                                               //!< destructor
 
     sf::Sprite* GetSprite() { return &spr_; };
+    GLuint	GetId() { return id_; };
 
 private:
     layer_t                 layer_;                               /**< foreground layer. */
     sf::Sprite              spr_;
-    std::string             id_;
-
-
-
+    std::string             name_;
+    GLuint                  id_;
 };
 #endif

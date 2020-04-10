@@ -46,10 +46,32 @@ public:
         window_.setPosition(sf::Vector2i(desktop.width/2 - window_.getSize().x/2, desktop.height/2 - window_.getSize().y/2));
 #ifdef _WIN32
         ShowWindow(window_.getSystemHandle(), SW_MAXIMIZE);
-#endif // _WIN64
+#endif // _WIN32
 
         //window_.setFramerateLimit(60);
         ImGui::SFML::Init(window_);
+
+        const GLubyte* renderer = glGetString(GL_RENDERER);
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        const GLubyte* version = glGetString(GL_VERSION);
+        const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+        GLint major, minor;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+        FILE* stream;
+        freopen_s(&stream, "log.txt", "w", stdout);
+        if (stream)
+        {
+            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+            fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+            fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+            fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+            fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+            fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+            fclose(stream);
+        }
 	}
 
 	~JnRWindow()

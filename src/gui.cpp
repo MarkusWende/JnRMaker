@@ -33,8 +33,17 @@ Gui::Gui()
 	init_();
 	customGuiStyle_();
 
-	active_tilemap_name_ = "tiles_keen4";
+	active_tilemap_name_ = "assets/tiles/keen4_tiles_red.png";
+	tilemap_list_.push_back("assets/tiles/keen4_tiles_red.png");
+	tilemap_list_.push_back("assets/tiles/keen4_tiles_blue.png");
+	tilemap_list_.push_back("assets/tiles/keen4_tiles_black.png");
+	tilemap_list_.push_back("assets/tiles/keen4_tiles_green.png");
+	tilemap_list_.push_back("assets/tiles/keen4_tiles_special.png");
 	active_sprite_name_ = "r0c0";
+	ResourceManager::LoadTexture(active_tilemap_name_.c_str(), sf::Color(186, 254, 202, 255), active_tilemap_name_);
+	TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
+
+	state_ = gui_state_t::GUI_ACTIVE;
 }
 
 Gui::~Gui()
@@ -63,6 +72,9 @@ GLvoid Gui::Update(GLuint width, GLuint height, Scene &scene)
 		//scene.Update();
 	}
 
+	scene.SetActiveTilemap(active_tilemap_name_);
+	scene.SetActiveSprite(active_sprite_name_);
+
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.DisplaySafeAreaPadding = ImVec2(0.0f, main_menubar_height_ - 23);
 
@@ -80,17 +92,38 @@ GLvoid Gui::Render(Scene &scene)
     if (ImGui::BeginMainMenuBar())
     {
       if (ImGui::BeginMenu("File"))
-      {
+	  {
+		  if (ImGui::MenuItem("Quit"))
+		  {
+			  state_ = gui_state_t::GUI_CLOSE;
+		  }
           ImGui::EndMenu();
       }
       if (ImGui::BeginMenu("Edit"))
       {
-          if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-          if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-          ImGui::Separator();
-          if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-          if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-          if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+		  if (ImGui::MenuItem("Test Info"))
+		  {
+			  // Test messages
+			  std::stringstream msg;
+			  msg << "Thats a test info text." << std::endl;
+			  MessageManager::AddMessage(msg, message_t::INFO);
+		  }
+
+		  if (ImGui::MenuItem("Test Warning"))
+		  {
+			  // Test messages
+			  std::stringstream msg;
+			  msg << "Thats a test warning text." << std::endl;
+			  MessageManager::AddMessage(msg, message_t::WARNING);
+		  }
+
+		  if (ImGui::MenuItem("Test Error"))
+		  {
+			  // Test messages
+			  std::stringstream msg;
+			  msg << "Thats a test error text." << std::endl;
+			  MessageManager::AddMessage(msg, message_t::ERROR_T);
+		  }
           ImGui::EndMenu();
       }
       ImGui::EndMainMenuBar();
@@ -133,10 +166,10 @@ GLvoid Gui::Render(Scene &scene)
 					sf::RenderTexture* texBg = ResourceManager::GetRenderTexture("tex_background");
 					//spr.setTexture(tex->getTexture());
 					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-					ImGui::SetCursorPos(ImVec2(800.f, 24.f));
+					ImGui::SetCursorPos(ImVec2(2.f, 850.f));
 					
 					ImGui::Image(texBg->getTexture(),
-						sf::Vector2f(32, texBg->getSize().y),
+						sf::Vector2f(texBg->getSize().x, texBg->getSize().y),
 						sf::FloatRect(0, (float)texBg->getSize().y, (float)texBg->getSize().x, -(float)texBg->getSize().y),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
@@ -209,15 +242,15 @@ GLvoid Gui::Render(Scene &scene)
 				ImGui::SameLine(0, 5);
 				if (it->type == message_t::ERROR_T)
 				{
-					ImGui::TextColored(ImVec4(1, 0, 0, 1), it->msg.c_str());
+					ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + it->msg).c_str());
 				}
 				else if (it->type == message_t::INFO)
 				{
-					ImGui::TextColored(ImVec4(0, 1, 0, 1), it->msg.c_str());
+					ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + it->msg).c_str());
 				}
 				else if (it->type == message_t::WARNING)
 				{
-					ImGui::TextColored(ImVec4(1, 1, 0, 1), it->msg.c_str());
+					ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + it->msg).c_str());
 				}
 				else
 				{
@@ -271,12 +304,30 @@ GLvoid Gui::Render(Scene &scene)
 		{
 			if (ImGui::Button("Create"))
 			{
-				scene.CreateMap(16, 8, { 16, 16 }, {2.0f, 2.0f});
+				scene.CreateMap(40, 25, { 16, 16 }, {2.0f, 2.0f});
 			}
 		}
 
 		if (ImGui::CollapsingHeader("Tiles"))
 		{
+			if (ImGui::BeginCombo("##TilemapCombo", active_tilemap_name_.c_str()))
+			{
+				for (int n = 0; n < tilemap_list_.size(); n++)
+				{
+					std::string item = tilemap_list_.at(n);
+					ImGui::PushID(n);
+					if (ImGui::Selectable(tilemap_list_.at(n).c_str(), item.compare(active_tilemap_name_)))
+					{
+						active_tilemap_name_ = item;
+						ResourceManager::LoadTexture(active_tilemap_name_.c_str(), sf::Color(186, 254, 202, 255), active_tilemap_name_);
+						TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
+					}
+						
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}
+
 			ImGui::BeginChild("TileSelector", ImVec2(0, 500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -297,11 +348,14 @@ GLvoid Gui::Render(Scene &scene)
 						ImGui::PushID(i);
 						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+						// Change mouse cursor to hand
+						if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
+							ImGui::SetMouseCursor(7);
 						if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
 						{
 							active_sprite_name_ = sprKey.str();
-							scene.SetCurrentTilemap(active_tilemap_name_);
-							scene.SetCurrentSprite(active_sprite_name_);
+							scene.SetActiveTilemap(active_tilemap_name_);
+							scene.SetActiveSprite(active_sprite_name_);
 						}
 						ImGui::PopStyleColor(2);
 						ImGui::PopID();
