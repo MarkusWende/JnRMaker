@@ -22,3 +22,6 @@ assets/tiles/*.*
 assets/textures/*.*
 assets/sprites/*.*
 assets/icons/*.*
+
+# log file
+log.txt
