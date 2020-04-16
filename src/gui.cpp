@@ -30,8 +30,8 @@
 
 Gui::Gui()
 {
-	init_();
-	customGuiStyle_();
+	init();
+	customGuiStyle();
 
 	active_tilemap_name_ = "assets/tiles/keen4_tiles_red.png";
 	tilemap_list_.push_back("assets/tiles/keen4_tiles_red.png");
@@ -93,10 +93,20 @@ GLvoid Gui::Render(Scene &scene)
     {
       if (ImGui::BeginMenu("File"))
 	  {
+		  if (ImGui::MenuItem("Save"))
+		  {
+			  ProjectManager::SetStatus(project_status_t::SAVE);
+		  }
+		  if (ImGui::MenuItem("Load"))
+		  {
+			  //load();
+			  //ProjectManager::Save();
+		  }
 		  if (ImGui::MenuItem("Quit"))
 		  {
 			  state_ = gui_state_t::GUI_CLOSE;
 		  }
+
           ImGui::EndMenu();
       }
       if (ImGui::BeginMenu("Edit"))
@@ -312,7 +322,7 @@ GLvoid Gui::Render(Scene &scene)
 		{
 			if (ImGui::BeginCombo("##TilemapCombo", active_tilemap_name_.c_str()))
 			{
-				for (int n = 0; n < tilemap_list_.size(); n++)
+				for (size_t n = 0; n < tilemap_list_.size(); n++)
 				{
 					std::string item = tilemap_list_.at(n);
 					ImGui::PushID(n);
@@ -388,7 +398,7 @@ GLvoid Gui::Render(Scene &scene)
 
 
 // PRIVATE
-GLvoid Gui::init_()
+GLvoid Gui::init()
 {
 	window_scene_.wPercent = 0.8f;
 	window_scene_.hPercent = 0.9f;
@@ -402,7 +412,7 @@ GLvoid Gui::init_()
 	main_menubar_height_ = 0 + 23;
 }
 
-GLvoid Gui::customGuiStyle_()
+GLvoid Gui::customGuiStyle()
 {
 	// Custom style
 	// Font

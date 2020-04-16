@@ -31,11 +31,12 @@
 
 #include <SFML/Window/Mouse.hpp>
 
- #include "../include/events.h"
- #include "../include/gui.h"
- #include "../include/resource_manager.h"
- #include "../include/scene.h"
- #include "../include/jnr_window.h"
+#include "../include/events.h"
+#include "../include/gui.h"
+#include "../include/resource_manager.h"
+#include "../include/project_manager.h"
+#include "../include/scene.h"
+#include "../include/jnr_window.h"
 
 int main()
 {
@@ -56,6 +57,10 @@ int main()
     // Always save the window size each loop cycle
     GLuint oldWidth = window->getSize().x;
     GLuint oldHeight = window->getSize().y;
+
+    ProjectManager::SetStatus(project_status_t::IDLE);
+    std::string projectName = "TestProject";
+    ProjectManager::SetName(projectName);
 
     // Main Loop
     while (appGui.IsOpen())
@@ -79,6 +84,26 @@ int main()
         // Save old window size
         oldWidth = window->getSize().x;
         oldHeight = window->getSize().y;
+
+        if (ProjectManager::GetStatus() == project_status_t::SAVE)
+        {
+            // create and open a character archive for output
+            std::ofstream ofs(ProjectManager::GetName() + ".jrm");
+
+            // save data to archive
+            {
+                unsigned int flags = boost::archive::no_header;
+                boost::archive::xml_oarchive oa(ofs, flags);
+                // write class instance to archive
+                std::string projectName = ProjectManager::GetName();
+                oa << BOOST_SERIALIZATION_NVP(projectName);
+                oa << BOOST_SERIALIZATION_NVP(appGui);
+
+            	// archive and stream closed when destructors are called
+            }
+
+            ProjectManager::SetStatus(project_status_t::IDLE);
+        }
     }
 
     window->close();

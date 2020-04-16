@@ -36,22 +36,32 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include "../include/imgui/imgui.h"
-#include "../include/imgui/imgui-SFML.h"
-#include "../include/resource_manager.h"
-#include "../include/message_manager.h"
-#include "../include/tilemap_manager.h"
-#include "../include/scene.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui-SFML.h"
+#include "resource_manager.h"
+#include "project_manager.h"
+#include "message_manager.h"
+#include "tilemap_manager.h"
+#include "scene.h"
 
 
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
 struct GuiWindow {
-  GLuint w;                     /**< Width in pixel of the gui window. */
-  GLuint h;                     /**< Height in pixel of the gui window. */
-  GLfloat wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
-  GLfloat hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(w);
+        ar & BOOST_SERIALIZATION_NVP(h);
+        ar & BOOST_SERIALIZATION_NVP(wPercent);
+        ar & BOOST_SERIALIZATION_NVP(hPercent);
+    }
+
+    GLuint w;                     /**< Width in pixel of the gui window. */
+    GLuint h;                     /**< Height in pixel of the gui window. */
+    GLfloat wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
+    GLfloat hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
 };
 
 enum class gui_state_t {
@@ -86,6 +96,20 @@ public:
   GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
 
 private:
+    friend class boost::serialization::access;
+    // When the class Archive corresponds to an output archive, the
+    // & operator is defined similar to <<.  Likewise, when the class Archive
+    // is a type of input archive the & operator is defined similar to >>.
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & BOOST_SERIALIZATION_NVP(width_);
+        ar & BOOST_SERIALIZATION_NVP(height_);
+        ar & BOOST_SERIALIZATION_NVP(window_scene_);
+        ar & BOOST_SERIALIZATION_NVP(window_messages_);
+        ar & BOOST_SERIALIZATION_NVP(window_sidebar_right_);
+    }
+
     GLuint                      width_;                     /**< Width of the application window. */
     GLuint                      height_;                    /**< Height of the application window. */
     GuiWindow                   window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
@@ -101,13 +125,13 @@ private:
 	    * @brief Initialize all gui related default attributes.
 	    * @return GLvoid.
 	    */
-    GLvoid init_();
+    GLvoid init();
 
     /**
 	    * @brief Set the custom gui style attributes.
 	    * @return GLvoid.
 	    */
-    GLvoid customGuiStyle_();
+    GLvoid customGuiStyle();
 };
 
 #endif	// GUI_H

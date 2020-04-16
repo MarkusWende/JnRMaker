@@ -39,13 +39,14 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui-SFML.h"
 #include "time_helper.h"
+#include "project_manager.h"
 
 class JnRWindow
 {
 public:
 	JnRWindow()														//!< constructor
 	{
-        window_.create(sf::VideoMode(1800, 1024), "[NewProject.jrm] - JnRMaker");
+        window_.create(sf::VideoMode(1800, 1024), ProjectManager::GetName() + " - JnRMaker");
         auto desktop = sf::VideoMode::getDesktopMode();
         window_.setPosition(sf::Vector2i(desktop.width/2 - window_.getSize().x/2, desktop.height/2 - window_.getSize().y/2));
 #ifdef _WIN32
