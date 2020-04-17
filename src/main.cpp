@@ -39,13 +39,6 @@
 #include "../include/scene.h"
 #include "../include/jnr_window.h"
 
-std::string toBinary(int n)
-{
-    std::string r;
-    while(n!=0) {r=(n%2==0 ?"0":"1")+r; n/=2;}
-    return r;
-}
-
 int main()
 {
     //glEnable(GL_BLEND);
@@ -100,7 +93,8 @@ int main()
 
             // save data to archive
             {
-                cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, true));
+                //cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, true));
+                cereal::JSONOutputArchive ar(ofs);
                 //cereal::BinaryOutputArchive ar(ofs);
                 ar( CEREAL_NVP(appGui) );
                 ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
@@ -123,7 +117,8 @@ int main()
         else if (ProjectManager::GetStatus() == project_status_t::LOAD)
         {
             std::ifstream is(ProjectManager::GetName() + ".jrm");
-            cereal::XMLInputArchive ar(is);
+            //cereal::XMLInputArchive ar(is);
+            cereal::JSONInputArchive ar(is);
             //cereal::BinaryInputArchive ar(is);
 
             GLuint width;
