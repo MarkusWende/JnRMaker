@@ -104,4 +104,5 @@ private:
 	sf::RenderWindow window_;
 
 };
+
 #endif    // JNRWINDOW_H

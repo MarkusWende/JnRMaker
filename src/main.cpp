@@ -35,8 +35,16 @@
 #include "../include/gui.h"
 #include "../include/resource_manager.h"
 #include "../include/project_manager.h"
+#include "../include/message_manager.h"
 #include "../include/scene.h"
 #include "../include/jnr_window.h"
+
+std::string toBinary(int n)
+{
+    std::string r;
+    while(n!=0) {r=(n%2==0 ?"0":"1")+r; n/=2;}
+    return r;
+}
 
 int main()
 {
@@ -92,15 +100,47 @@ int main()
 
             // save data to archive
             {
-                unsigned int flags = boost::archive::no_header;
-                boost::archive::xml_oarchive oa(ofs, flags);
-                // write class instance to archive
-                std::string projectName = ProjectManager::GetName();
-                oa << BOOST_SERIALIZATION_NVP(projectName);
-                oa << BOOST_SERIALIZATION_NVP(appGui);
+                cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, true));
+                //cereal::BinaryOutputArchive ar(ofs);
+                ar( CEREAL_NVP(appGui) );
+                ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
 
-            	// archive and stream closed when destructors are called
+                sf::Texture texture;
+                if (texture.loadFromFile("assets/tiles/keen4_tiles_red.png"))
+                {
+                    sf::Image img;
+                    img = texture.copyToImage();
+
+                    const sf::Uint8* pByteBuffer = img.getPixelsPtr();
+                    std::stringstream ss;
+
+                    for(uint i = 0; i < img.getSize().x ; i++)
+                    {
+                        for(uint j = 0; j < img.getSize().y; j++)
+                        {
+                            int result = static_cast<int>(pByteBuffer[4 * (j * img.getSize().x + i)]);
+                            ss << toBinary(result);
+                        }
+                    }
+
+                    ar( ss.str() );
+                }
             }
+
+            ProjectManager::SetStatus(project_status_t::IDLE);
+        }
+        else if (ProjectManager::GetStatus() == project_status_t::LOAD)
+        {
+            std::ifstream is(ProjectManager::GetName() + ".jrm");
+            cereal::XMLInputArchive ar(is);
+
+            GLuint width;
+            GLuint height;
+
+            ar( appGui );
+            ar( width, height);
+
+            window->setSize({ width, height });
 
             ProjectManager::SetStatus(project_status_t::IDLE);
         }

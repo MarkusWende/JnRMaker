@@ -37,7 +37,7 @@
 
 #include "time_helper.h"
 
-#define MAX_STORED_MSG 20               /**< Defines the maximal number of messages to be stored. */
+#define MAX_STORED_MSG 200               /**< Defines the maximal number of messages to be stored. */
 
 /**
  * @brief Enumeration for message types.

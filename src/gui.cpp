@@ -99,8 +99,7 @@ GLvoid Gui::Render(Scene &scene)
 		  }
 		  if (ImGui::MenuItem("Load"))
 		  {
-			  //load();
-			  //ProjectManager::Save();
+			  ProjectManager::SetStatus(project_status_t::LOAD);
 		  }
 		  if (ImGui::MenuItem("Quit"))
 		  {

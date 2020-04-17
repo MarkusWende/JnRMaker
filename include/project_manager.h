@@ -32,8 +32,11 @@
 #include <string>
 #include <fstream>
 
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
+#include <cereal/archives/xml.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/cereal.hpp> // for defer
+#include <cereal/types/memory.hpp>
 
 /**
  * @brief Enumeration for message types.
