@@ -11,6 +11,9 @@ build_and_run.sh
 # imgui.ini
 imgui.ini
 
+# application project file
+*.jrm
+
 # VS build dir
 x64/
 
