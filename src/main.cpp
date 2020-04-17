@@ -110,21 +110,12 @@ int main()
                 {
                     sf::Image img;
                     img = texture.copyToImage();
-
                     const sf::Uint8* pByteBuffer = img.getPixelsPtr();
-                    std::stringstream ss;
-
-                    for(uint i = 0; i < img.getSize().x ; i++)
-                    {
-                        for(uint j = 0; j < img.getSize().y; j++)
-                        {
-                            int result = static_cast<int>(pByteBuffer[4 * (j * img.getSize().x + i)]);
-                            ss << toBinary(result);
-                        }
-                    }
-
-                    ar( ss.str() );
+                    ar.saveBinaryValue( pByteBuffer, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y, "image_data");
                 }
+
+                long double c = pow(0.5, 1000);
+                ar ( cereal::make_nvp("a_very_small_value_", c) );
             }
 
             ProjectManager::SetStatus(project_status_t::IDLE);
@@ -133,6 +124,7 @@ int main()
         {
             std::ifstream is(ProjectManager::GetName() + ".jrm");
             cereal::XMLInputArchive ar(is);
+            //cereal::BinaryInputArchive ar(is);
 
             GLuint width;
             GLuint height;
