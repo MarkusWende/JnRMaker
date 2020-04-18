@@ -29,12 +29,10 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "scene_entity.h"
-
   /**
    * @brief Object class represents an general object.
    */
-class Object : public SceneEntity
+class Object
 {
 public:
     Object() { init(); }                                            //!< constructor

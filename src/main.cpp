@@ -93,20 +93,12 @@ int main()
 
             // save data to archive
             {
-                //cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, true));
-                cereal::JSONOutputArchive ar(ofs);
+                cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, false));
+                //cereal::JSONOutputArchive ar(ofs);
                 //cereal::BinaryOutputArchive ar(ofs);
                 ar( CEREAL_NVP(appGui) );
-                ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
-
-                sf::Texture texture;
-                if (texture.loadFromFile("assets/tiles/keen4_tiles_red.png"))
-                {
-                    sf::Image img;
-                    img = texture.copyToImage();
-                    const sf::Uint8* pByteBuffer = img.getPixelsPtr();
-                    ar.saveBinaryValue( pByteBuffer, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y, "image_data");
-                }
+                ar( CEREAL_NVP(appScene) );
+                //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
 
                 long double c = pow(0.5, 1000);
                 ar ( cereal::make_nvp("a_very_small_value_", c) );
@@ -117,17 +109,18 @@ int main()
         else if (ProjectManager::GetStatus() == project_status_t::LOAD)
         {
             std::ifstream is(ProjectManager::GetName() + ".jrm");
-            //cereal::XMLInputArchive ar(is);
-            cereal::JSONInputArchive ar(is);
+            cereal::XMLInputArchive ar(is);
+            //cereal::JSONInputArchive ar(is);
             //cereal::BinaryInputArchive ar(is);
 
             GLuint width;
             GLuint height;
 
             ar( appGui );
-            ar( width, height);
+            ar( appScene );
+            //ar( width, height);
 
-            window->setSize({ width, height });
+            //window->setSize({ width, height });
 
             ProjectManager::SetStatus(project_status_t::IDLE);
         }

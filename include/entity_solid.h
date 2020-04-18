@@ -29,9 +29,7 @@
 #ifndef SOLID_H
 #define SOLID_H
 
-#include <SFML/Graphics/Sprite.hpp>
-
-#include "scene_entity.h"
+#include "project_manager.h"
 
  /**
   * @brief Enumeration for layer types.
@@ -45,31 +43,40 @@ enum class layer_t {
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */
-class Solid : public SceneEntity
+class Solid
 {
 public:
     Solid()
     {
-        Solid(0, "NULL", sf::Sprite(), layer_t::FORE);
+        Solid(0, "NULL", layer_t::FORE);
     };
 
-    Solid(GLuint id, std::string name, sf::Sprite spr, layer_t layer)                            //!< constructor
+    Solid(GLuint id, std::string name, layer_t layer)                            //!< constructor
     {
         layer_ = layer;
         name_ = name;
-        spr_ = spr;
         id_ = id;
     };
 
     ~Solid() { };                                               //!< destructor
 
-    sf::Sprite* GetSprite() { return &spr_; };
     GLuint	GetId() { return id_; };
 
 private:
+    friend class cereal::access;
+    template <class Archive>
+    void serialize(Archive& ar, std::uint32_t const version)
+    {
+        //ar(cereal::base_class<SceneEntity>(this));
+        //ar(CEREAL_NVP(layer_));
+        ar(CEREAL_NVP(name_));
+        ar(CEREAL_NVP(id_));
+    }
+
     layer_t                 layer_;                               /**< foreground layer. */
-    sf::Sprite              spr_;
     std::string             name_;
     GLuint                  id_;
 };
+CEREAL_CLASS_VERSION(Solid, 1);
+
 #endif

@@ -38,6 +38,8 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/cereal.hpp> // for defer
 #include <cereal/types/memory.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/map.hpp>
 
 /**
  * @brief Enumeration for message types.

@@ -34,12 +34,12 @@ Gui::Gui()
 	customGuiStyle();
 
 	active_tilemap_name_ = "assets/tiles/keen4_tiles_red.png";
-	tilemap_list_.push_back("assets/tiles/keen4_tiles_red.png");
-	tilemap_list_.push_back("assets/tiles/keen4_tiles_blue.png");
-	tilemap_list_.push_back("assets/tiles/keen4_tiles_black.png");
-	tilemap_list_.push_back("assets/tiles/keen4_tiles_green.png");
-	tilemap_list_.push_back("assets/tiles/keen4_tiles_special.png");
-	active_sprite_name_ = "r0c0";
+	//tilemap_list_.push_back("assets/tiles/keen4_tiles_red.png");
+	//tilemap_list_.push_back("assets/tiles/keen4_tiles_blue.png");
+	//tilemap_list_.push_back("assets/tiles/keen4_tiles_black.png");
+	//tilemap_list_.push_back("assets/tiles/keen4_tiles_green.png");
+	//tilemap_list_.push_back("assets/tiles/keen4_tiles_special.png");
+	//active_sprite_name_ = "r0c0";
 	ResourceManager::LoadTexture(active_tilemap_name_.c_str(), sf::Color(186, 254, 202, 255), active_tilemap_name_);
 	TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
 

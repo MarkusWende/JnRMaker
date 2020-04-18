@@ -29,12 +29,10 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "scene_entity.h"
-
   /**
    * @brief Player class represents the player.
    */
-class Player : public SceneEntity
+class Player
 {
 public:
     Player() { init(); }                                            //!< constructor

@@ -35,6 +35,7 @@
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/OpenGL.hpp>
@@ -66,14 +67,16 @@ public:
 	 */
   static GLvoid CreateRenderTexture(GLuint width, GLuint height, std::string name);
 
-  /**
-	 * @brief Removes the old reference to the render texture and creates an empty SFML render texture with the same name.
-   * @param width Width of the new render texture.
-   * @param height Height of the new render texture.
-   * @param name The name of the render texture. The name is also the key in the map.
-	 * @return GLvoid.
-	 */
-  static GLvoid UpdateRenderTexture(GLuint width, GLuint height, std::string name);
+    /**
+     * @brief Removes the old reference to the render texture and creates an empty SFML render texture with the same name.
+     * @param width Width of the new render texture.
+     * @param height Height of the new render texture.
+     * @param name The name of the render texture. The name is also the key in the map.
+     * @return GLvoid.
+     */
+    static GLvoid ResizeRenderTexture(GLuint width, GLuint height, std::string name);
+
+    static GLvoid UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name);
 
   /**
 	 * @brief Get the SFML texture by name.

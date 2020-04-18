@@ -29,12 +29,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "scene_entity.h"
-
 /**
  * @brief Camera class represents a camera object.
  */
-class Camera : public SceneEntity
+class Camera
 {
 public:
     Camera() { init(); }                                            //!< constructor

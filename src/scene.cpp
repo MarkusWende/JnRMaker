@@ -63,6 +63,8 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
     width_ = map_width_ * spriteSize.x * spriteScale.x;
     height_ = map_height_ * spriteSize.y * spriteScale.y;
 
+    map_bg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
+
     map_bg_vao_.clear();
     map_bg_vao_.setPrimitiveType(sf::Quads);
     map_bg_vao_.resize(map_width_ * map_height_* 4);
@@ -72,8 +74,8 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
 
 GLvoid Scene::Update()
 {
-    ResourceManager::UpdateRenderTexture(width_, height_, "viewport");
-    ResourceManager::UpdateRenderTexture(width_, height_, "minimap");
+    ResourceManager::ResizeRenderTexture(width_, height_, "viewport");
+    ResourceManager::ResizeRenderTexture(width_, height_, "minimap");
 }
 
 GLvoid Scene::Render(sf::Vector2i posMouse)
@@ -87,8 +89,6 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
 
         glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
         glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
-
-        texViewport->draw(&grid_[0], grid_.size(), sf::Lines);
 
         sf::Sprite* spr = TilemapManager::GetTilemap(active_tilemap_name_)->GetSprite(active_sprite_name_);
         sf::RectangleShape rectangle(sf::Vector2f(32, 32));
@@ -125,38 +125,28 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
                 }
                 else
                 {
-                    idSolid = e_solids_.size();
-                    e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, *spr, layer_t::BACK)));
-                    ResourceManager::UpdateRenderTexture(e_solids_.size() * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_background");
-                    sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
-
-                    texBackground->clear(sf::Color::Black);
-
-                    for (auto const& it : e_solids_)
-                    {
-                        texBackground->draw(*it.second->GetSprite());
-                    }
+                    idSolid = e_solids_.size() + 1;
+                    e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, layer_t::BACK)));
+                    sf::RenderTexture* renderTexBg = ResourceManager::GetRenderTexture("tex_background");
+                    sf::Texture texBg = renderTexBg->getTexture();
+                    sf::Sprite sprBgOld;
+                    sprBgOld.setOrigin(0, 32);
+                    sprBgOld.setScale(1.0f, -1.0f);
+                    sprBgOld.setTexture(texBg);
+                    ResourceManager::ResizeRenderTexture((idSolid) * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_background");
+                    sf::RenderTexture* newRenderTexBg = ResourceManager::GetRenderTexture("tex_background");
+                    newRenderTexBg->clear(sf::Color::Black);
+                    newRenderTexBg->draw(sprBgOld);
+                    newRenderTexBg->draw(*spr);
 
                     std::stringstream msg;
-                    msg << "hash: " << hashSolid;
+                    msg << "hash: " << hashSolid << "id: " << idSolid;
                     MessageManager::AddMessage(msg, message_t::INFO);
                 }
 
-                sf::Vertex* quad = &map_bg_vao_[(col + row * map_width_) * 4];
+                map_bg_.at(row).at(col) = idSolid;
 
-                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
-                GLuint tu = idSolid % (GLuint)(texBackground->getSize().x / (sprSize.x * sprScale.x));
-                GLuint tv = idSolid / (texBackground->getSize().x / (sprSize.x * sprScale.x));
-
-                quad[0].position = sf::Vector2f(x, y);
-                quad[1].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y);
-                quad[2].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y + (sprSize.y * sprScale.y));
-                quad[3].position = sf::Vector2f(x, y + (sprSize.y * sprScale.y));
-
-                quad[3].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
-                quad[2].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
-                quad[1].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
-                quad[0].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
+                updateLayerVAO(layer_t::BACK);
 
                 add_sprite_flag_ = false;
             }
@@ -179,12 +169,55 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
         states.transform = sf::Transform::Identity;
         states.texture = &ResourceManager::GetRenderTexture("tex_background")->getTexture();
         texViewport->draw(map_bg_vao_, states);
+        texViewport->draw(&grid_[0], grid_.size(), sf::Lines);
         texMinimap->draw(map_bg_vao_, states);
 
         texViewport->display();
     }
 }
 
+GLvoid Scene::updateLayerVAO(layer_t layer)
+{
+    glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
+    glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
+
+    for (size_t row = 0; row < map_bg_.size(); row++)
+    {
+        for (size_t col = 0; col < map_bg_.at(0).size(); col++)
+        {
+            GLuint y = row * (sprSize.y * sprScale.y);
+            GLuint x = col * (sprSize.x * sprScale.x);
+            
+            sf::Vertex* quad;
+            GLuint tu, tv;
+            GLuint id = 0;
+            
+            if (layer == layer_t::BACK)
+            {
+                id = map_bg_.at(row).at(col);
+                quad = &map_bg_vao_[(col + row * map_width_) * 4];
+                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
+                tu = (id-1) % (GLuint)(texBackground->getSize().x / (sprSize.x * sprScale.x));
+                tv = (id-1) / (texBackground->getSize().x / (sprSize.x * sprScale.x));
+            }
+            
+            if (id != 0)
+            {
+                quad[0].position = sf::Vector2f(x, y);
+                quad[1].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y);
+                quad[2].position = sf::Vector2f(x + (sprSize.x * sprScale.x), y + (sprSize.y * sprScale.y));
+                quad[3].position = sf::Vector2f(x, y + (sprSize.y * sprScale.y));
+
+                quad[3].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
+                quad[2].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), tv * (sprSize.y * sprScale.y));
+                quad[1].texCoords = sf::Vector2f((tu + 1) * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
+                quad[0].texCoords = sf::Vector2f(tu * (sprSize.x * sprScale.x), (tv + 1) * (sprSize.y * sprScale.y));
+            }
+        }
+    }
+}
+
+// PRIVATE
 GLvoid Scene::generateGrid()
 {
   grid_.clear();

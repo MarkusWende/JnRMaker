@@ -68,7 +68,7 @@ GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::st
   }
 }
 
-GLvoid ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::string name)
+GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::string name)
 {
   RenderTextures.erase(name);
   RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
@@ -79,6 +79,19 @@ GLvoid ResourceManager::UpdateRenderTexture(GLuint width, GLuint height, std::st
       msg << "Updating render texture.";
       MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
+}
+
+GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name)
+{
+    ResizeRenderTexture(width, height, name);
+    sf::Texture tex;
+    tex.create(width, height);
+    tex.update(data);
+    sf::Sprite spr;
+    spr.setOrigin(0, 32);
+    spr.setScale(1.0f, -1.0f);
+    spr.setTexture(tex);
+    RenderTextures[name]->draw(spr);
 }
 
 sf::Texture* ResourceManager::GetTexture(std::string name)

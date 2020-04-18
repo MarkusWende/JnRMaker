@@ -43,7 +43,7 @@
 #include "resource_manager.h"
 #include "message_manager.h"
 #include "tilemap_manager.h"
-#include "scene_entity.h"
+#include "project_manager.h"
 
 
 /**
@@ -106,6 +106,47 @@ public:
 private:
 	GLvoid generateGrid();
 	std::string getNameHash(std::string tilesetName, std::string tileName);
+	GLvoid updateLayerVAO(layer_t layer);
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version) const
+	{
+		ar(CEREAL_NVP(e_solids_));
+
+		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
+
+		sf::Texture viewportTexture = ResourceManager::GetRenderTexture("tex_background")->getTexture();
+		sf::Image img;
+		img = viewportTexture.copyToImage();
+		const sf::Uint8* pByteBuffer = img.getPixelsPtr();
+		ar(cereal::make_nvp("tex_background_width_", img.getSize().x));
+		ar(cereal::make_nvp("tex_background_height_", img.getSize().y));
+		ar.saveBinaryValue(pByteBuffer, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_background_");
+
+		ar(CEREAL_NVP(map_bg_));
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+		ar(e_solids_);
+
+		GLuint width, height;
+		ar(width, height);
+
+		glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
+		glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
+		CreateMap(width, height, sf::Vector2u(sprSize.x, sprSize.y), sf::Vector2f( sprScale.x, sprScale.y ));
+
+		ar(width, height);
+		sf::Uint8* pByteBuffer = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
+		ar.loadBinaryValue(pByteBuffer, sizeof(sf::Uint8) * width * height * 4, "tex_background_");
+		ResourceManager::UpdateRenderTexture(pByteBuffer, width, height, "tex_background");
+
+		ar( map_bg_ );
+		updateLayerVAO(layer_t::BACK);
+	}
 
 	std::map<std::string, std::unique_ptr<Camera>> 	e_cameras_;					/**< All camera entities are stored in this map. */
 	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;					/**< All static entities that are in 3 layers (background, playerground and foreground). */
@@ -122,7 +163,9 @@ private:
 	GLuint											map_width_;					/**< Width of the map. */
 	GLuint											map_height_;				/**< Height of the map. */
 	sf::VertexArray									map_bg_vao_;
+	std::vector<std::vector<GLuint>>				map_bg_;
 
 };
+CEREAL_CLASS_VERSION(Scene, 1);
 
 #endif

@@ -99,6 +99,8 @@ private:
     void serialize( Archive & ar, std::uint32_t const version )
     {
         ar( CEREAL_NVP(window_scene_), CEREAL_NVP(window_messages_), CEREAL_NVP(window_sidebar_right_) );
+        ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
+        ar( CEREAL_NVP(tilemap_list_) );
     }
 
     GLuint                      width_;                     /**< Width of the application window. */
