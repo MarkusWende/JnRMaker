@@ -30,6 +30,7 @@
 #define GUI_H
 
 #include <iostream>
+#include <filesystem>
 
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -43,6 +44,8 @@
 #include "message_manager.h"
 #include "tilemap_manager.h"
 #include "scene.h"
+
+namespace fs = std::filesystem;
 
 
 /**
@@ -82,7 +85,8 @@ public:
    * @param window Render window.
 	 * @return GLvoid.
 	 */
-  GLvoid Update(GLuint width, GLuint height, Scene& scene);
+  GLvoid WindowUpdate(GLuint width, GLuint height);
+  GLvoid WindowUpdate();
 
   /**
 	 * @brief Render all gui related entities, that are displayed in the application.
@@ -96,11 +100,25 @@ public:
 private:
     friend class cereal::access;
     template <class Archive>
-    void serialize( Archive & ar, std::uint32_t const version )
+    void save(Archive& ar, std::uint32_t const version) const
     {
-        ar( CEREAL_NVP(window_scene_), CEREAL_NVP(window_messages_), CEREAL_NVP(window_sidebar_right_) );
+        ar( CEREAL_NVP(window_scene_) );
         ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
         ar( CEREAL_NVP(tilemap_list_) );
+    }
+
+    template <class Archive>
+    void load(Archive& ar, std::uint32_t const version)
+    {
+        ar(window_scene_);
+        WindowUpdate();
+        ar(active_tilemap_name_, active_sprite_name_);
+        ar(tilemap_list_);
+        for (auto const& tilemapItem : tilemap_list_)
+        {
+            ResourceManager::LoadTexture(tilemapItem.c_str(), sf::Color(186, 254, 202, 255), tilemapItem);
+            TilemapManager::AddTilemap(tilemapItem, 16, 16, { 2.0f, 2.0f });
+        }
     }
 
     GLuint                      width_;                     /**< Width of the application window. */
@@ -113,6 +131,8 @@ private:
     std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
     std::vector<std::string>    tilemap_list_;
     gui_state_t                 state_;
+    fs::path					root_file_path_;
+    GLboolean                   file_browser_add_tiles_;
 
     /**
 	    * @brief Initialize all gui related default attributes.
@@ -125,6 +145,9 @@ private:
 	    * @return GLvoid.
 	    */
     GLvoid customGuiStyle();
+
+    GLvoid fileBrowserAddTile(fs::path& path, GLboolean extension_only, fs::path extension);
+    GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 };
 CEREAL_CLASS_VERSION(Gui, 1);
 

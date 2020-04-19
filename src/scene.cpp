@@ -42,6 +42,7 @@ Scene::Scene(GLuint width, GLuint height)
   // Load tilemap
   active_tilemap_name_ = "";
   active_sprite_name_ = "";
+  active_layer_ = layer_t::BACK;
 
   // Create framebuffers
   //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
@@ -54,7 +55,7 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
 {
     ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     ResourceManager::CreateRenderTexture(width_, height_, "minimap");
-    ResourceManager::CreateRenderTexture(32, 32, "tex_background");
+    ResourceManager::CreateRenderTexture(32, 32, "tex_used_tiles");
 
     map_is_null_ = false;
     map_width_ = width;
@@ -64,10 +65,20 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
     height_ = map_height_ * spriteSize.y * spriteScale.y;
 
     map_bg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
+    map_pg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
+    map_fg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
 
     map_bg_vao_.clear();
     map_bg_vao_.setPrimitiveType(sf::Quads);
     map_bg_vao_.resize(map_width_ * map_height_* 4);
+
+    map_pg_vao_.clear();
+    map_pg_vao_.setPrimitiveType(sf::Quads);
+    map_pg_vao_.resize(map_width_ * map_height_ * 4);
+
+    map_fg_vao_.clear();
+    map_fg_vao_.setPrimitiveType(sf::Quads);
+    map_fg_vao_.resize(map_width_ * map_height_ * 4);
 
     Update();
 }
@@ -100,10 +111,6 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
         {
             sf::Vector2i sprPos(posMouse.x, posMouse.y - 48);
 
-            //std::stringstream msg;
-            //msg << "x: " << (width_ % 32) << "\ty: " << (height_ % 32);
-            //MessageManager::AddMessage(msg, message_t::INFO);
-
             GLuint row = sprPos.y / (sprSize.y * sprScale.y);
             GLuint col = sprPos.x / (sprSize.x * sprScale.x);
 
@@ -126,27 +133,38 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
                 else
                 {
                     idSolid = e_solids_.size() + 1;
-                    e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, layer_t::BACK)));
-                    sf::RenderTexture* renderTexBg = ResourceManager::GetRenderTexture("tex_background");
-                    sf::Texture texBg = renderTexBg->getTexture();
-                    sf::Sprite sprBgOld;
-                    sprBgOld.setOrigin(0, 32);
-                    sprBgOld.setScale(1.0f, -1.0f);
-                    sprBgOld.setTexture(texBg);
-                    ResourceManager::ResizeRenderTexture((idSolid) * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_background");
-                    sf::RenderTexture* newRenderTexBg = ResourceManager::GetRenderTexture("tex_background");
-                    newRenderTexBg->clear(sf::Color::Black);
-                    newRenderTexBg->draw(sprBgOld);
-                    newRenderTexBg->draw(*spr);
+                    e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, active_layer_)));
+                    sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("tex_used_tiles");
+                    sf::Texture tex = renderTex->getTexture();
+                    sf::Sprite sprTexOld;
+                    sprTexOld.setOrigin(0, 32);
+                    sprTexOld.setScale(1.0f, -1.0f);
+                    sprTexOld.setTexture(tex);
+                    ResourceManager::ResizeRenderTexture((idSolid) * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_used_tiles");
+                    sf::RenderTexture* newRenderTex = ResourceManager::GetRenderTexture("tex_used_tiles");
+                    //newRenderTex->clear(sf::Color::Black);
+                    newRenderTex->draw(sprTexOld);
+                    newRenderTex->draw(*spr);
 
-                    std::stringstream msg;
-                    msg << "hash: " << hashSolid << "id: " << idSolid;
-                    MessageManager::AddMessage(msg, message_t::INFO);
+                    //std::stringstream msg;
+                    //msg << "hash: " << hashSolid << "id: " << idSolid;
+                    //MessageManager::AddMessage(msg, message_t::INFO);
                 }
 
-                map_bg_.at(row).at(col) = idSolid;
-
-                updateLayerVAO(layer_t::BACK);
+                if ((active_layer_ == layer_t::FORE) && (row < map_fg_.size()) && (col < map_fg_.at(0).size()))
+                {
+                    map_fg_.at(row).at(col) = idSolid;
+                }
+                else if ((active_layer_ == layer_t::PLAYER) && (row < map_pg_.size()) && (col < map_pg_.at(0).size()))
+                {
+                    map_pg_.at(row).at(col) = idSolid;
+                }
+                else if ((active_layer_ == layer_t::BACK) && (row < map_bg_.size()) && (col < map_bg_.at(0).size()))
+                {
+                    map_bg_.at(row).at(col) = idSolid;
+                }
+                
+                updateLayerVAO(active_layer_);
 
                 add_sprite_flag_ = false;
             }
@@ -159,18 +177,22 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
             spr->setPosition(sf::Vector2f(0, 0));
         }
 
-        texViewport->draw(*spr);
-        //texViewport->draw(rectangle);
-        texMinimap->draw(*spr);
-        //texMinimap->draw(rectangle);
-
         // Draw background
         sf::RenderStates states;
         states.transform = sf::Transform::Identity;
-        states.texture = &ResourceManager::GetRenderTexture("tex_background")->getTexture();
+        states.blendMode = sf::BlendAlpha;
+        states.texture = &ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
         texViewport->draw(map_bg_vao_, states);
+        texViewport->draw(map_pg_vao_, states);
+        texViewport->draw(map_fg_vao_, states);
+
+        texViewport->draw(*spr);
         texViewport->draw(&grid_[0], grid_.size(), sf::Lines);
+
         texMinimap->draw(map_bg_vao_, states);
+        texMinimap->draw(map_pg_vao_, states);
+        texMinimap->draw(map_fg_vao_, states);
+        texMinimap->draw(*spr);
 
         texViewport->display();
     }
@@ -181,25 +203,34 @@ GLvoid Scene::updateLayerVAO(layer_t layer)
     glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
     glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
 
-    for (size_t row = 0; row < map_bg_.size(); row++)
+    for (size_t row = 0; row < map_height_; row++)
     {
-        for (size_t col = 0; col < map_bg_.at(0).size(); col++)
+        for (size_t col = 0; col < map_width_; col++)
         {
             GLuint y = row * (sprSize.y * sprScale.y);
             GLuint x = col * (sprSize.x * sprScale.x);
             
             sf::Vertex* quad;
-            GLuint tu, tv;
             GLuint id = 0;
-            
-            if (layer == layer_t::BACK)
+            if (layer == layer_t::FORE)
+            {
+                id = map_fg_.at(row).at(col);
+                quad = &map_fg_vao_[(col + row * map_width_) * 4];
+            }
+            else if (layer == layer_t::PLAYER)
+            {
+                id = map_pg_.at(row).at(col);
+                quad = &map_pg_vao_[(col + row * map_width_) * 4];
+            }
+            else
             {
                 id = map_bg_.at(row).at(col);
                 quad = &map_bg_vao_[(col + row * map_width_) * 4];
-                sf::RenderTexture* texBackground = ResourceManager::GetRenderTexture("tex_background");
-                tu = (id-1) % (GLuint)(texBackground->getSize().x / (sprSize.x * sprScale.x));
-                tv = (id-1) / (texBackground->getSize().x / (sprSize.x * sprScale.x));
             }
+
+            sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("tex_used_tiles");
+            GLuint tu = (id - 1) % (GLuint)(renderTex->getSize().x / (sprSize.x * sprScale.x));
+            GLuint tv = (id - 1) / (renderTex->getSize().x / (sprSize.x * sprScale.x));
             
             if (id != 0)
             {

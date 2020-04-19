@@ -92,6 +92,7 @@ public:
 	GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
 	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
+	GLvoid SetActiveLayer(layer_t layer) { active_layer_ = layer; };
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };
@@ -113,17 +114,18 @@ private:
 	void save(Archive& ar, std::uint32_t const version) const
 	{
 		ar(CEREAL_NVP(e_solids_));
-
 		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
 
-		sf::Texture viewportTexture = ResourceManager::GetRenderTexture("tex_background")->getTexture();
+		sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
 		sf::Image img;
-		img = viewportTexture.copyToImage();
-		const sf::Uint8* pByteBuffer = img.getPixelsPtr();
-		ar(cereal::make_nvp("tex_background_width_", img.getSize().x));
-		ar(cereal::make_nvp("tex_background_height_", img.getSize().y));
-		ar.saveBinaryValue(pByteBuffer, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_background_");
+		img = tex.copyToImage();
+		const sf::Uint8* imgData = img.getPixelsPtr();
+		ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
+		ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
+		ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
 
+		ar(CEREAL_NVP(map_fg_));
+		ar(CEREAL_NVP(map_pg_));
 		ar(CEREAL_NVP(map_bg_));
 	}
 
@@ -140,10 +142,14 @@ private:
 		CreateMap(width, height, sf::Vector2u(sprSize.x, sprSize.y), sf::Vector2f( sprScale.x, sprScale.y ));
 
 		ar(width, height);
-		sf::Uint8* pByteBuffer = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
-		ar.loadBinaryValue(pByteBuffer, sizeof(sf::Uint8) * width * height * 4, "tex_background_");
-		ResourceManager::UpdateRenderTexture(pByteBuffer, width, height, "tex_background");
+		sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
+		ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
+		ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
 
+		ar( map_fg_ );
+		updateLayerVAO(layer_t::FORE);
+		ar( map_pg_ );
+		updateLayerVAO(layer_t::PLAYER);
 		ar( map_bg_ );
 		updateLayerVAO(layer_t::BACK);
 	}
@@ -162,8 +168,13 @@ private:
 	GLboolean										map_is_null_;
 	GLuint											map_width_;					/**< Width of the map. */
 	GLuint											map_height_;				/**< Height of the map. */
+	layer_t											active_layer_;
 	sf::VertexArray									map_bg_vao_;
 	std::vector<std::vector<GLuint>>				map_bg_;
+	sf::VertexArray									map_pg_vao_;
+	std::vector<std::vector<GLuint>>				map_pg_;
+	sf::VertexArray									map_fg_vao_;
+	std::vector<std::vector<GLuint>>				map_fg_;
 
 };
 CEREAL_CLASS_VERSION(Scene, 1);
