@@ -44,6 +44,8 @@ Scene::Scene(GLuint width, GLuint height)
   active_sprite_name_ = "";
   active_layer_ = layer_t::BACK;
 
+  e_cameras_.insert(std::make_pair("Editor", new Camera(width_, height_)));
+
   // Create framebuffers
   //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
   //generateGrid();
@@ -53,16 +55,19 @@ Scene::~Scene() { }
 
 GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf::Vector2f spriteScale)
 {
-    ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-    ResourceManager::CreateRenderTexture(width_, height_, "minimap");
-    ResourceManager::CreateRenderTexture(32, 32, "tex_used_tiles");
-
     map_is_null_ = false;
     map_width_ = width;
     map_height_ = height;
     generateGrid();
     width_ = map_width_ * spriteSize.x * spriteScale.x;
     height_ = map_height_ * spriteSize.y * spriteScale.y;
+
+    ResourceManager::CreateRenderTexture(width_, height_, "viewport");
+    ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+    ResourceManager::CreateRenderTexture(32, 32, "tex_used_tiles");
+
+    e_cameras_["Editor"]->Size(width_, height_);
+    e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
 
     map_bg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
     map_pg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
@@ -91,6 +96,8 @@ GLvoid Scene::Update()
 
 GLvoid Scene::Render(sf::Vector2i posMouse)
 {
+    //e_cameras_["Editor"]->SetZoom(2.0f);
+
     if (!map_is_null_)
     {
         sf::RenderTexture* texViewport = ResourceManager::GetRenderTexture("viewport");
@@ -109,7 +116,8 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
 
         if (mouse_over_scene_)
         {
-            sf::Vector2i sprPos(posMouse.x, posMouse.y - 48);
+            sf::Vector2f worldPos = texViewport->mapPixelToCoords({ posMouse.x, posMouse.y - 48 });
+            sf::Vector2i sprPos(worldPos);
 
             GLuint row = sprPos.y / (sprSize.y * sprScale.y);
             GLuint col = sprPos.x / (sprSize.x * sprScale.x);
@@ -261,7 +269,7 @@ GLvoid Scene::generateGrid()
     sf::Color gridColor = {255, 255, 255, 50};
     // Push grid rows to vertex vector
     GLuint numRows = map_height_;
-    for (size_t row = 0; row < numRows; row++)
+    for (size_t row = 0; row <= numRows; row++)
     {
       GLuint rowPixel = row * (sprSize.y * sprScale.y);
       grid_.push_back(sf::Vertex(sf::Vector2f(0, rowPixel), gridColor));
@@ -269,7 +277,7 @@ GLvoid Scene::generateGrid()
     }
     // Push grid columns to vertex vector
     GLuint numCols = map_width_;
-    for (size_t col = 0; col < numCols; col++)
+    for (size_t col = 0; col <= numCols; col++)
     {
       GLuint colPixel = col * (sprSize.x * sprScale.x);
       grid_.push_back(sf::Vertex(sf::Vector2f(colPixel, 0), gridColor));

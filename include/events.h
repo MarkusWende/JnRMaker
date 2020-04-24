@@ -62,11 +62,27 @@ void processEvents(sf::RenderWindow &window, Scene &scene, Gui& gui)
         gui.Close();
     }
 
-    if (event.type == sf::Event::MouseButtonPressed)
+    if (scene.IsMouseOverScene())
     {
-        if (scene.IsMouseOverScene())
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             scene.SetAddSpriteFlag();
+        }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+        {
+            sf::Vector2i pos = sf::Mouse::getPosition(window);
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                scene.GetCamera("Editor")->SetMousePos(pos.x, pos.y);
+            }
+            scene.GetCamera("Editor")->Move(pos.x, pos.y);
+        }
+
+        if (event.type == sf::Event::MouseWheelScrolled)
+        {
+            //scene.GetCamera("Editor")->Zoom(event.mouseWheelScroll.delta);
+            scene.GetCamera("Editor")->ZoomAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, event.mouseWheelScroll.delta);
         }
     }
   }

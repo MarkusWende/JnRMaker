@@ -101,6 +101,7 @@ public:
 	GLuint	GetHeight() { return height_; };
 	GLuint	GetMapWidth() { return map_width_; };
 	GLuint	GetMapHeight() { return map_height_; };
+	Camera* GetCamera(std::string cameraName) { return e_cameras_.find(cameraName)->second.get(); };
 
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 

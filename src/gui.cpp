@@ -153,26 +153,25 @@ GLvoid Gui::Render(Scene &scene)
 					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
 					//spr.setTexture(tex->getTexture());
 					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-					ImGui::SetCursorPos(ImVec2(2.f, 24.f));
+					//ImGui::SetCursorPos(ImVec2(0.f, 24.f));
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+					ImGui::BeginChildFrame(1, ImVec2(window_scene_.w, window_scene_.w));
+					{
+						ImGui::Image(tex->getTexture(),
+							sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
+							sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+							sf::Color(255, 255, 255, 255),
+							sf::Color(0, 255, 0, 255));
 
-					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
-						sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
-						sf::Color(255, 255, 255, 255),
-						sf::Color(0, 255, 0, 255));
-
-					sf::RenderTexture* texBg = ResourceManager::GetRenderTexture("tex_used_tiles");
-					//spr.setTexture(tex->getTexture());
-					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-					ImGui::SetCursorPos(ImVec2(2.f, 850.f));
-
-					ImGui::Image(texBg->getTexture(),
-						sf::Vector2f(texBg->getSize().x, texBg->getSize().y),
-						sf::FloatRect(0, (float)texBg->getSize().y, (float)texBg->getSize().x, -(float)texBg->getSize().y),
-						sf::Color(255, 255, 255, 255),
-						sf::Color(0, 255, 0, 255));
-
-					//ImGui::Image(texBg->getTexture());
+						if (ImGui::IsItemHovered())
+							scene.SetMouseOverScene(true);
+						else
+							scene.SetMouseOverScene(false);
+					}
+					ImGui::EndChildFrame();
+					ImGui::PopStyleColor();
+					ImGui::PopStyleVar();
 				}
 
 				ImGui::EndTabItem();
@@ -180,21 +179,71 @@ GLvoid Gui::Render(Scene &scene)
 
 			if (ImGui::BeginTabItem("Depth"))
 			{
-				//ImGui::Checkbox("Show Floor", &show_main_dancefloor);
+				scene.SetMouseOverScene(false);
+
+				GLuint texId = ResourceManager::GetTextureID("viewport");
+
+				ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene.GetWidth(), scene.GetHeight() + 50));
+				//ImGui::Image(textureID, size, uv0, uv1, sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
+
+				/*
+				static ImVec2 offset(0, 0);
+				//ImGui::DragFloat2("size", (float*)&size, 0.5f, 1.0f, 200.0f, "%.0f");
+				ImVec2 pos = ImGui::GetCursorScreenPos();
+				ImVec4 clip_rect(pos.x, pos.y, pos.x + window_scene_.w, pos.y + window_scene_.h);
+				ImGui::InvisibleButton("##dummy", ImVec2(window_scene_.w, window_scene_.h));
+				if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
+				{ 
+					offset.x += ImGui::GetIO().MouseDelta.x;
+					offset.y += ImGui::GetIO().MouseDelta.y;
+				}
+
+				
+
+				ImGui::SetCursorPos(ImVec2(2.f, 24.f));
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+				ImGui::BeginChildFrame(1, ImVec2(window_scene_.w, window_scene_.w));
+				{
+					
+					ImGui::Image(tex->getTexture(),
+						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
+						sf::FloatRect(offset.x, (float)scene.GetHeight(), (float)scene.GetWidth() + offset.x, -(float)scene.GetHeight()),
+						sf::Color(255, 255, 255, 255),
+						sf::Color(0, 255, 0, 255));
+					
+					
+					//ImGui::GetWindowDrawList()->AddImage(textureID, ImVec2(0, 25), ImVec2(scene.GetWidth(), scene.GetHeight()));
+				}
+				ImGui::EndChildFrame();
+				ImGui::PopStyleColor();
+				*/
 				ImGui::EndTabItem();
 			}
 
-			if (ImGui::BeginTabItem("Wireframe"))
+			if (ImGui::BeginTabItem("Memory"))
 			{
+				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("tex_used_tiles");
+
+				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
+				ImGui::Text("Tiles used and which will be saved.");
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
+				ImGui::BeginChildFrame(2, ImVec2(window_scene_.w, 50.0f));
+				{
+					ImGui::Separator();
+
+					ImGui::Image(tex->getTexture(),
+						sf::Vector2f(tex->getSize().x, tex->getSize().y),
+						sf::FloatRect(0, (float)tex->getSize().y, (float)tex->getSize().x, -(float)tex->getSize().y),
+						sf::Color(255, 255, 255, 255),
+						sf::Color(0, 255, 0, 0));
+				}
+				ImGui::EndChildFrame();
+				ImGui::PopStyleColor();
+
 				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
 		}
-
-		if (ImGui::IsWindowHovered())
-			scene.SetMouseOverScene(true);
-		else
-			scene.SetMouseOverScene(false);
 
 		GLuint windowWidth = ImGui::GetWindowWidth();
 		GLuint windowHeight = ImGui::GetWindowHeight();

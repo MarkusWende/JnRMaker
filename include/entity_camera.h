@@ -25,6 +25,14 @@
  * https://github.com/MarkusWende
  */
 
+#include <iostream>
+
+#include <SFML/Graphics/View.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+
+#include "message_manager.h"
+#include "resource_manager.h"
+
 
 #ifndef CAMERA_H
 #define CAMERA_H
@@ -35,11 +43,90 @@
 class Camera
 {
 public:
-    Camera() { init(); }                                            //!< constructor
+    Camera(GLfloat width, GLfloat height)
+    {
+        width_ = width;
+        height_ = height;
+        center_ = { width_ / 2, height_ / 2 };
+
+        view_.setSize(width_, height_);
+        view_.setCenter(center_.x, center_.y);
+
+        zoom_ = 1.0f;
+    }                                            //!< constructor
     ~Camera() { };                                                  //!< destructor
 
+    GLvoid Zoom(GLint zoom)
+    {
+        zoom_ *= 1.0f + zoom * 0.1f;
+
+        view_.zoom(1.0f + zoom * 0.1f);
+
+        set();
+    };
+
+    GLvoid ZoomAt(sf::Vector2i pixel, GLint zoom)
+    {
+        zoom_ *= 1.0f + zoom * 0.1f;
+
+        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        const sf::Vector2f beforeCoord { renderTex->mapPixelToCoords(pixel) };
+        view_.zoom(1.0f + zoom * 0.1f);
+        set();
+        const sf::Vector2f afterCoord { renderTex->mapPixelToCoords(pixel) };
+        const sf::Vector2f offsetCoord { beforeCoord - afterCoord };
+        view_.move(offsetCoord);
+        set();
+    }
+
+    GLvoid Center(GLfloat x, GLfloat y)
+    {
+        view_.setCenter(x, y);
+        set();
+    }
+
+    GLvoid Size(GLuint width, GLuint height)
+    {
+        width_ = width;
+        height_ = height;
+        view_.setSize(width_, height_);
+        set();
+    }
+
+    GLvoid Move(GLint x, GLint y)
+    {
+        sf::Vector2f newPos { (GLfloat)x, (GLfloat)y };
+        sf::Vector2f delta = { newPos - center_ };
+        delta = -1.0f * delta * zoom_;
+
+        view_.move(delta);
+        set();
+        center_ = newPos;
+    }
+
+    GLvoid SetMousePos(GLint x, GLint y)
+    {
+        std::stringstream msg;
+        msg << "x: " << x << "\ty: " << y;
+        MessageManager::AddMessage(msg, message_t::INFO);
+        sf::Vector2f newPos{ (GLfloat)x, (GLfloat)y };
+        center_ = newPos;
+    }
+
+    sf::View* GetView() { return &view_; }
+
 private:
-	GLvoid init() { };
+    GLvoid set()
+    {
+        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        renderTex->setView(view_);
+    }
+
+    sf::View										view_;
+    GLfloat                                         width_;
+    GLfloat                                         height_;
+    GLfloat                                         zoom_;
+    sf::Vector2f                                    center_;
 
 };
 #endif

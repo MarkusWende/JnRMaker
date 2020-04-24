@@ -85,6 +85,8 @@ public:
 	 */
   static sf::Texture* GetTexture(std::string name);
 
+  static GLuint GetTextureID(std::string name);
+
   /**
 	 * @brief Get the SFML render texture by name.
    * @param name The name of the render texture.

@@ -104,6 +104,12 @@ sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 	return RenderTextures.find(name)->second.get();
 }
 
+GLuint ResourceManager::GetTextureID(std::string name)
+{
+    GLuint id = RenderTextures[name]->getTexture().getNativeHandle();
+    return id;
+}
+
 
 // PRIVATE:
 ////////////////////////////////////////////////////////////////////////////
