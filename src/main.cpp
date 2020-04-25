@@ -51,7 +51,7 @@ int main()
     // Create default scene object
     Scene appScene(640, 480);
     // Update Gui to display the windows
-    appGui.WindowUpdate(window->getSize().x, window->getSize().y);
+    //appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
 
     sf::Clock deltaClock;
 
@@ -71,7 +71,7 @@ int main()
         ImGui::SFML::Update(*window, deltaClock.restart());
         // If the window size change, update gui and scene
         if (oldWidth != window->getSize().x || oldHeight != window->getSize().y)
-            appGui.WindowUpdate(window->getSize().x, window->getSize().y);
+            appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
 
         // Render Gui
         appGui.Render(appScene);

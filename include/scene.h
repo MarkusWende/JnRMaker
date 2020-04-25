@@ -65,7 +65,7 @@ public:
 	 * @brief Update the scene, when the window size changes.
 	 * @return GLvoid.
 	 */
-	GLvoid Update();
+	GLvoid Update(GLuint width, GLuint height);
 
 	/**
 	 * @brief Render all entities that are displayed to the scene texture.
@@ -74,19 +74,6 @@ public:
 	GLvoid Render(sf::Vector2i posMouse);
 
 	// Setters
-	/**
-	 * @brief Set the width of the scene.
-	 * @param width New width of the scene.
-	 * @return GLvoid.
-	 */
-	GLvoid SetWidth(GLuint width) { width_ = width; };
-
-	/**
-	 * @brief Set the height of the scene.
-	 * @param height New height of the scene.
-	 * @return GLvoid.
-	 */
-	GLvoid SetHeight(GLuint height) { height_ = height; };
 
 	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
 	GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
@@ -99,8 +86,8 @@ public:
 
 	GLuint	GetWidth() { return width_; };
 	GLuint	GetHeight() { return height_; };
-	GLuint	GetMapWidth() { return map_width_; };
-	GLuint	GetMapHeight() { return map_height_; };
+	GLuint	GetMapWidth() { return map_pixel_width_; };
+	GLuint	GetMapHeight() { return map_pixel_height_; };
 	Camera* GetCamera(std::string cameraName) { return e_cameras_.find(cameraName)->second.get(); };
 
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
@@ -159,8 +146,10 @@ private:
 	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;					/**< All static entities that are in 3 layers (background, playerground and foreground). */
 	std::map<std::string, std::unique_ptr<Object>> 	e_objects_;					/**< All moving and interactable objects. */
 	Player											e_player_;
-	GLuint											width_;						/**< Width of the rendered scene. */
-	GLuint											height_;					/**< Height of the rendered scene. */
+	GLuint											map_pixel_width_;			/**< Width of the map in pixels. */
+	GLuint											map_pixel_height_;			/**< Height of the map in pixels. */
+	GLuint											width_;			/**< Height of the map in pixels. */
+	GLuint											height_;			/**< Height of the map in pixels. */
 	std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
 	std::string     								active_sprite_name_;		/**< Name (key) of the sprite which is currently selected. */
 	std::vector<sf::Vertex> 						grid_;

@@ -85,7 +85,7 @@ public:
    * @param window Render window.
 	 * @return GLvoid.
 	 */
-  GLvoid WindowUpdate(GLuint width, GLuint height);
+  GLvoid WindowUpdate(Scene& scene, GLuint width, GLuint height);
   GLvoid WindowUpdate();
 
   /**
@@ -133,6 +133,7 @@ private:
     gui_state_t                 state_;
     fs::path					root_file_path_;
     GLboolean                   file_browser_add_tiles_;
+    GLboolean                   update_sence_;
 
     /**
 	    * @brief Initialize all gui related default attributes.

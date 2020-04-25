@@ -52,13 +52,13 @@ public:
         view_.setSize(width_, height_);
         view_.setCenter(center_.x, center_.y);
 
-        zoom_ = 1.0f;
+        ratio_ = 1.0f;
     }                                            //!< constructor
     ~Camera() { };                                                  //!< destructor
 
     GLvoid Zoom(GLint zoom)
     {
-        zoom_ *= 1.0f + zoom * 0.1f;
+        ratio_ *= 1.0f + zoom * 0.1f;
 
         view_.zoom(1.0f + zoom * 0.1f);
 
@@ -67,7 +67,7 @@ public:
 
     GLvoid ZoomAt(sf::Vector2i pixel, GLint zoom)
     {
-        zoom_ *= 1.0f + zoom * 0.1f;
+        ratio_ *= 1.0f + zoom * 0.1f;
 
         sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
         const sf::Vector2f beforeCoord { renderTex->mapPixelToCoords(pixel) };
@@ -85,19 +85,23 @@ public:
         set();
     }
 
-    GLvoid Size(GLuint width, GLuint height)
+    GLvoid Resize(GLuint width, GLuint height)
     {
         width_ = width;
         height_ = height;
-        view_.setSize(width_, height_);
-        set();
+        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        sf::FloatRect visibleArea(0, 0, width_, height_);
+        sf::View newView(visibleArea);
+        newView.zoom(ratio_);
+        renderTex->setView(newView);
+        view_ = newView;
     }
 
     GLvoid Move(GLint x, GLint y)
     {
         sf::Vector2f newPos { (GLfloat)x, (GLfloat)y };
         sf::Vector2f delta = { newPos - center_ };
-        delta = -1.0f * delta * zoom_;
+        delta = -1.0f * delta * ratio_;
 
         view_.move(delta);
         set();
@@ -125,7 +129,7 @@ private:
     sf::View										view_;
     GLfloat                                         width_;
     GLfloat                                         height_;
-    GLfloat                                         zoom_;
+    GLfloat                                         ratio_;
     sf::Vector2f                                    center_;
 
 };

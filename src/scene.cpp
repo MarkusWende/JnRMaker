@@ -44,6 +44,9 @@ Scene::Scene(GLuint width, GLuint height)
   active_sprite_name_ = "";
   active_layer_ = layer_t::BACK;
 
+  ResourceManager::CreateRenderTexture(width_, height_, "viewport");
+  ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+
   e_cameras_.insert(std::make_pair("Editor", new Camera(width_, height_)));
 
   // Create framebuffers
@@ -59,15 +62,14 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
     map_width_ = width;
     map_height_ = height;
     generateGrid();
-    width_ = map_width_ * spriteSize.x * spriteScale.x;
-    height_ = map_height_ * spriteSize.y * spriteScale.y;
+    map_pixel_width_ = map_width_ * spriteSize.x * spriteScale.x;
+    map_pixel_height_ = map_height_ * spriteSize.y * spriteScale.y;
 
-    ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-    ResourceManager::CreateRenderTexture(width_, height_, "minimap");
     ResourceManager::CreateRenderTexture(32, 32, "tex_used_tiles");
+    ResourceManager::ResizeRenderTexture(map_pixel_width_, map_pixel_height_, "minimap");
 
-    e_cameras_["Editor"]->Size(width_, height_);
-    e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
+    //e_cameras_["Editor"]->Size(width_, height_);
+    //e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
 
     map_bg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
     map_pg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
@@ -84,20 +86,20 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf
     map_fg_vao_.clear();
     map_fg_vao_.setPrimitiveType(sf::Quads);
     map_fg_vao_.resize(map_width_ * map_height_ * 4);
-
-    Update();
 }
 
-GLvoid Scene::Update()
+GLvoid Scene::Update(GLuint width, GLuint height)
 {
+    width_ = width;
+    height_ = height-24;
+
     ResourceManager::ResizeRenderTexture(width_, height_, "viewport");
-    ResourceManager::ResizeRenderTexture(width_, height_, "minimap");
+    //e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
+    e_cameras_["Editor"]->Resize(width_, height_);
 }
 
 GLvoid Scene::Render(sf::Vector2i posMouse)
 {
-    //e_cameras_["Editor"]->SetZoom(2.0f);
-
     if (!map_is_null_)
     {
         sf::RenderTexture* texViewport = ResourceManager::GetRenderTexture("viewport");
@@ -200,7 +202,7 @@ GLvoid Scene::Render(sf::Vector2i posMouse)
         texMinimap->draw(map_bg_vao_, states);
         texMinimap->draw(map_pg_vao_, states);
         texMinimap->draw(map_fg_vao_, states);
-        texMinimap->draw(*spr);
+        //texMinimap->draw(*spr);
 
         texViewport->display();
     }

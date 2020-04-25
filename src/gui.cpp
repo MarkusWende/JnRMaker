@@ -39,19 +39,12 @@ Gui::~Gui()
 
 }
 
-GLvoid Gui::WindowUpdate(GLuint width, GLuint height)
+GLvoid Gui::WindowUpdate(Scene& scene, GLuint width, GLuint height)
 {
 	width_ = width;
 	height_ = height;
 
-	window_scene_.w = width_ * window_scene_.wPercent;
-	window_scene_.h = height_ * window_scene_.hPercent;
-
-	window_messages_.w = width_ * window_messages_.wPercent;
-	window_messages_.h = height_ * (1.0f - window_scene_.hPercent);
-
-	window_sidebar_right_.w = width_ * (1.0f - window_scene_.wPercent);
-	window_sidebar_right_.h = height_ * window_scene_.hPercent;
+	WindowUpdate();
 }
 
 GLvoid Gui::WindowUpdate()
@@ -64,10 +57,17 @@ GLvoid Gui::WindowUpdate()
 
 	window_sidebar_right_.w = width_ * (1.0f - window_scene_.wPercent);
 	window_sidebar_right_.h = height_ * window_scene_.hPercent;
+
+	update_sence_ = true;
 }
 
 GLvoid Gui::Render(Scene &scene)
 {
+	if (update_sence_)
+	{
+		scene.Update(window_scene_.w, window_scene_.h);
+		update_sence_ = false;
+	}
   // Main menu
   {
     if (ImGui::BeginMainMenuBar())
@@ -149,29 +149,17 @@ GLvoid Gui::Render(Scene &scene)
 			{
 				if (!scene.IsMapNull())
 				{
-					//sf::Sprite spr;
 					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
-					//spr.setTexture(tex->getTexture());
-					//spr.setTextureRect(sf::IntRect(0, window_scene_.h, window_scene_.w, -window_scene_.h));
-					//ImGui::SetCursorPos(ImVec2(0.f, 24.f));
-					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
-					ImGui::BeginChildFrame(1, ImVec2(window_scene_.w, window_scene_.w));
-					{
-						ImGui::Image(tex->getTexture(),
-							sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
-							sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
-							sf::Color(255, 255, 255, 255),
-							sf::Color(0, 255, 0, 255));
+					ImGui::Image(tex->getTexture(),
+						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
+						sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+						sf::Color(255, 255, 255, 255),
+						sf::Color(0, 255, 0, 255));
 
-						if (ImGui::IsItemHovered())
-							scene.SetMouseOverScene(true);
-						else
-							scene.SetMouseOverScene(false);
-					}
-					ImGui::EndChildFrame();
-					ImGui::PopStyleColor();
-					ImGui::PopStyleVar();
+					if (ImGui::IsItemHovered())
+						scene.SetMouseOverScene(true);
+					else
+						scene.SetMouseOverScene(false);
 				}
 
 				ImGui::EndTabItem();
@@ -322,7 +310,7 @@ GLvoid Gui::Render(Scene &scene)
 
 		GLuint windowHeight = ImGui::GetWindowHeight();
 
-		if (windowHeight != window_scene_.h)
+		if (windowHeight != window_messages_.h)
 		{
 			window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
 
@@ -357,7 +345,7 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
 			ImGui::Image(tex->getTexture(),
 				sf::Vector2f(350, height),
-				sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+				sf::FloatRect(0, (float)scene.GetMapHeight(), (float)scene.GetMapWidth(), -(float)scene.GetMapHeight()),
 				sf::Color(255, 255, 255, 255),
 				sf::Color(0, 255, 0, 255));
 			ImGui::EndChild();
@@ -467,7 +455,7 @@ GLvoid Gui::Render(Scene &scene)
 		GLuint windowWidth = ImGui::GetWindowWidth();
 		GLuint windowHeight = ImGui::GetWindowHeight();
 
-		if ((windowWidth != window_scene_.w) || (windowHeight != window_scene_.h))
+		if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
 		{
 			window_scene_.wPercent = (GLfloat)(width_ - windowWidth) / (GLfloat)width_;
 			window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
@@ -504,6 +492,7 @@ GLvoid Gui::init()
 	state_ = gui_state_t::GUI_ACTIVE;
 
 	file_browser_add_tiles_ = false;
+	update_sence_ = true;
 
 	std::string path;
 	char const* home = std::getenv("HOME");
