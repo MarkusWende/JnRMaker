@@ -129,7 +129,7 @@ GLvoid Gui::Render(Scene &scene)
 	  fileBrowserAddTile(root_file_path_, true, ".png");
   }
 
-	
+
 	// Scene Render Window
 	{
 		ImGui::SetNextWindowSize(ImVec2(window_scene_.w, window_scene_.h));
@@ -193,25 +193,25 @@ GLvoid Gui::Render(Scene &scene)
 				ImVec4 clip_rect(pos.x, pos.y, pos.x + window_scene_.w, pos.y + window_scene_.h);
 				ImGui::InvisibleButton("##dummy", ImVec2(window_scene_.w, window_scene_.h));
 				if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
-				{ 
+				{
 					offset.x += ImGui::GetIO().MouseDelta.x;
 					offset.y += ImGui::GetIO().MouseDelta.y;
 				}
 
-				
+
 
 				ImGui::SetCursorPos(ImVec2(2.f, 24.f));
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
 				ImGui::BeginChildFrame(1, ImVec2(window_scene_.w, window_scene_.w));
 				{
-					
+
 					ImGui::Image(tex->getTexture(),
 						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
 						sf::FloatRect(offset.x, (float)scene.GetHeight(), (float)scene.GetWidth() + offset.x, -(float)scene.GetHeight()),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
-					
-					
+
+
 					//ImGui::GetWindowDrawList()->AddImage(textureID, ImVec2(0, 25), ImVec2(scene.GetWidth(), scene.GetHeight()));
 				}
 				ImGui::EndChildFrame();
@@ -841,7 +841,9 @@ GLvoid Gui::listDirectoryContent(fs::path path, bool displayLogicalDrives, bool 
 			}
 		}
 	}
-	else {
+	else
+	{
+		#ifdef _WIN32
 		WCHAR szDrive[] = L"A:\\";
 		DWORD uDriveMask = GetLogicalDrives();
 		if (uDriveMask == 0) {
@@ -876,6 +878,7 @@ GLvoid Gui::listDirectoryContent(fs::path path, bool displayLogicalDrives, bool 
 				uDriveMask >>= 1;
 			}
 		}
+		#endif // _WIN32
 	}
 	ImGui::EndChild();
 }

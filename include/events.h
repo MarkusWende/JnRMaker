@@ -76,7 +76,10 @@ void processEvents(sf::RenderWindow &window, Scene &scene, Gui& gui)
             {
                 scene.GetCamera("Editor")->SetMousePos(pos.x, pos.y);
             }
-            scene.GetCamera("Editor")->Move(pos.x, pos.y);
+            else
+            {
+                scene.GetCamera("Editor")->Move(pos.x, pos.y);
+            }
         }
 
         if (event.type == sf::Event::MouseWheelScrolled)
