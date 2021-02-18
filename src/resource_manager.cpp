@@ -29,45 +29,42 @@
 #include "../include/resource_manager.h"
 #include "../include/message_manager.h"
 
-std::map<std::string, sf::Texture> ResourceManager::Textures;
-std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
+std::map<std::string, Texture2D>    ResourceManager::Textures;
+//std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
+std::map<std::string, Framebuffer>  ResourceManager::Framebuffers;
+std::map<std::string, Shader>       ResourceManager::Shaders;
 
-
-GLvoid ResourceManager::LoadTexture(const char* file, sf::Color maskColor, std::string name)
+Shader ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
 {
-  sf::Image image;
-  if (!image.loadFromFile(file))
-  {
-      std::stringstream msg;
-      msg << "Loading image file.";
-      MessageManager::AddMessage(msg, message_t::ERROR_T);
-  }
-
-  image.createMaskFromColor(maskColor);
-
-  sf::Texture texture;
-  if (!texture.loadFromImage(image))
-  {
-      std::stringstream msg;
-      msg << "Loading texture from image.";
-      MessageManager::AddMessage(msg, message_t::ERROR_T);
-  }
-
-	Textures[name] = texture;
+    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
+    return Shaders[name];
 }
 
-GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
+Shader ResourceManager::GetShader(std::string name)
 {
-  RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
-  sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
-  if(!rTexture->create(width, height))
-  {
-      std::stringstream msg;
-      msg << "Creating render texture.";
-      MessageManager::AddMessage(msg, message_t::ERROR_T);
-  }
+    return Shaders[name];
 }
 
+Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
+{
+    Textures[name] = loadTextureFromFile(file, alpha);
+    return Textures[name];
+}
+
+//GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
+//{
+    /*
+    RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
+    sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
+    if(!rTexture->create(width, height))
+    {
+        std::stringstream msg;
+        msg << "Creating render texture.";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+    */
+//}
+/*
 GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::string name)
 {
   RenderTextures.erase(name);
@@ -103,27 +100,131 @@ sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 {
 	return RenderTextures.find(name)->second.get();
 }
-
-GLuint ResourceManager::GetTextureID(std::string name)
+*/
+Texture2D ResourceManager::GetTexture(std::string name)
 {
-    GLuint id = RenderTextures[name]->getTexture().getNativeHandle();
-    return id;
+    return Textures[name];
+}
+
+Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height)
+{
+    Framebuffers[name] = generateFramebuffer(width, height);
+    return Framebuffers[name];
+}
+
+void ResourceManager::DeleteFramebuffer(std::string name)
+{
+    glDeleteBuffers(1, &Framebuffers[name].GetID());
+}
+
+Framebuffer ResourceManager::GetFramebuffer(std::string name)
+{
+    return Framebuffers[name];
+}
+
+Framebuffer ResourceManager::ResizeFramebuffer(std::string name, GLuint width, GLuint height)
+{
+    Framebuffers[name].Resize(width, height);
+
+    return Framebuffers[name];
+}
+
+std::string ResourceManager::getNameHash(std::string tilesetName, std::string tileName)
+{
+    std::stringstream hash;
+    std::hash<std::string> hash_fn;
+    size_t str_hash = hash_fn(tilesetName);
+    hash << str_hash << ":" << tileName;
+    return hash.str();
 }
 
 
 // PRIVATE:
 ////////////////////////////////////////////////////////////////////////////
-sf::Texture ResourceManager::loadTextureFromFile(const char* file)
+Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
 {
-	// Create Texture object
-	sf::Texture texture;
+    // Create Texture object
+    Texture2D texture;
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+    else {
+        texture.Internal_Format = GL_RGB;
+        texture.Image_Format = GL_RGB;
+    }
+    // Load image
+    int width, height;
+    unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    // Now generate texture
+    texture.Generate(width, height, image);
+    // And finally free image data
+    SOIL_free_image_data(image);
+    return texture;
+}
 
-  if (!texture.loadFromFile(file))
-  {
-      std::stringstream msg;
-      msg << "Loading texture from file.";
-      MessageManager::AddMessage(msg, message_t::ERROR_T);
-  }
+Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height)
+{
+    // create framebuffer object
+    Framebuffer fb;
 
-	return texture;
+    // generate framebuffer
+    fb.Generate(width, height);
+
+    return fb;
+}
+
+Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile)
+{
+    // 1. Retrieve the vertex/fragment source code from filePath
+    std::string vertexCode;
+    std::string fragmentCode;
+    std::string geometryCode;
+    try
+    {
+        // Open files
+        std::ifstream vertexShaderFile(vShaderFile);
+        std::ifstream fragmentShaderFile(fShaderFile);
+        std::stringstream vShaderStream, fShaderStream;
+        // Read file's buffer contents into streams
+        vShaderStream << vertexShaderFile.rdbuf();
+        fShaderStream << fragmentShaderFile.rdbuf();
+        // close file handlers
+        vertexShaderFile.close();
+        fragmentShaderFile.close();
+        // Convert stream into string
+        vertexCode = vShaderStream.str();
+        fragmentCode = fShaderStream.str();
+        // If geometry shader path is present, also load a geometry shader
+        if (gShaderFile != nullptr)
+        {
+            std::ifstream geometryShaderFile(gShaderFile);
+            std::stringstream gShaderStream;
+            gShaderStream << geometryShaderFile.rdbuf();
+            geometryShaderFile.close();
+            geometryCode = gShaderStream.str();
+        }
+    }
+    catch (std::exception e)
+    {
+        FILE* stream;
+#ifdef _WIN32
+        freopen_s(&stream, "log.txt", "w", stdout);
+        fprintf(stream, "\tFailed to read shader files\n");
+        fclose(stream);
+#endif // _WIN32
+#ifdef __linux__
+        stream = fopen("./log.txt", "w");
+        fprintf(stream, "\tFailed to read shader files\n");
+        fclose(stream);
+#endif // __linux__
+    }
+    const GLchar* vShaderCode = vertexCode.c_str();
+    const GLchar* fShaderCode = fragmentCode.c_str();
+    const GLchar* gShaderCode = geometryCode.c_str();
+    // 2. Now create shader object from source code
+    Shader shader;
+    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    return shader;
 }

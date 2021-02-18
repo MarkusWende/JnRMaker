@@ -25,49 +25,209 @@
  * https://github.com/MarkusWende
 **/
 
-#define GLEW_STATIC
-#include <GL/glew.h>
-#include <iostream>
+#include "../include/imgui/imgui.h"
+#include "../include/imgui/imgui_impl_sdl.h"
+#include "../include/imgui/imgui_impl_opengl3.h"
+#include <SDL2/SDL.h>
 
-#include <SFML/Window/Mouse.hpp>
+// About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
+// Helper libraries are often used for this purpose! Here we are supporting a few common ones: gl3w, glew, glad.
+// You may use another loader/header of your choice (glext, glLoadGen, etc.), or chose to manually implement your own.
+#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+#include <GL/gl3w.h>    // Initialize with gl3wInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+#include <GL/glew.h>    // Initialize with glewInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+#include <glad/glad.h>  // Initialize with gladLoadGL()
+#else
+#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#endif
 
-#include "../include/events.h"
-#include "../include/gui.h"
-#include "../include/resource_manager.h"
 #include "../include/project_manager.h"
 #include "../include/message_manager.h"
 #include "../include/scene.h"
-#include "../include/jnr_window.h"
+#include "../include/events.h"
+#include "../include/gui.h"
+#include "../include/window.h"
 
-int main()
+#include <GLFW/glfw3.h>
+#include <iostream>
+
+#include "../include/resource_manager.h"
+//#include <SFML/Window/Mouse.hpp>
+
+// The Width of the screen
+const GLuint SCREEN_WIDTH = 1800;
+// The height of the screen
+const GLuint SCREEN_HEIGHT = 1000;
+
+int main(int argc, char* argv[])
 {
     //glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    JnRWindow appWindow;
-    sf::RenderWindow* window = appWindow.Get();
+    JNRWindow* window = new JNRWindow();
+    //sf::RenderWindow* window = appWindow.Get();
+
+    if (window->SetupSDL() == -1) {
+        return -1;
+    }
+
+
+    glfwInit();
+
+    glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
+
+    //window->ShowLoadingWindow();
+    window->CreateNewWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "JnRMaker");
+
+
+    // Initialize OpenGL loader
+#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+    bool err = gl3wInit() != 0;
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+    glewExperimental = GL_TRUE;
+    bool err = glewInit() != GLEW_OK;
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+    bool err = gladLoadGL() == 0;
+#else
+    bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
+#endif
+    if (err)
+    {
+        FILE* stream;
+#ifdef _WIN32
+        freopen_s(&stream, "log.txt", "w", stdout);
+        if (stream)
+        {
+            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
+            fclose(stream);
+        }
+#endif // _WIN32
+#ifdef __linux__
+        stream = fopen("./log.txt", "w");
+        fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
+        fclose(stream);
+#endif // __linux__
+        return 1;
+    }
+    else
+    {
+        const GLubyte* renderer = glGetString(GL_RENDERER);
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        const GLubyte* version = glGetString(GL_VERSION);
+        const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+        GLint major, minor;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+        FILE* stream;
+
+#ifdef _WIN32
+        freopen_s(&stream, "log.txt", "w", stdout);
+
+        if (stream)
+        {
+            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+            fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+            fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+            fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+            fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+            fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+            fclose(stream);
+        }
+#endif // _WIN32
+#ifdef __linux__
+        stream = fopen("./log.txt", "w");
+        fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+        fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+        fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+        fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+        fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+        fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+        fclose(stream);
+#endif // __linux__
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 
     // Create gui object
     Gui appGui;
     // Create default scene object
-    Scene appScene(640, 480);
+    Scene appScene(1200, 800);
     // Update Gui to display the windows
     //appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
+    //appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
 
-    sf::Clock deltaClock;
+    //sf::Clock deltaClock;
 
     // Always save the window size each loop cycle
-    GLuint oldWidth = window->getSize().x;
-    GLuint oldHeight = window->getSize().y;
+    //GLuint oldWidth = window->getSize().x;
+    //GLuint oldHeight = window->getSize().y;
 
     ProjectManager::SetStatus(project_status_t::IDLE);
     std::string projectName = "TestProject";
     ProjectManager::SetName(projectName);
 
+    // Setup Platform/Renderer bindings
+    ImGui_ImplSDL2_InitForOpenGL(window->GetWindow(), window->GetGLContext());
+    ImGui_ImplOpenGL3_Init(window->GetGLSLVersion());
+
     // Main Loop
     while (appGui.IsOpen())
     {
-        processEvents(*window, appScene, appGui);
+        processEvents(window->GetWindow(), appScene, appGui);
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(window->GetWindow());
+        ImGui::NewFrame();
+
+        //ImGui::ShowDemoWindow();
+
+        // Update and render 3d scene
+        //appScene.Update(window->GetWidth(), window->GetHeight());
+
+        // Update and render gui
+        //appGui.Update(window->GetWidth(), window->GetHeight());
+        appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
+        appGui.Render(appScene);
+
+        appScene.Render();
+
+        // If the project name changes, update the window title
+        /*if (myGui.project_name_changed)
+        {
+            SDL_SetWindowTitle(window, ("[" + myGui.project_name + "] - SoundIMP").c_str());
+            myGui.project_name_changed = false;
+        }*/
+
+        // Render ImGui to show the gui
+        
+        ImGui::Render();
+
+        // Set the background color
+        ImGuiStyle* style = &ImGui::GetStyle();
+        ImColor col = style->Colors[ImGuiCol_PopupBg];
+        glClearColor(col.Value.x, col.Value.y, col.Value.z, col.Value.w);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // render end
+        SDL_GL_SwapWindow(window->GetWindow());
+
+        // update
+        glfwPollEvents();
+
+        /*
         ImGui::SFML::Update(*window, deltaClock.restart());
         // If the window size change, update gui and scene
         if (oldWidth != window->getSize().x || oldHeight != window->getSize().y)
@@ -80,12 +240,14 @@ int main()
         appScene.Render(appWindow.GetMousePosition());
         // Clear window and render it
         window->clear();
-        ImGui::SFML::Render(*window);
-        window->display();
+        //ImGui::SFML::Render(*window);
+        //window->display();
         // Save old window size
         oldWidth = window->getSize().x;
         oldHeight = window->getSize().y;
-
+        
+        */
+        /*
         if (ProjectManager::GetStatus() == project_status_t::SAVE)
         {
             // create and open a character archive for output
@@ -124,11 +286,12 @@ int main()
 
             ProjectManager::SetStatus(project_status_t::IDLE);
         }
+        */
     }
 
-    window->close();
-    window = nullptr;
-    ImGui::SFML::Shutdown();
+    //window->close();
+    //window = nullptr;
+    //ImGui::SFML::Shutdown();
 
     return 0;
 }

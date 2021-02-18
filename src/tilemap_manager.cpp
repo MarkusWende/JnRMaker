@@ -31,9 +31,14 @@
 
 std::map<std::string, Tilemap> TilemapManager::Tilemaps;
 
-GLvoid TilemapManager::AddTilemap(std::string name, GLuint spriteWidth, GLuint spriteHeight, glm::vec2 scale)
+GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale)
 {
-  Tilemaps.insert(std::make_pair(name, Tilemap(name, spriteWidth, spriteHeight, scale)));
+  Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale)));
+}
+
+GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file)
+{
+    Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, file)));
 }
 
 Tilemap* TilemapManager::GetTilemap(std::string name)

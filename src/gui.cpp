@@ -32,6 +32,9 @@ Gui::Gui()
 {
 	init();
 	customGuiStyle();
+	active_tilemap_name_ = "E:\\C++\\JnRMaker\\assets\\tiles\\game-tiles_cut.png";
+	tilemap_list_.push_back(active_tilemap_name_);
+	TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);
 }
 
 Gui::~Gui()
@@ -39,7 +42,7 @@ Gui::~Gui()
 
 }
 
-GLvoid Gui::WindowUpdate(Scene& scene, GLuint width, GLuint height)
+GLvoid Gui::WindowUpdate(GLuint width, GLuint height)
 {
 	width_ = width;
 	height_ = height;
@@ -65,78 +68,78 @@ GLvoid Gui::Render(Scene &scene)
 {
 	if (update_sence_)
 	{
-		scene.Update(window_scene_.w, window_scene_.h);
+		scene.Update(window_scene_.w-5, window_scene_.h-25);
 		update_sence_ = false;
 	}
-  // Main menu
-  {
-    if (ImGui::BeginMainMenuBar())
-    {
-      if (ImGui::BeginMenu("File"))
-	  {
-		  if (ImGui::MenuItem("Save"))
-		  {
-			  ProjectManager::SetStatus(project_status_t::SAVE);
-		  }
-		  if (ImGui::MenuItem("Load"))
-		  {
-			  ProjectManager::SetStatus(project_status_t::LOAD);
-		  }
-		  if (ImGui::MenuItem("Open"))
-		  {
-			  file_browser_add_tiles_ = true;
-		  }
-		  if (ImGui::MenuItem("Quit"))
-		  {
-			  state_ = gui_state_t::GUI_CLOSE;
-		  }
 
-          ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("Edit"))
-      {
-		  if (ImGui::MenuItem("Test Info"))
-		  {
-			  // Test messages
-			  std::stringstream msg;
-			  msg << "Thats a test info text." << std::endl;
-			  MessageManager::AddMessage(msg, message_t::INFO);
-		  }
+	// Main menu
+	{
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Save"))
+				{
+					ProjectManager::SetStatus(project_status_t::SAVE);
+				}
+				if (ImGui::MenuItem("Load"))
+				{
+					ProjectManager::SetStatus(project_status_t::LOAD);
+				}
+				if (ImGui::MenuItem("Open"))
+				{
+					file_browser_add_tiles_ = true;
+				}
+				if (ImGui::MenuItem("Quit"))
+				{
+					state_ = gui_state_t::GUI_CLOSE;
+				}
 
-		  if (ImGui::MenuItem("Test Warning"))
-		  {
-			  // Test messages
-			  std::stringstream msg;
-			  msg << "Thats a test warning text." << std::endl;
-			  MessageManager::AddMessage(msg, message_t::WARNING);
-		  }
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Test Info"))
+				{
+					// Test messages
+					std::stringstream msg;
+					msg << "Thats a test info text." << std::endl;
+					MessageManager::AddMessage(msg, message_t::INFO);
+				}
 
-		  if (ImGui::MenuItem("Test Error"))
-		  {
-			  // Test messages
-			  std::stringstream msg;
-			  msg << "Thats a test error text." << std::endl;
-			  MessageManager::AddMessage(msg, message_t::ERROR_T);
-		  }
-          ImGui::EndMenu();
-      }
-      ImGui::EndMainMenuBar();
-    }
-  }
+				if (ImGui::MenuItem("Test Warning"))
+				{
+					// Test messages
+					std::stringstream msg;
+					msg << "Thats a test warning text." << std::endl;
+					MessageManager::AddMessage(msg, message_t::WARNING);
+				}
 
-  if (file_browser_add_tiles_)
-  {
-	  fileBrowserAddTile(root_file_path_, true, ".png");
-  }
+				if (ImGui::MenuItem("Test Error"))
+				{
+					// Test messages
+					std::stringstream msg;
+					msg << "Thats a test error text." << std::endl;
+					MessageManager::AddMessage(msg, message_t::ERROR_T);
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
+		}
+	}
 
+	if (file_browser_add_tiles_)
+	{
+		fileBrowserAddTile(root_file_path_, true, ".png");
+	}
 
+	ImGuiStyle* style = &ImGui::GetStyle();
 	// Scene Render Window
 	{
-		ImGui::SetNextWindowSize(ImVec2(window_scene_.w, window_scene_.h));
+		ImGui::SetNextWindowSize(ImVec2(window_scene_.w + style->WindowBorderSize, window_scene_.h + style->WindowBorderSize));
 		ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
+		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
 		ImGui::Begin("Rendering", NULL,	ImGuiWindowFlags_NoTitleBar |
 										ImGuiWindowFlags_NoMove |
 										ImGuiWindowFlags_NoScrollbar |
@@ -147,19 +150,38 @@ GLvoid Gui::Render(Scene &scene)
 		{
 			if (ImGui::BeginTabItem("Viewport"))
 			{
-				if (!scene.IsMapNull())
+				//if (!scene.IsMapNull())
 				{
+					GLfloat yOff = 45;
+					GLfloat xOff = 3;
+
+					/*
 					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
 					ImGui::Image(tex->getTexture(),
 						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
 						sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
-
-					if (ImGui::IsItemHovered())
-						scene.SetMouseOverScene(true);
+						*/
+					GLuint64 fbID = ResourceManager::GetFramebuffer("scene").GetTextureID();
+					ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene.GetWidth() + xOff, scene.GetHeight() + yOff));
+					//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene.GetWidth(), scene.GetHeight()));
+					ImVec2 mousePos = ImGui::GetMousePos();
+					if (mousePos.x > xOff && mousePos.x < (scene.GetWidth() + xOff))
+					{
+						if (mousePos.y > yOff && mousePos.y < (scene.GetHeight() + yOff))
+						{
+							scene.SetMouseOverScene(true);
+						}
+						else
+						{
+							scene.SetMouseOverScene(false);
+						}
+					}
 					else
+					{
 						scene.SetMouseOverScene(false);
+					}
 				}
 
 				ImGui::EndTabItem();
@@ -169,9 +191,9 @@ GLvoid Gui::Render(Scene &scene)
 			{
 				scene.SetMouseOverScene(false);
 
-				GLuint texId = ResourceManager::GetTextureID("viewport");
+				//GLuint texId = ResourceManager::GetTextureID("viewport");
 
-				ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene.GetWidth(), scene.GetHeight() + 50));
+				//ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene.GetWidth(), scene.GetHeight() + 50));
 				//ImGui::Image(textureID, size, uv0, uv1, sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
 
 				/*
@@ -210,7 +232,7 @@ GLvoid Gui::Render(Scene &scene)
 
 			if (ImGui::BeginTabItem("Memory"))
 			{
-				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("tex_used_tiles");
+				//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("tex_used_tiles");
 
 				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
 				ImGui::Text("Tiles used and which will be saved.");
@@ -219,11 +241,13 @@ GLvoid Gui::Render(Scene &scene)
 				{
 					ImGui::Separator();
 
+					/*
 					ImGui::Image(tex->getTexture(),
 						sf::Vector2f(tex->getSize().x, tex->getSize().y),
 						sf::FloatRect(0, (float)tex->getSize().y, (float)tex->getSize().x, -(float)tex->getSize().y),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 0));
+						*/
 				}
 				ImGui::EndChildFrame();
 				ImGui::PopStyleColor();
@@ -245,89 +269,15 @@ GLvoid Gui::Render(Scene &scene)
 		}
 
 		ImGui::End();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
-	}
-
-	// Messages Window
-	//if (false)
-	{
-		ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
-		ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
-		ImGui::Begin("Messages", NULL, 	ImGuiWindowFlags_NoTitleBar |
-										ImGuiWindowFlags_NoMove |
-										ImGuiWindowFlags_NoCollapse);
-
-		static float wrap_width = 1200.0f;
-		ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
-
-		ImGui::Separator();
-
-		// BeginChild: MessageList
-		ImGui::BeginChild("##MessageList", ImVec2(0, 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-		std::vector<Message>* ptrMessages;
-		ptrMessages = MessageManager::GetMessages();
-		if (ptrMessages->size() > 0)
-		{
-			for (auto it = ptrMessages->begin(); it != ptrMessages->end(); ++it)
-			{
-				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-				ImGui::TextColored(ImVec4(1, 1, 1, 1), it->timeinfo.c_str());
-				ImGui::SameLine(0, 2);
-				ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
-
-				std::string word;
-				std::stringstream ss(it->msg);
-
-				ImGui::SameLine(0, 5);
-				if (it->type == message_t::ERROR_T)
-				{
-					ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + it->msg).c_str());
-				}
-				else if (it->type == message_t::INFO)
-				{
-					ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + it->msg).c_str());
-				}
-				else if (it->type == message_t::WARNING)
-				{
-					ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + it->msg).c_str());
-				}
-				else
-				{
-					ImGui::Text("%s", it->msg.c_str());
-				}
-
-			}
-		}
-
-		ImGui::SetScrollHere(1.0f);
-		// EndChild: MessageList
-		ImGui::EndChild();
-
-		GLuint windowHeight = ImGui::GetWindowHeight();
-
-		if (windowHeight != window_messages_.h)
-		{
-			window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
-
-			WindowUpdate();
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	}
 
 	// Side Bar Right Window
 	{
-		ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w, window_sidebar_right_.h));
+		ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
 		ImGui::SetNextWindowPos(ImVec2(window_scene_.w, main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
 		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
 											ImGuiWindowFlags_NoMove |
 											ImGuiWindowFlags_NoCollapse);
@@ -341,22 +291,68 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::BeginChild("Minimap", ImVec2(400, height + 30));
 			ImGui::Text("Minimap");
 
-			sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
+			//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
 			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+			/*
 			ImGui::Image(tex->getTexture(),
 				sf::Vector2f(350, height),
 				sf::FloatRect(0, (float)scene.GetMapHeight(), (float)scene.GetMapWidth(), -(float)scene.GetMapHeight()),
 				sf::Color(255, 255, 255, 255),
 				sf::Color(0, 255, 0, 255));
+				*/
 			ImGui::EndChild();
 		}
 
 
 		if (ImGui::CollapsingHeader("Map"))
 		{
+			static int mapSize[2] = { 20, 20};
+			static std::string spriteSizeStr = "16x16";
+			std::vector<std::string> spriteSizeStrVector = { "16x16", "24x24", "32x32", "64x64" };
+			if (ImGui::BeginCombo("##SpriteSize", spriteSizeStr.c_str()))
+			{
+				for (size_t n = 0; n < spriteSizeStrVector.size(); n++)
+				{
+					std::string item = spriteSizeStrVector.at(n);
+					ImGui::PushID(n);
+					if (ImGui::Selectable(spriteSizeStrVector.at(n).c_str(), item.compare(spriteSizeStr)))
+					{
+						spriteSizeStr = item;
+					}
+
+					ImGui::PopID();
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::Separator();
+			ImGui::Text("Map size");
+			ImGui::SliderInt2("width x height", mapSize, 1, 255);
+			ImGui::Separator();
+
 			if (ImGui::Button("Create"))
 			{
-				scene.CreateMap(40, 25, { 16, 16 }, {2.0f, 2.0f});
+				std::string delimiter = "x";
+				size_t pos = 0;
+				std::vector<std::string> tokens;
+				std::string s = spriteSizeStr;
+				while ((pos = s.find(delimiter)) != std::string::npos)
+				{
+					tokens.push_back(s.substr(0, pos));
+					s.erase(0, pos + delimiter.length());
+				}
+				tokens.push_back(s);
+
+				if (tokens.size() == 2)
+				{
+					int width = std::stoi(tokens.at(0));
+					int height = std::stoi(tokens.at(1));
+
+					if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height))
+					{
+						scene.CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
+					}
+				}
 			}
 
 			static int selected = 0;
@@ -382,6 +378,33 @@ GLvoid Gui::Render(Scene &scene)
 			}
 		}
 
+		if (ImGui::CollapsingHeader("Camera"))
+		{
+			ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene.GetCamera("SceneCamera")->GetPosition().x, scene.GetCamera("SceneCamera")->GetPosition().y, scene.GetCamera("SceneCamera")->GetPosition().z);
+			ImGui::Text("Yaw: %.2f", scene.GetCamera("SceneCamera")->GetYaw());
+			ImGui::Text("Pitch: %.2f", scene.GetCamera("SceneCamera")->GetPitch());
+			ImGui::Text("Roll: %.2f", scene.GetCamera("SceneCamera")->GetRoll());
+			ImGui::Text("Zoom: %.2f", scene.GetCamera("SceneCamera")->GetZoom());
+
+			if (ImGui::Button("Reset"))
+			{
+				scene.GetCamera("SceneCamera")->Reset();
+			}
+
+			CameraState cState = scene.GetCamera("SceneCamera")->GetState();
+			if (ImGui::Button("Persp"))
+			{
+				scene.GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
+				cState = CameraState::PERSPECTIVE;
+			}
+			if (ImGui::Button("Ortho"))
+			{
+				scene.GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
+				cState = CameraState::ORTHOGRAPHIC;
+			}
+		}
+		
+
 		if (ImGui::CollapsingHeader("Tiles"))
 		{
 			if (!tilemap_list_.empty())
@@ -404,42 +427,51 @@ GLvoid Gui::Render(Scene &scene)
 
 				ImGui::BeginChild("TileSelector", ImVec2(0, 500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
+				
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-
+				
 				Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
-
+				
 				GLuint i = 0;
-				ImGuiListClipper clipper(tilemap->NumRows());
+				ImGuiListClipper clipper(tilemap->NumCols());
+	
 				while (clipper.Step())
 				{
-					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+					for (int col = clipper.DisplayStart; col < clipper.DisplayEnd; col++)
 					{
-						for (GLuint col = 0; col < tilemap->NumCols(); col++)
+						for (GLuint row = 0; row < tilemap->NumRows(); row++)
 						{
 							std::stringstream sprKey;
 							sprKey << "r" << row << "c" << col;
-							sf::Sprite* sprValue = tilemap->GetSprite(sprKey.str());
+							GLuint64 tile = tilemap->GetTile(sprKey.str())->ID;
+							GLuint width = 16 * 4;
+							GLuint height = 16 * 4;
 							ImGui::PushID(i);
 							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 							// Change mouse cursor to hand
 							if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
 								ImGui::SetMouseCursor(7);
-							if (ImGui::ImageButton(*sprValue, 1, sf::Color(0, 0, 0, 0), sf::Color(200, 200, 200, 255)))
+
+							if (ImGui::ImageButton((ImTextureID)tile, ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1), 1, ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
 							{
 								active_sprite_name_ = sprKey.str();
 								scene.SetActiveTilemap(active_tilemap_name_);
 								scene.SetActiveSprite(active_sprite_name_);
+								Texture2D *brushTex = tilemap->GetTile(sprKey.str());
+								scene.GetSprite("brush")->AssignTextureByName(*brushTex);
 							}
+							
 							ImGui::PopStyleColor(2);
 							ImGui::PopID();
-							if (col < tilemap->NumCols() - 1)
+							if (row < tilemap->NumRows() - 1)
 								ImGui::SameLine();
 							i++;
 						}
 					}
 				}
-
+				
+				
 				ImGui::PopStyleVar();
 
 				//ImGui::EndChildFrame();
@@ -465,11 +497,84 @@ GLvoid Gui::Render(Scene &scene)
 
 		ImGui::End();
 		ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+	}
+
+	// Messages Window
+	//if (false)
+	{
+	ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
+	ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+	ImGui::Begin("Messages", NULL, ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoCollapse);
+
+	static float wrap_width = 1200.0f;
+	ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
+	ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+	ImGui::Separator();
+
+	// BeginChild: MessageList
+	ImGui::SetCursorPos(ImVec2(0.f, 21.f));
+	ImGui::BeginChild("##MessageList", ImVec2(0, window_messages_.h - 50), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+	std::vector<Message>* ptrMessages;
+	ptrMessages = MessageManager::GetMessages();
+	if (ptrMessages->size() > 0)
+	{
+		ImGuiListClipper clipper(ptrMessages->size());
+		while (clipper.Step())
+		{
+			for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+			{
+				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+				ImGui::TextColored(ImVec4(1, 1, 1, 1), ptrMessages->at(it).timeinfo.c_str());
+				ImGui::SameLine(0, 2);
+				ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+
+				std::string word;
+				std::stringstream ss(ptrMessages->at(it).msg);
+
+				ImGui::SameLine(0, 5);
+				if (ptrMessages->at(it).type == message_t::ERROR_T)
+				{
+					ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + ptrMessages->at(it).msg).c_str());
+				}
+				else if (ptrMessages->at(it).type == message_t::INFO)
+				{
+					ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + ptrMessages->at(it).msg).c_str());
+				}
+				else if (ptrMessages->at(it).type == message_t::WARNING)
+				{
+					ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + ptrMessages->at(it).msg).c_str());
+				}
+				else
+				{
+					ImGui::Text("%s", ptrMessages->at(it).msg.c_str());
+				}
+			}
+		}
+	}
+
+	ImGui::SetScrollHere(1.0f);
+	// EndChild: MessageList
+	ImGui::EndChild();
+
+	GLuint windowHeight = ImGui::GetWindowHeight();
+
+	if (windowHeight != window_messages_.h)
+	{
+		window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
+
+		WindowUpdate();
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
 	}
 
 	// Imgui Demo Window
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 }
 
 
@@ -493,21 +598,15 @@ GLvoid Gui::init()
 
 	file_browser_add_tiles_ = false;
 	update_sence_ = true;
-
-	std::string path;
-	char const* home = std::getenv("HOME");
-	if (home || (home = getenv("USERPROFILE")))
-	{
-		path.replace(0, 1, home);
-	}
-	else
-	{
-		char const* hdrive = getenv("HOMEDRIVE");
-		char const* hpath = getenv("HOMEPATH");
-		path.replace(0, 1, std::string(hdrive) + hpath);
-	}
-
+#ifdef _WIN32
+	TCHAR path[256];
+	GetCurrentDirectory(256, path);
 	root_file_path_ = path;
+#endif
+#ifdef __linux__
+
+#endif
+	
 }
 
 GLvoid Gui::customGuiStyle()
@@ -524,7 +623,7 @@ GLvoid Gui::customGuiStyle()
 	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
 	// - Read 'misc/fonts/README.txt' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash
-	io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 6.0f);
+	io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 10.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Roboto-Medium.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Cousine-Regular.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/DroidSans.ttf", 12.0f);
@@ -550,9 +649,9 @@ GLvoid Gui::customGuiStyle()
 	style->WindowMinSize = ImVec2(20, 20);				    // Minimum window size. This is a global setting. If you want to constraint individual windows, use SetNextWindowSizeConstraints().
 	style->WindowTitleAlign = ImVec2(0.5f, 0.5f);               // Alignment for title bar text. Defaults to (0.0f,0.5f) for left-aligned,vertically centered.
 	style->ChildRounding = 0.0f;						        // Radius of child window corners rounding. Set to 0.0f to have rectangular windows.
-	style->ChildBorderSize = 1.0f;						        // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+	style->ChildBorderSize = 0.2f;						        // Thickness of border around child windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
 	style->PopupRounding = 0.0f;						        // Radius of popup window corners rounding. (Note that tooltip windows use WindowRounding)
-	style->PopupBorderSize = 1.0f;						        // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
+	style->PopupBorderSize = 0.0f;						        // Thickness of border around popup/tooltip windows. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
 	style->FramePadding = ImVec2(5, 5);					    // Padding within a framed rectangle (used by most widgets).
 	style->FrameRounding = 0.0f;						        // Radius of frame corners rounding. Set to 0.0f to have rectangular frame (used by most widgets).
 	style->FrameBorderSize = 0.0f;						        // Thickness of border around frames. Generally set to 0.0f or 1.0f. (Other values are not well tested and more CPU/GPU costly).
@@ -566,7 +665,7 @@ GLvoid Gui::customGuiStyle()
 	style->GrabMinSize = 5.0f;							    // Minimum width/height of a grab box for slider/scrollbar.
 	style->GrabRounding = 0.0f;							    // Radius of grabs corners rounding. Set to 0.0f to have rectangular slider grabs.
 	style->TabRounding = 0.0f;							    // Radius of upper corners of a tab. Set to 0.0f to have rectangular tabs.
-	style->TabBorderSize = 1.0f;						        // Thickness of border around tabs.
+	style->TabBorderSize = 0.0f;						        // Thickness of border around tabs.
 	style->ButtonTextAlign = ImVec2(0.5f, 0.5f);               // Alignment of button text when button is larger than text. Defaults to (0.5f,0.5f) for horizontally+vertically centered.
 	//style->DisplayWindowPadding   = ImVec2(0, 0);						// Window position are clamped to be visible within the display area by at least this amount. Only applies to regular windows.
 	//style->DisplaySafeAreaPadding = ImVec2(0, 0);						// If you cannot see the edges of your screen (e.g. on a TV) increase the safe area padding. Apply to popups/tooltips as well regular windows. NB: Prefer configuring your TV sets correctly!
@@ -621,10 +720,10 @@ GLvoid Gui::customGuiStyle()
 	style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 	style->Colors[ImGuiCol_Tab] = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
 	style->Colors[ImGuiCol_TabHovered] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-	style->Colors[ImGuiCol_TabActive] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_TabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.00f);
 	style->Colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 	style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
-	style->Colors[ImGuiCol_Separator] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+	style->Colors[ImGuiCol_Separator] = ImVec4(0.4f, 0.4f, 0.4f, 1.00f);
 }
 
 
@@ -716,9 +815,10 @@ GLvoid Gui::fileBrowserAddTile(fs::path& path, GLboolean extensionOnly, fs::path
 			{
 				active_tilemap_name_ = str;
 				tilemap_list_.push_back(str);
-				ResourceManager::LoadTexture(active_tilemap_name_.c_str(), sf::Color(186, 254, 202, 255), active_tilemap_name_);
-				TilemapManager::AddTilemap(active_tilemap_name_, 16, 16, { 2.0f, 2.0f });
+				ResourceManager::LoadTexture(active_tilemap_name_.c_str(), GL_TRUE, active_tilemap_name_);
+				TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 2.0f, 2.0f }, active_tilemap_name_);
 				file_browser_add_tiles_ = false;
+				ImGui::CloseCurrentPopup();
 			}
 			currentItem = "";
 			strcpy(newPath, "");

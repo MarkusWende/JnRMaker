@@ -32,13 +32,20 @@
 #include <map>
 #include <memory>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/OpenGL.hpp>
+#include "framebuffer.h"
+#include "shader.h"
+#include "texture.h"
+
+//#include <SFML/Graphics/Image.hpp>
+//#include <SFML/Graphics/Texture.hpp>
+//#include <SFML/Graphics/Sprite.hpp>
+//#include <SFML/Graphics/RenderTexture.hpp>
+//#include <SFML/Graphics/Color.hpp>
+//#include <SFML/OpenGL.hpp>
+
 
 /**
  * @brief The sindgleton resource manager class manages all resources like, textures, audio etc that are accessed across the application.
@@ -46,26 +53,42 @@
 class ResourceManager
 {
 public:
-  static std::map<std::string, sf::Texture> Textures;                                 /**< Contains all SFML textures. */
-  static std::map<std::string, std::unique_ptr<sf::RenderTexture>> RenderTextures;    /**< Contains all SFML render textures. */
+  static std::map<std::string, Texture2D>		Textures;							/**< Texture vector. Stores every texture used in the application. */
+  //static std::map<std::string, std::unique_ptr<sf::RenderTexture>> RenderTextures;    /**< Contains all SFML render textures. */
+  static std::map<std::string, Framebuffer>	Framebuffers;						        /**< Framebuffer vector. Stores every framebuffer used in the application. */
+  static std::map<std::string, Shader>		Shaders;							/**< Shader vector. Stores every shader used in the application. */
 
   /**
-	 * @brief Load a SFML texture from a file.
-   * @param file The path and filename to the image.
-   * @param maskColor A color that masks particular areas in the image and is replaced with transparancy (alpha = 0.0f).
-   * @param name The name of the texture. The name is also the key in the map.
-	 * @return GLvoid.
-	 */
-  static GLvoid LoadTexture(const char* file, sf::Color maskColor, std::string name);
+     * @brief Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.
+     * @param vShaderFile Filename of the vertex shader.
+     * @param fShaderFile Filename of the fragment shader.
+     * @param gShaderFile Filename of the geometry shader.
+     * @param name Resource name of the shader.
+     * @return Shader Return the shader object.
+     */
+  static Shader   LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
 
   /**
-	 * @brief Create an empty SFML render texture.
-   * @param width Width of the new render texture.
-   * @param height Height of the new render texture.
-   * @param name The name of the render texture. The name is also the key in the map.
-	 * @return GLvoid.
-	 */
-  static GLvoid CreateRenderTexture(GLuint width, GLuint height, std::string name);
+   * @brief Retrieves a stored shader.
+   * @param name Resource name of the shader.
+   * @return Shader Return the shader object.
+   */
+  static Shader GetShader(std::string name);
+
+  /**
+    * @brief Loads (and generates) a texture from file.
+    * @param file Filename of the texture.
+    * @param alpha Set the alpha channel true or false.
+    * @param name Resource name of the texture.
+    * @return Texture2D Return the texture object.
+    */
+  static Texture2D LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
+
+  /**
+	* @brief Create an texture from id.
+	* @return GLvoid.
+	*/
+  //static GLvoid CreateEmptyTexture(GLuint width, GLuint height, GLboolean alpha, std::string name);
 
     /**
      * @brief Removes the old reference to the render texture and creates an empty SFML render texture with the same name.
@@ -74,25 +97,57 @@ public:
      * @param name The name of the render texture. The name is also the key in the map.
      * @return GLvoid.
      */
-    static GLvoid ResizeRenderTexture(GLuint width, GLuint height, std::string name);
+    //static GLvoid ResizeRenderTexture(GLuint width, GLuint height, std::string name);
 
-    static GLvoid UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name);
+    //static GLvoid UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name);
 
   /**
-	 * @brief Get the SFML texture by name.
-   * @param name The name of the texture.
-	 * @return Pointer to the texture.
-	 */
-  static sf::Texture* GetTexture(std::string name);
-
-  static GLuint GetTextureID(std::string name);
+     * @brief Retrieves a stored texture.
+     * @param name Resource name of the texture.
+     * @return Texture2D Return the texture object.
+     */
+  static Texture2D GetTexture(std::string name);
 
   /**
 	 * @brief Get the SFML render texture by name.
    * @param name The name of the render texture.
 	 * @return Pointer to the render texture.
 	 */
-  static sf::RenderTexture* GetRenderTexture(std::string name);
+  //static sf::RenderTexture* GetRenderTexture(std::string name);
+
+  /**
+     * @brief Generate a framebuffer.
+     * @param name Resource name of the framebuffer.
+     * @param width Width of the framebuffer.
+     * @param height Height of the framebuffer.
+     * @return Framebuffer Return the framebuffer object.
+     */
+  static Framebuffer CreateFramebuffer(std::string name, GLuint width, GLuint height);
+
+  /**
+   * @brief Delete framebuffer by name.
+   * @param name Resource name of the framebuffer.
+   * @return Void.
+   */
+  static void DeleteFramebuffer(std::string name);
+
+  /**
+     * @brief Resize a given framebuffer.
+     * @param name Resource name of the framebuffer.
+     * @param width New width of the framebuffer.
+     * @param height New height of the framebuffer.
+     * @return Framebuffer Return the framebuffer object.
+     */
+  static Framebuffer ResizeFramebuffer(std::string name, GLuint width, GLuint height);
+
+  /**
+   * @brief Retrieves a stored framebuffer.
+   * @param name Resource name of the framebuffer.
+   * @return Framebuffer Return the framebuffer object.
+   */
+  static Framebuffer GetFramebuffer(std::string name);
+
+  static std::string getNameHash(std::string tilesetName, std::string tileName);
 
 private:
   // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
@@ -100,11 +155,29 @@ private:
   ~ResourceManager() { }
 
   /**
-	 * @brief Load a SFML texture from a file.
-   * @param file The path and filename to the image.
-	 * @return The SFML texture.
-	 */
-  static sf::Texture loadTextureFromFile(const char* file);
+     * @brief Loads (and generates) a texture from file.
+     * @param file Filename of the texture.
+     * @param alpha Set the alpha channel true or false.
+     * @return Texture2D Return the texture object.
+     */
+  static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
+
+  /**
+     * @brief Generate a framebuffer.
+     * @param width Width of the framebuffer.
+     * @param height Height of the framebuffer.
+     * @return Framebuffer Return the framebuffer object.
+     */
+  static Framebuffer generateFramebuffer(GLuint width, GLuint height);
+
+  /**
+     * @brief Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.
+     * @param vShaderFile Filename of the vertex shader.
+     * @param fShaderFile Filename of the fragment shader.
+     * @param gShaderFile Filename of the geometry shader.
+     * @return Shader Return the shader object.
+     */
+  static Shader loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile = nullptr);
 };
 
 #endif

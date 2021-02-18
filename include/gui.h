@@ -32,18 +32,24 @@
 #include <iostream>
 #include <filesystem>
 
-#include <SFML/OpenGL.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-
-#include "imgui/imgui.h"
-#include "imgui/imgui-SFML.h"
 #include "resource_manager.h"
 #include "project_manager.h"
 #include "message_manager.h"
 #include "tilemap_manager.h"
 #include "scene.h"
+
+#include "imgui/imgui.h"
+//#include "imgui/imgui-SFML.h"
+
+//#include <SFML/OpenGL.hpp>
+//#include <SFML/Graphics/Sprite.hpp>
+//#include <SFML/Graphics/Texture.hpp>
+//#include <SFML/Graphics/RenderWindow.hpp>
+
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -77,25 +83,26 @@ enum class gui_state_t {
 class Gui
 {
 public:
-  Gui();                                                      //!< constructor
-	~Gui();                                                     //!< destructor
+    Gui();                                                      //!< constructor
+    ~Gui();                                                     //!< destructor
 
-  /**
+    /**
 	 * @brief Update the gui window dimensions if the application window size changed.
-   * @param window Render window.
+     * @param window Render window.
 	 * @return GLvoid.
 	 */
-  GLvoid WindowUpdate(Scene& scene, GLuint width, GLuint height);
-  GLvoid WindowUpdate();
+    GLvoid WindowUpdate(GLuint width, GLuint height);
+    GLvoid WindowUpdate();
 
-  /**
+    /**
 	 * @brief Render all gui related entities, that are displayed in the application.
 	 * @return GLvoid.
 	 */
-  GLvoid Render(Scene &scene);
+    //GLvoid Render(Scene &scene);
+    GLvoid Render(Scene& scene);
 
-  GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
-  GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
+    GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
+    GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
 
 private:
     friend class cereal::access;
@@ -116,7 +123,7 @@ private:
         ar(tilemap_list_);
         for (auto const& tilemapItem : tilemap_list_)
         {
-            ResourceManager::LoadTexture(tilemapItem.c_str(), sf::Color(186, 254, 202, 255), tilemapItem);
+            ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
             TilemapManager::AddTilemap(tilemapItem, 16, 16, { 2.0f, 2.0f });
         }
     }

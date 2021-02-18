@@ -36,14 +36,16 @@
 
 #include <glm/vec2.hpp>
 
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/OpenGL.hpp>
+//#include <SFML/Graphics/Image.hpp>
+//#include <SFML/Graphics/Texture.hpp>
+//#include <SFML/Graphics/RenderTexture.hpp>
+//#include <SFML/Graphics/Color.hpp>
+//#include <SFML/Graphics/Sprite.hpp>
+//#include <SFML/OpenGL.hpp>
 
 #include "resource_manager.h"
+//#include "entity_solid.h"
+//#include "solid_sprite.h"
 
 /**
  * @brief This class represents a tilemap containing sf::Sprites.
@@ -51,34 +53,46 @@
 class Tilemap
 {
 public:
-  /**
+    /**
 	 * @brief Constructor for a tilemap.
 	 * @param name The name of the tilemap.
 	 * @param spriteWidth Width of a sprite in pixesl.
 	 * @param spriteHeight height of a sprite in pixesl.
 	 * @param scale The Scale of a sprite in the x and y axis.
 	 */
-  Tilemap(std::string name, GLuint spriteWidth, GLuint spriteHeight, glm::vec2 scale)
-  {
-    loadTilemap(name, spriteWidth, spriteHeight, scale);
-  };
+    Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 SpriteScale, std::string file)
+    {
+        ResourceManager::LoadTexture(file.c_str(), GL_TRUE, name);
+        name_ = name;
+        sprite_size_ = spriteSize;
+        sprite_scale_ = SpriteScale;
+        loadTilemap(file);
+    };
+
+    Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 SpriteScale)
+    {
+        name_ = name;
+        sprite_size_ = spriteSize;
+        sprite_scale_ = SpriteScale;
+    };
 
   /**
 	 * @brief Constructor with no parameters for a tilemap.
 	 */
-  Tilemap ()
-  {
-    std::string name = "tiles_keen4";
-    GLuint spriteWidth = 16;
-    GLuint spriteHeight = 16;
-    glm::vec2 scale = { 2.0f, 2.0f };
-    loadTilemap(name, spriteWidth, spriteHeight, scale);
-  };
+    Tilemap ()
+    {
+        name_ = "default";
+        sprite_size_ = { 16, 16 };;
+        sprite_scale_ = { 1.0f, 1.0f };
+    };
 
   /**
 	 * @brief Destructor.
 	 */
-  ~Tilemap() { };
+  ~Tilemap()
+  {
+      tilemap_.clear();
+  };
 
   // Methods. Getters.
   /**
@@ -86,9 +100,9 @@ public:
    * @param spriteName Name (key) of the sprite.
    * @return A sf::Sprite pointer.
 	 */
-  sf::Sprite* GetSprite(std::string spriteName) { return &tilemap_[spriteName]; };
+  //sf::Sprite* GetSprite(std::string spriteName) { return &tilemap_[spriteName]; };
 
-  glm::vec2 GetSpriteSize() { return {sprite_with_, sprite_height_}; };
+  glm::vec2 GetSpriteSize() { return { sprite_size_.x, sprite_size_ .y}; };
   glm::vec2 GetSpriteScale() { return {sprite_scale_.x, sprite_scale_.y}; };
 
   /**
@@ -103,6 +117,14 @@ public:
 	 */
   GLuint NumCols() { return num_cols_; };
 
+  GLvoid AddTile();
+
+    Texture2D* GetTile(std::string key)
+    {
+        return tilemap_.find(key)->second.get();
+        //return &ResourceManager::GetTexture(name_);
+    };
+
 private:
   /**
 	 * @brief Load a Tilemap.
@@ -112,36 +134,44 @@ private:
 	 * @param scale The Scale of a sprite in the x and y axis.
    * @return GLvoid.
 	 */
-  GLvoid loadTilemap(std::string name, GLuint spriteWidth, GLuint spriteHeight, glm::vec2 scale)
-  {
-    name_ = name;
-    sprite_with_ = spriteWidth;
-    sprite_height_ = spriteHeight;
-    sprite_scale_ = scale;
+  
+    GLvoid loadTilemap(std::string file)
+    {
+        Texture2D* tex = &ResourceManager::GetTexture(name_);
 
-    sf::Sprite spr;
-    sf::Texture& tex = *ResourceManager::GetTexture(name);
-    spr.setTexture(tex);
-    spr.scale(scale.x, scale.y);
+        num_rows_ = tex->Width / sprite_size_.x;
+        num_cols_ = tex->Height / sprite_size_.y;
 
-    glm::vec2 textureSize = { tex.getSize().x, tex.getSize().y };
-    num_cols_ = textureSize.x / spriteWidth;
-    num_rows_ = textureSize.y / spriteHeight;
+        for (GLuint i = 0; i < num_rows_; i++)
+        {
+            for (GLuint j = 0; j < num_cols_; j++)
+            {
+                unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
+                glGetTextureSubImage(   tex->ID,
+                                        0, 
+                                        i * sprite_size_.x,
+                                        j * sprite_size_.y,
+                                        0, 
+                                        sprite_size_.x, 
+                                        sprite_size_.y, 
+                                        1, 
+                                        GL_RGBA, 
+                                        GL_UNSIGNED_BYTE, 
+                                        sprite_size_.x * sprite_size_.y * 4, 
+                                        data);
 
-    for (GLuint row = 0; row < num_rows_; row++) {
-      for (GLuint col = 0; col < num_cols_; col++) {
-        spr.setTextureRect(sf::IntRect(col*spriteWidth, row*spriteHeight, spriteWidth, spriteHeight));
-        std::stringstream sprKey;
-        sprKey << "r" << row << "c" << col;
-        tilemap_.insert(std::make_pair(sprKey.str(), spr));
-      }
+                std::stringstream key;
+                key << "r" << i << "c" << j;
+                ResourceManager::getNameHash(name_, key.str());
+                tilemap_.insert(std::make_pair(key.str(), new Texture2D()));
+                tilemap_.find(key.str())->second->Generate(sprite_size_.x, sprite_size_.y, data);
+            }
+        }
     }
-  }
 
+    std::map<std::string, std::shared_ptr<Texture2D>> tilemap_;
 
-  std::map<std::string, sf::Sprite> tilemap_;       /**< The tilemap is a map of sprites. */
-  GLuint        sprite_with_;                       /**< Width of all the sprites in the map. */
-  GLuint        sprite_height_;                     /**< Height of all the sprites in the map. */
+  glm::vec2     sprite_size_;                       /**< Width of all the sprites in the map. */
   glm::vec2     sprite_scale_;                      /**< Scale of all the sprites. */
   std::string   name_;                              /**< Name of the tilemap. */
   GLuint        num_cols_;                          /**< Number of columns of the tilemap. */

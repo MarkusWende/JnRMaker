@@ -35,15 +35,15 @@
 
 #include <glm/vec2.hpp>
 
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/OpenGL.hpp>
-
 #include "resource_manager.h"
 #include "tilemap.h"
+
+//#include <SFML/Graphics/Image.hpp>
+//#include <SFML/Graphics/Texture.hpp>
+//#include <SFML/Graphics/RenderTexture.hpp>
+//#include <SFML/Graphics/Color.hpp>
+//#include <SFML/Graphics/Sprite.hpp>
+//#include <SFML/OpenGL.hpp>
 
 /**
  * @brief The sindgleton tilemap manager class manages all tilemaps use in the application.
@@ -61,7 +61,17 @@ public:
 	 * @param scale The global scale of aall the sprite along the x and y axis.
    * @return GLvoid.
 	 */
-  static GLvoid AddTilemap(std::string name, GLuint spriteWidth, GLuint spriteHeight, glm::vec2 scale);
+  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale);
+
+  /**
+    * @brief Add a new tilemap to the map of tilemaps.
+  * @param name The name of the tilemap.
+    * @param spriteWidth The global width of all the sprites in pixesl.
+    * @param spriteHeight The global height of all the sprites in pixesl.
+    * @param scale The global scale of aall the sprite along the x and y axis.
+  * @return GLvoid.
+    */
+  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file);
 
   /**
 	 * @brief Get a tilemap by name.

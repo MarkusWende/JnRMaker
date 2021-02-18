@@ -32,18 +32,23 @@
 #include <map>
 #include <memory>
 
-#include <SFML/OpenGL.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-
+#include "resource_manager.h"
 #include "entity_camera.h"
 #include "entity_solid.h"
 #include "entity_object.h"
 #include "entity_player.h"
-#include "resource_manager.h"
+#include "entity_level_layer.h"
 #include "message_manager.h"
 #include "tilemap_manager.h"
 #include "project_manager.h"
+#include "primitive_cube.h"
+#include "solid_grid.h"
+#include "solid_cs.h"
+#include "solid_sprite.h"
+
+//#include <SFML/OpenGL.hpp>
+//#include <SFML/System/Vector2.hpp>
+//#include <SFML/Graphics/RectangleShape.hpp>
 
 
 /**
@@ -59,7 +64,7 @@ public:
 	 * @brief Create a new map.
 	 * @return GLvoid.
 	 */
-	GLvoid CreateMap(GLuint width, GLuint height, sf::Vector2u spriteSize, sf::Vector2f spriteScale);
+	GLvoid CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::vec2 spriteScale);
 
 	/**
 	 * @brief Update the scene, when the window size changes.
@@ -71,7 +76,7 @@ public:
 	 * @brief Render all entities that are displayed to the scene texture.
 	 * @return GLvoid.
 	 */
-	GLvoid Render(sf::Vector2i posMouse);
+	GLvoid Render();
 
 	// Setters
 
@@ -80,6 +85,7 @@ public:
 	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
 	GLvoid SetActiveLayer(layer_t layer) { active_layer_ = layer; };
+	GLvoid SetMousePosition(glm::vec2 pos) { mouse_position_ = pos; };
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };
@@ -89,13 +95,11 @@ public:
 	GLuint	GetMapWidth() { return map_pixel_width_; };
 	GLuint	GetMapHeight() { return map_pixel_height_; };
 	Camera* GetCamera(std::string cameraName) { return e_cameras_.find(cameraName)->second.get(); };
+	Sprite* GetSprite(std::string spriteName) { return e_sprites_.find(spriteName)->second.get(); };
 
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
-	GLvoid generateGrid();
-	std::string getNameHash(std::string tilesetName, std::string tileName);
-	GLvoid updateLayerVAO(layer_t layer);
 
 	friend class cereal::access;
 	template <class Archive>
@@ -104,17 +108,17 @@ private:
 		ar(CEREAL_NVP(e_solids_));
 		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
 
-		sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
-		sf::Image img;
-		img = tex.copyToImage();
-		const sf::Uint8* imgData = img.getPixelsPtr();
-		ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
-		ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
-		ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
+		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
+		//sf::Image img;
+		//img = tex.copyToImage();
+		//const sf::Uint8* imgData = img.getPixelsPtr();
+		//ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
+		//ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
+		//ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
 
-		ar(CEREAL_NVP(map_fg_));
-		ar(CEREAL_NVP(map_pg_));
-		ar(CEREAL_NVP(map_bg_));
+		//ar(CEREAL_NVP(map_fg_));
+		//ar(CEREAL_NVP(map_pg_));
+		//ar(CEREAL_NVP(map_bg_));
 	}
 
 	template <class Archive>
@@ -127,24 +131,26 @@ private:
 
 		glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
 		glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
-		CreateMap(width, height, sf::Vector2u(sprSize.x, sprSize.y), sf::Vector2f( sprScale.x, sprScale.y ));
+		CreateMap(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
 
 		ar(width, height);
-		sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
-		ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
-		ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
+		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
+		//ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
+		//ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
 
-		ar( map_fg_ );
-		updateLayerVAO(layer_t::FORE);
-		ar( map_pg_ );
-		updateLayerVAO(layer_t::PLAYER);
-		ar( map_bg_ );
-		updateLayerVAO(layer_t::BACK);
+		//ar( map_fg_ );
+		//ar( map_pg_ );
+		//ar( map_bg_ );
 	}
 
-	std::map<std::string, std::unique_ptr<Camera>> 	e_cameras_;					/**< All camera entities are stored in this map. */
-	std::map<std::string, std::unique_ptr<Solid>> 	e_solids_;					/**< All static entities that are in 3 layers (background, playerground and foreground). */
-	std::map<std::string, std::unique_ptr<Object>> 	e_objects_;					/**< All moving and interactable objects. */
+	std::map<std::string, std::unique_ptr<Camera>> 					e_cameras_;					/**< All camera entities used in the scene. */
+	std::map<std::string, std::unique_ptr<Sprite>> 					e_sprites_;					/**< All sprite entities used in the scene. */
+	std::map<std::string, std::unique_ptr<Solid>> 					e_solids_;					/**< All primitives used in the scene. */
+	std::map<std::string, std::unique_ptr<CoordinateSystem>> 		e_cs_;						/**< All Coordinates systems used in the scene. */
+	std::map<std::string, std::unique_ptr<Grid>> 					e_grids_;					/**< All grids used in the scene. */
+	std::map<std::string, std::unique_ptr<Object>> 					e_objects_;					/**< All moving and interactable objects used in the scene. */
+	//std::map<std::string, std::vector<std::vector<std::string>>> 	e_level_;					/**< Store the hashes of the drawn sprites in each layer used. */
+	std::map<std::string, std::unique_ptr<LevelLayer>> 				e_level_layers_;			/**< Store the hashes of the drawn sprites in each layer used. */
 	Player											e_player_;
 	GLuint											map_pixel_width_;			/**< Width of the map in pixels. */
 	GLuint											map_pixel_height_;			/**< Height of the map in pixels. */
@@ -152,19 +158,23 @@ private:
 	GLuint											height_;			/**< Height of the map in pixels. */
 	std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
 	std::string     								active_sprite_name_;		/**< Name (key) of the sprite which is currently selected. */
-	std::vector<sf::Vertex> 						grid_;
+	//std::vector<sf::Vertex> 						grid_;
 	GLboolean										add_sprite_flag_;
 	GLboolean										mouse_over_scene_;
 	GLboolean										map_is_null_;
 	GLuint											map_width_;					/**< Width of the map. */
 	GLuint											map_height_;				/**< Height of the map. */
 	layer_t											active_layer_;
-	sf::VertexArray									map_bg_vao_;
-	std::vector<std::vector<GLuint>>				map_bg_;
-	sf::VertexArray									map_pg_vao_;
-	std::vector<std::vector<GLuint>>				map_pg_;
-	sf::VertexArray									map_fg_vao_;
-	std::vector<std::vector<GLuint>>				map_fg_;
+	//sf::VertexArray									map_bg_vao_;
+	//std::vector<std::vector<GLuint>>				map_bg_;
+	//sf::VertexArray									map_pg_vao_;
+	//std::vector<std::vector<GLuint>>				map_pg_;
+	//sf::VertexArray									map_fg_vao_;
+	//std::vector<std::vector<GLuint>>				map_fg_;
+	glm::vec3						mouse_ray_start_;
+	glm::vec3						mouse_ray_end_;
+	glm::vec2						mouse_position_;
+	GLuint							vao_;
 
 };
 CEREAL_CLASS_VERSION(Scene, 1);

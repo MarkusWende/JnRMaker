@@ -29,66 +29,117 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/Event.hpp>
+//#include <SFML/Graphics/RenderWindow.hpp>
+//#include <SFML/Window/Event.hpp>
 
-#include "imgui/imgui-SFML.h"
+//#include "imgui/imgui-SFML.h"
 #include "scene.h"
 #include "gui.h"
 
+unsigned int lastTime, currentTime;
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(sf::RenderWindow &window, Scene &scene, Gui& gui)
+void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
 {
-  sf::Event event;
-  while (window.pollEvent(event)) {
-    ImGui::SFML::ProcessEvent(event);
-
-    if (event.type == sf::Event::Closed) {
-        gui.Close();
-    }
-
-    if (event.type == sf::Event::Resized)
+    lastTime = currentTime;
+    currentTime = SDL_GetTicks();
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
     {
-        // update the view to the new size of the window
-        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-        window.setView(sf::View(visibleArea));
-    }
+    //ImGui::SFML::ProcessEvent(event);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-    {
-        gui.Close();
-    }
-
-    if (scene.IsMouseOverScene())
-    {
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        if (event.type == SDL_QUIT)
         {
-            scene.SetAddSpriteFlag();
+            gui.Close();
         }
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+        if (scene.IsMouseOverScene())
         {
-            sf::Vector2i pos = sf::Mouse::getPosition(window);
-            if (event.type == sf::Event::MouseButtonPressed)
+            // Pass the mouse position to the scene. The mouse position is import to calculate intersections.
+            // TODO (Markus): Create a setter method for this.
+            scene.SetMousePosition(glm::vec2(event.motion.x, event.motion.y));
+
+            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
             {
-                scene.GetCamera("Editor")->SetMousePos(pos.x, pos.y);
+                float x = event.motion.xrel;
+                float y = event.motion.yrel;
+
+                if (x != 107.0f && y < 1000.0f)
+                {
+                    scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, 0.002f);
+                }
             }
-            else
+            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT))
             {
-                scene.GetCamera("Editor")->Move(pos.x, pos.y);
+                float x = event.motion.xrel;
+                float y = event.motion.yrel;
+
+                if (x != 107.0f && y < 1000.0f)
+                {
+                    scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, 0.002f);
+                }
+            }
+            if (event.type == SDL_MOUSEWHEEL)
+            {
+                float y = event.wheel.y;
+                scene.GetCamera("SceneCamera")->ProcessMouseScroll(y, 0.2f);
             }
         }
 
-        if (event.type == sf::Event::MouseWheelScrolled)
+        if (event.type == SDL_KEYDOWN)
         {
-            //scene.GetCamera("Editor")->Zoom(event.mouseWheelScroll.delta);
-            scene.GetCamera("Editor")->ZoomAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, event.mouseWheelScroll.delta);
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_ESCAPE:
+                gui.Close();
+                break;
+            default:
+                break;
+            }
         }
+        /*
+        if (event.type == sf::Event::Resized)
+        {
+            // update the view to the new size of the window
+            sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+            window.setView(sf::View(visibleArea));
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            gui.Close();
+        }
+
+        if (scene.IsMouseOverScene())
+        {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                scene.SetAddSpriteFlag();
+            }
+
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
+            {
+                sf::Vector2i pos = sf::Mouse::getPosition(window);
+                if (event.type == sf::Event::MouseButtonPressed)
+                {
+                    //scene.GetCamera("Editor")->SetMousePos(pos.x, pos.y);
+                }
+                else
+                {
+                    scene.GetCamera("FreeCamera")->Move(pos.x, pos.y);
+                }
+            }
+
+            if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                //scene.GetCamera("Editor")->Zoom(event.mouseWheelScroll.delta);
+                //scene.GetCamera("Editor")->ZoomAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, event.mouseWheelScroll.delta);
+            }
+        }
+        */
     }
-  }
 }
 
 #endif	// EVENTS_H

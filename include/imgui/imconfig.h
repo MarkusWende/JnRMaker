@@ -104,6 +104,7 @@ namespace ImGui
 
 // Add this to your imconfig.h
 
+/*
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Color.hpp>
 
@@ -134,3 +135,4 @@ namespace ImGui
     }
 
 #define ImTextureID unsigned int
+*/

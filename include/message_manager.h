@@ -33,7 +33,7 @@
 #include <vector>
 #include <sstream>
 
-#include <SFML/OpenGL.hpp>
+//#include <SFML/OpenGL.hpp>
 
 #include "time_helper.h"
 
