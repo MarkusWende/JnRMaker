@@ -1,4 +1,5 @@
-#version 410 core
+#version 330 core
+
 flat in vec3 startPos;
 in vec3 vertPos;
 
@@ -15,7 +16,7 @@ void main()
     float dist = length(dir);
 
     if (fract(dist / (u_dashSize + u_gapSize)) > u_dashSize/(u_dashSize + u_gapSize))
-        discard; 
+        discard;
 
 	FragColor = color;
 }

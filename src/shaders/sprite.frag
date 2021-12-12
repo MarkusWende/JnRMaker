@@ -1,4 +1,5 @@
-#version 410 core
+#version 330 core
+
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 TexCoords;
@@ -17,7 +18,7 @@ struct DirLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-};  
+};
 
 uniform DirLight dirLight;
 uniform vec3 viewPos;
@@ -29,13 +30,13 @@ uniform sampler2D ourTexture;
 
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 
-float near = 0.1; 
+float near = 0.1;
 float far  = 5.0;
 
-float LinearizeDepth(float depth) 
+float LinearizeDepth(float depth)
 {
-    float z = depth * 2.0 - 1.0; // back to NDC 
-    return (2.0 * near * far) / (far + near - z * (far - near));	
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * near * far) / (far + near - z * (far - near));
 }
 
 void main()
@@ -46,8 +47,8 @@ void main()
 
     // phase 1: Directional lighting
     vec4 result = CalcDirLight(dirLight, norm, viewDir);
-    
-    
+
+
     //vec3 ambient = texture(ourTexture, TexCoords).rgb;
 
     //vec3 result = ambient;

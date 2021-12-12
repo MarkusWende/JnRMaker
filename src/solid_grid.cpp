@@ -32,9 +32,11 @@ Grid::Grid(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
 	smooth_ = smooth;
 	layer_ = layer_t::FORE;
 	scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
-	line_width_ = 0.5f;
+	line_width_ = 1.0f;
 	height_ = height;
 	width_ = width;
+	color_ = glm::vec3(1.0f, 1.0f, 1.0f);
+	alpha_ = 0.5f;
 
 	build();
 }
@@ -61,7 +63,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
-		ResourceManager::GetShader("line").SetVector4f("color", { axis_h_[key.str()]->GetColor(), axis_h_[key.str()]->GetAlpha() });
+		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_h_[key.str()]->Draw();
 	}
 
@@ -69,7 +71,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
-		ResourceManager::GetShader("line").SetVector4f("color", { axis_v_[key.str()]->GetColor(), axis_v_[key.str()]->GetAlpha() });
+		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_v_[key.str()]->Draw();
 	}
 	glLineWidth(1.0f);
@@ -86,7 +88,7 @@ GLvoid Grid::build()
 		axis_h_[key.str()]->SetColor({1.0f, 1.0f, 1.0f});
 		axis_h_[key.str()]->SetAlpha(1.0f);
 	}
-	
+
 	for (size_t i = 0; i <= width_; i++)
 	{
 		std::stringstream key;

@@ -25,9 +25,9 @@
  * https://github.com/MarkusWende
 **/
 
-#include "../include/imgui/imgui.h"
-#include "../include/imgui/imgui_impl_sdl.h"
-#include "../include/imgui/imgui_impl_opengl3.h"
+#include "../lib/imgui/imgui.h"
+#include "../lib/imgui/imgui_impl_sdl.h"
+#include "../lib/imgui/imgui_impl_opengl3.h"
 #include <SDL2/SDL.h>
 
 // About OpenGL function loaders: modern OpenGL doesn't have a standard header file and requires individual function pointers to be loaded manually.
@@ -73,7 +73,8 @@ int main(int argc, char* argv[])
     }
 
 
-    glfwInit();
+    //glfwInit();
+    //glewInit();
 
     glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
 
@@ -92,6 +93,8 @@ int main(int argc, char* argv[])
 #else
     bool err = false; // If you use IMGUI_IMPL_OPENGL_LOADER_CUSTOM, your loader is likely to requires some form of initialization.
 #endif
+
+//bool err = false;
     if (err)
     {
         FILE* stream;
@@ -161,6 +164,7 @@ int main(int argc, char* argv[])
     // Create gui object
     Gui appGui;
     // Create default scene object
+
     Scene appScene(1200, 800);
     // Update Gui to display the windows
     //appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
@@ -190,10 +194,8 @@ int main(int argc, char* argv[])
         ImGui_ImplSDL2_NewFrame(window->GetWindow());
         ImGui::NewFrame();
 
-        //ImGui::ShowDemoWindow();
-
         // Update and render 3d scene
-        //appScene.Update(window->GetWidth(), window->GetHeight());
+        appScene.Update(window->GetWidth(), window->GetHeight());
 
         // Update and render gui
         //appGui.Update(window->GetWidth(), window->GetHeight());
@@ -201,6 +203,8 @@ int main(int argc, char* argv[])
         appGui.Render(appScene);
 
         appScene.Render();
+
+        ImGui::ShowDemoWindow();
 
         // If the project name changes, update the window title
         /*if (myGui.project_name_changed)
@@ -210,7 +214,7 @@ int main(int argc, char* argv[])
         }*/
 
         // Render ImGui to show the gui
-        
+
         ImGui::Render();
 
         // Set the background color
@@ -245,7 +249,7 @@ int main(int argc, char* argv[])
         // Save old window size
         oldWidth = window->getSize().x;
         oldHeight = window->getSize().y;
-        
+
         */
         /*
         if (ProjectManager::GetStatus() == project_status_t::SAVE)

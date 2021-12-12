@@ -46,6 +46,17 @@
 #include "solid_cs.h"
 #include "solid_sprite.h"
 
+#ifdef _WIN32
+#include <filesystem>
+#include <windows.h>
+namespace fs = std::filesystem;
+#endif // _WIN32
+#ifdef __linux__
+#include <experimental/filesystem>
+#include <unistd.h>
+namespace fs = std::experimental::filesystem;
+#endif
+
 //#include <SFML/OpenGL.hpp>
 //#include <SFML/System/Vector2.hpp>
 //#include <SFML/Graphics/RectangleShape.hpp>
@@ -81,11 +92,13 @@ public:
 	// Setters
 
 	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
-	GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
+	//GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
 	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
 	GLvoid SetActiveLayer(layer_t layer) { active_layer_ = layer; };
 	GLvoid SetMousePosition(glm::vec2 pos) { mouse_position_ = pos; };
+
+	GLvoid PlaceSprite();
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };

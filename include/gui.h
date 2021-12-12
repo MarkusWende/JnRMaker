@@ -30,7 +30,6 @@
 #define GUI_H
 
 #include <iostream>
-#include <filesystem>
 
 #include "resource_manager.h"
 #include "project_manager.h"
@@ -38,7 +37,7 @@
 #include "tilemap_manager.h"
 #include "scene.h"
 
-#include "imgui/imgui.h"
+#include "../lib/imgui/imgui.h"
 //#include "imgui/imgui-SFML.h"
 
 //#include <SFML/OpenGL.hpp>
@@ -48,10 +47,17 @@
 
 
 #ifdef _WIN32
+#include <filesystem>
 #include <windows.h>
+namespace fs = std::filesystem;
+#endif // _WIN32
+#ifdef __linux__
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#include <unistd.h>
 #endif
 
-namespace fs = std::filesystem;
+
 
 
 /**
@@ -124,7 +130,7 @@ private:
         for (auto const& tilemapItem : tilemap_list_)
         {
             ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
-            TilemapManager::AddTilemap(tilemapItem, 16, 16, { 2.0f, 2.0f });
+            TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
         }
     }
 

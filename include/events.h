@@ -66,9 +66,16 @@ void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
                 float x = event.motion.xrel;
                 float y = event.motion.yrel;
 
-                if (x != 107.0f && y < 1000.0f)
+                if ((x != 107.0f && y < 1000.0f) && (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
                 {
                     scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, 0.002f);
+                }
+                else if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+                {
+                    //std::stringstream msg;
+                    //msg << "x: " << x << "\ty: " << y;
+                    //MessageManager::AddMessage(msg, message_t::INFO);
+                    scene.PlaceSprite();
                 }
             }
             if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT))
@@ -118,7 +125,6 @@ void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
             {
                 scene.SetAddSpriteFlag();
             }
-
             if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
             {
                 sf::Vector2i pos = sf::Mouse::getPosition(window);

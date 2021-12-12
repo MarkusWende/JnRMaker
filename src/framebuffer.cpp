@@ -67,7 +67,15 @@ void Framebuffer::Generate(GLuint width, GLuint height)
 
 	// Always check that our framebuffer is ok
 	FILE* stream;
-	freopen_s(&stream, "log.txt", "a", stdout);
+#ifdef _WIN32
+            freopen_s(&stream, "log.txt", "a", stdout);
+            fprintf(stream, "Failed to initialize GLEW\n");
+#endif // _WIN32
+#ifdef __linux__
+            stream = fopen("./log.txt", "a");
+            fprintf(stream, "Failed to initialize GLEW\n");
+#endif // __linux__
+//	freopen_s(&stream, "log.txt", "a", stdout);
 	bool status = false;
 	if (stream)
 	{
@@ -81,7 +89,7 @@ void Framebuffer::Generate(GLuint width, GLuint height)
 			fprintf(stream, "%s\t[Error]: Framebuffer could not be initialized.\n", time_helper::GetTimeinfo().c_str());
 			status = false;
 		}
-		fclose(stream);
+            	fclose(stream);
 	}
 
 	// Unbind texture

@@ -31,7 +31,7 @@
 
 #include <map>
 #include <memory>
-#include <ppl.h>
+//#include <ppl.h>
 
 #include "solid_mesh.h"
 
@@ -46,8 +46,8 @@ public:
 
 	~ModelNew()
 	{
-		mesh_reduction_task.wait();
-		mesh_reduction_task.~task_group();
+//		mesh_reduction_task.wait();
+//		mesh_reduction_task.~task_group();
 	}
 
 
@@ -131,7 +131,7 @@ public:
 	{
 		meshes_[meshName]->Triangulate();
 	}
-
+/*
 	GLvoid UpdateNormals(std::string meshName) {
 		meshes_[meshName]->updateNormals();
 	}
@@ -161,7 +161,7 @@ public:
 		meshes_.insert(std::make_pair(meshName, new MeshNew(meshName)));
 		memcpy(meshes_.at(meshName).get(), mesh_copy_ptr_, sizeof(MeshNew));
 	}
-
+*/
 	GLvoid UpdateVAO(std::string meshName)
 	{
 		meshes_[meshName]->UpdateVAO();
@@ -186,7 +186,7 @@ public:
 	GLboolean	IsMeshReductionCostQueueEmpty()						{ return mesh_copy_ptr_->IsMeshReductionCostQueueEmpty(); };
 
 protected:
-	concurrency::task_group mesh_reduction_task;
+	//concurrency::task_group mesh_reduction_task;
 
 private:
 	std::map<std::string, std::unique_ptr<MeshNew>>		meshes_;

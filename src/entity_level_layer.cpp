@@ -57,7 +57,12 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &tile_id_vbo_);
 };
 
-void LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
+GLvoid AddSprite()
+{
+    
+}
+
+GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
 {
     ResourceManager::GetShader("llayer").Use();
     ResourceManager::GetShader("llayer").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
@@ -75,7 +80,7 @@ void LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
 
 // PRIVATE:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-void LevelLayer::init()
+GLvoid LevelLayer::init()
 {
     for (size_t y = 0; y < height_; y++)
     {
@@ -136,7 +141,7 @@ void LevelLayer::init()
     draw_border();
 }
 
-void LevelLayer::draw_border()
+GLvoid LevelLayer::draw_border()
 {
     //ResourceManager::
     //tile_size_
@@ -153,7 +158,7 @@ void LevelLayer::draw_border()
         hash_map_.at(0).at(i) = key;
         hash_map_.at(height_ - 1).at(i) = key;
     }
-    
+
     tile_id_.clear();
     std::string emptyHash = ResourceManager::getNameHash("default", "empty");
 
@@ -171,7 +176,7 @@ void LevelLayer::draw_border()
             }
         }
     }
- 
+
     //tile_id_.at(54) = 1.0f;
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     //void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);

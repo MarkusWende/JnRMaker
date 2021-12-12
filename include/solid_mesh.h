@@ -2,7 +2,7 @@
 #define MESH_NEW_H
 
 #include <algorithm>
-#include <ppl.h>
+//#include <ppl.h>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -465,7 +465,7 @@ public:
 		faces_.clear();
 		edges_.clear();
 	}
-
+/*
 	void Reduce()
 	{
 		int counter = 0;
@@ -519,7 +519,7 @@ public:
 		faces_.clear();
 		edges_.clear();
 	}
-
+*/
 	/**
 	 * @brief Setup the OpenGL vertex array object.
 	 * @return Void.
@@ -558,6 +558,7 @@ public:
 	* @brief Updates the normal vectors of the mesh. Indices have to be in counter-clockwise order for this to work (OpenGL standard)
 	* @return
 	*/
+/*
 	GLvoid updateNormals() {
 		//Finds all indice-entries for all vertices and calculates the vertice-normal by averaging over the normals of each adjacent face
 		concurrency::parallel_for_each(std::begin(vertices_), std::end(vertices_), [&](VertexNew v) {
@@ -601,7 +602,7 @@ public:
 			});
 		return;
 	}
-
+*/
 	void GetCorners(VertexNew* v1, VertexNew* v2, VertexNew* v3, VertexNew* v4) {
 		VertexNew lowerLeft, upperLeft, lowerRight, upperRight;
 		lowerLeft.Position = glm::vec3(0, 0, 0);

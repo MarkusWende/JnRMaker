@@ -135,12 +135,12 @@ GLvoid Solid::triangulateMesh(std::string meshName)
 
 GLvoid Solid::reduceMesh(std::string meshName)
 {
-	model_.ReduceMesh(meshName);
+//	model_.ReduceMesh(meshName);
 }
 
 GLvoid Solid::copyReducedMesh(std::string meshName)
 {
-	model_.CopyReducedMesh(meshName);
+//	model_.CopyReducedMesh(meshName);
 }
 
 GLvoid Solid::updateVAO(std::string meshName)
@@ -253,5 +253,5 @@ GLboolean Solid::vecVecIntersection(glm::vec3 vP0, glm::vec3 vP1, glm::vec3 uP0,
 
 GLvoid Solid::updateNormals(std::string meshName)
 {
-	model_.UpdateNormals(meshName);
+//	model_.UpdateNormals(meshName);
 }

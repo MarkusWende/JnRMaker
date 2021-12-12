@@ -134,30 +134,30 @@ private:
 	 * @param scale The Scale of a sprite in the x and y axis.
    * @return GLvoid.
 	 */
-  
+
     GLvoid loadTilemap(std::string file)
     {
-        Texture2D* tex = &ResourceManager::GetTexture(name_);
+        Texture2D tex = ResourceManager::GetTexture(name_);
 
-        num_rows_ = tex->Width / sprite_size_.x;
-        num_cols_ = tex->Height / sprite_size_.y;
+        num_rows_ = tex.Width / sprite_size_.x;
+        num_cols_ = tex.Height / sprite_size_.y;
 
         for (GLuint i = 0; i < num_rows_; i++)
         {
             for (GLuint j = 0; j < num_cols_; j++)
             {
                 unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
-                glGetTextureSubImage(   tex->ID,
-                                        0, 
+                glGetTextureSubImage(   tex.ID,
+                                        0,
                                         i * sprite_size_.x,
                                         j * sprite_size_.y,
-                                        0, 
-                                        sprite_size_.x, 
-                                        sprite_size_.y, 
-                                        1, 
-                                        GL_RGBA, 
-                                        GL_UNSIGNED_BYTE, 
-                                        sprite_size_.x * sprite_size_.y * 4, 
+                                        0,
+                                        sprite_size_.x,
+                                        sprite_size_.y,
+                                        1,
+                                        GL_RGBA,
+                                        GL_UNSIGNED_BYTE,
+                                        sprite_size_.x * sprite_size_.y * 4,
                                         data);
 
                 std::stringstream key;

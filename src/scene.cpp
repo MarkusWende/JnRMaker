@@ -44,29 +44,34 @@ Scene::Scene(GLuint width, GLuint height)
     active_sprite_name_ = "empty";
     active_layer_ = layer_t::BACK;
 
-    
-    ResourceManager::LoadShader("src/shaders/scene.vert", "src/shaders/scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("src/shaders/solid.vert", "src/shaders/solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("src/shaders/sprite.vert", "src/shaders/sprite.frag", nullptr, "sprite");
-    ResourceManager::LoadShader("src/shaders/line.vert", "src/shaders/line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
-    //ResourceManager::CreateRenderTexture(width_, height_, "viewport");   
+
+#ifdef __linux__
+    chdir(fs::current_path().parent_path().string().c_str());
+#endif
+
+
+    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.frag", nullptr, "scene");
+    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.frag", nullptr, "solid");
+    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.frag",  nullptr, "line");
+    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.frag",  nullptr, "llayer");
+    //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
-    ResourceManager::LoadTexture("assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-    ResourceManager::LoadTexture("assets/sprites/default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
-    ResourceManager::LoadTexture("assets/sprites/default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
-    ResourceManager::LoadTexture("assets/sprites/default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
 
-    ResourceManager::LoadTexture("assets/sprites/default_border_16x16.png", GL_TRUE, "default_border_16x16");
-    ResourceManager::LoadTexture("assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
-    ResourceManager::LoadTexture("assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
-    ResourceManager::LoadTexture("assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_16x16.png", GL_TRUE, "default_border_16x16");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_24x24.png", GL_TRUE, "default_border_24x24");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_32x32.png", GL_TRUE, "default_border_32x32");
+    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_64x64.png", GL_TRUE, "default_border_64x64");
 
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
     e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem("MainCS", glm::vec3(0))));
-    
+
     e_cameras_.insert(std::make_pair("SceneCamera", new Camera()));
     //e_cameras_["SceneCamera"]->SetState(CameraState::ORTHOGRAPHIC);
 
@@ -99,7 +104,7 @@ Scene::Scene(GLuint width, GLuint height)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
@@ -126,7 +131,6 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     std::stringstream key;
     key << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
     e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(key.str()));
-    ResourceManager::LoadTexture("assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
 
     // Create level
     if (!e_level_layers_.empty())
@@ -136,10 +140,10 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     //std::vector<std::vector<std::string>> layer(height, std::vector<std::string>(width, "null"));
     map_pixel_width_ = width * spriteSize.x;
     map_pixel_height_ = height * spriteSize.y;
-    e_level_layers_.insert(std::make_pair("Layer_Player", new LevelLayer("Layer_Player", width, height, spriteSize)));
+    e_level_layers_.insert(std::make_pair("Player", new LevelLayer("Player", width, height, spriteSize)));
     //e_level_layers_.insert(std::make_pair("Layer_Foreground", layer));
     //e_level_layers_.insert(std::make_pair("Layer_Background", layer));
-    //ResourceManager::CreateFramebuffer("Layer_Player", map_pixel_width_, map_pixel_height_);
+    //ResourceManager::CreateFramebuffer("Player", map_pixel_width_, map_pixel_height_);
     //ResourceManager::CreateFramebuffer("Layer_Foreground", map_pixel_width_, map_pixel_height_);
     //ResourceManager::CreateFramebuffer("Layer_Background", map_pixel_width_, map_pixel_height_);
 
@@ -187,7 +191,7 @@ GLvoid Scene::Update(GLuint width, GLuint height)
         ResourceManager::ResizeFramebuffer("scene", width_, height_);
         ResourceManager::ResizeFramebuffer("imguiScene", width_, height_);
     }
-   
+
     //e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
     //e_cameras_["Editor"]->Resize(width_, height_);
 }
@@ -203,7 +207,7 @@ GLvoid Scene::Render()
     // Background color
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
-    
+
 
     // Create transformations
     glm::mat4 projection = glm::mat4(1.0f);
@@ -277,9 +281,9 @@ GLvoid Scene::Render()
     }
 
     // Draw level
-    if (e_level_layers_.find("Layer_Player") != e_level_layers_.end())
+    if (e_level_layers_.find("Player") != e_level_layers_.end())
     {
-        e_level_layers_["Layer_Player"]->Draw(projection, view);
+        e_level_layers_["Player"]->Draw(projection, view);
     }
 
 
@@ -303,8 +307,8 @@ GLvoid Scene::Render()
         ResourceManager::GetShader("floor").SetFloat("alpha", 1.0f);
         */
         glm::mat4 model = glm::mat4(1.0f);
-        
-        
+
+
 
         //model = glm::translate(model, glm::vec3(0.0, 0.1f, 0.0));
         //model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f)); // a smaller cube
@@ -360,8 +364,8 @@ GLvoid Scene::Render()
         //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f)); // a smaller cube
-        
-        
+
+
         //e_solids_["TestCube"]->DrawWireframe();
         /*
         const char* vertexShaderSource = "#version 330 core\n"
@@ -425,9 +429,9 @@ GLvoid Scene::Render()
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float vertices[] = {
-            -0.1f, -0.1f, 0.0f, // left  
-             0.1f, -0.1f, 0.0f, // right 
-             0.0f,  0.1f, 0.0f  // top   
+            -0.1f, -0.1f, 0.0f, // left
+             0.1f, -0.1f, 0.0f, // right
+             0.0f,  0.1f, 0.0f  // top
         };
 
         unsigned int VBO, VAO;
@@ -550,7 +554,7 @@ GLvoid Scene::Render()
                 {
                     map_bg_.at(row).at(col) = idSolid;
                 }
-                
+
                 updateLayerVAO(active_layer_);
 
                 add_sprite_flag_ = false;
@@ -585,10 +589,10 @@ GLvoid Scene::Render()
     }
     */
 
-    
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Render to our imgui framebuffer
-    
+
     glBindFramebuffer(GL_FRAMEBUFFER, ResourceManager::GetFramebuffer("imguiScene").GetID());
     glViewport(0, 0, width_, height_); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
@@ -602,7 +606,24 @@ GLvoid Scene::Render()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    
+
+}
+
+GLvoid Scene::PlaceSprite()
+{
+    if (!e_level_layers_.empty())
+    {
+        if (active_layer_ != layer_t::FORE)
+        {
+            std::stringstream msg;
+            msg << "tileMap: " << active_tilemap_name_ << "\tsprite: " << active_sprite_name_;
+            MessageManager::AddMessage(msg, message_t::INFO);
+
+            ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\build\\Debug\\assets\\sprites\\default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
+
+            //e_level_layers_["Player"]->
+        }
+    }
 }
 
 // PRIVATE

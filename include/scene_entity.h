@@ -22,6 +22,8 @@
 #ifndef SCENE_ENTITY_H
 #define SCENE_ENTITY_H
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include "resource_manager.h"
 
 #include <glm/glm.hpp>

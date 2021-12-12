@@ -14,18 +14,18 @@ int JNRWindow::SetupSDL()
 	// Decide GL+GLSL versions
 #if __APPLE__
 	// GL 4.1 + GLSL 410
-	glsl_version_ = "#version 410";
+	glsl_version_ = "#version 330";
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #else
 	// GL 4.1 + GLSL 410
-	glsl_version_ = "#version 410";
+	glsl_version_ = "#version 330";
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #endif
 
 	return 0;
@@ -37,7 +37,7 @@ void JNRWindow::CleanUp() {
 	SDL_Quit();
 	return;
 }
-
+/*
 void JNRWindow::ShowLoadingWindow() {
 	SDL_Surface* loadingWindowImage = IMG_Load("loading.png");
 	// create the loading window
@@ -61,7 +61,7 @@ void JNRWindow::ShowLoadingWindow() {
 	SDL_DestroyWindow(loadingWindow);
 	loadingWindow = nullptr;
 }
-
+*/
 void JNRWindow::CreateNewWindow(int width, int height, const char* name) {
 	SDL_GetCurrentDisplayMode(0, &display_mode_);
 

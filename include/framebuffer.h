@@ -48,8 +48,8 @@ public:
 	~Framebuffer() { }
 
 	// Getters
-	GLuint& Framebuffer::GetID() { return id_; }								/**< @brief Get the framebuffer ID. @return A reference to an OpenGL unsignet integer. */
-	GLuint& Framebuffer::GetTextureID() { return tex_id_; }						/**< @brief Get the texture ID. @return A reference to an OpenGL unsignet integer. */
+	GLuint& GetID() { return id_; }								/**< @brief Get the framebuffer ID. @return A reference to an OpenGL unsignet integer. */
+	GLuint& GetTextureID() { return tex_id_; }						/**< @brief Get the texture ID. @return A reference to an OpenGL unsignet integer. */
 
 	// General member functions
 	/**
@@ -66,7 +66,7 @@ public:
 	 * @brief Binds the framebuffer as the current active framebuffer object.
 	 * @return void
 	 */
-	void Framebuffer::Bind() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }
+	void Bind() const { glBindFramebuffer(GL_FRAMEBUFFER, id_); }
 
 	/**
 	 * @brief Delete the framebuffer and texture.

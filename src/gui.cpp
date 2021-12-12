@@ -32,9 +32,12 @@ Gui::Gui()
 {
 	init();
 	customGuiStyle();
-	active_tilemap_name_ = "E:\\C++\\JnRMaker\\assets\\tiles\\game-tiles_cut.png";
+
+	active_tilemap_name_ = "D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\tiles\\game-tiles_cut.png";
+	//active_tilemap_name_ = "assets/tiles/game-tiles_cut.png";
 	tilemap_list_.push_back(active_tilemap_name_);
 	TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);
+	//std::cout << "blub.\n";
 }
 
 Gui::~Gui()
@@ -403,7 +406,7 @@ GLvoid Gui::Render(Scene &scene)
 				cState = CameraState::ORTHOGRAPHIC;
 			}
 		}
-		
+
 
 		if (ImGui::CollapsingHeader("Tiles"))
 		{
@@ -427,14 +430,14 @@ GLvoid Gui::Render(Scene &scene)
 
 				ImGui::BeginChild("TileSelector", ImVec2(0, 500), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-				
+
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-				
+
 				Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
-				
+
 				GLuint i = 0;
 				ImGuiListClipper clipper(tilemap->NumCols());
-	
+
 				while (clipper.Step())
 				{
 					for (int col = clipper.DisplayStart; col < clipper.DisplayEnd; col++)
@@ -461,7 +464,7 @@ GLvoid Gui::Render(Scene &scene)
 								Texture2D *brushTex = tilemap->GetTile(sprKey.str());
 								scene.GetSprite("brush")->AssignTextureByName(*brushTex);
 							}
-							
+
 							ImGui::PopStyleColor(2);
 							ImGui::PopID();
 							if (row < tilemap->NumRows() - 1)
@@ -470,8 +473,8 @@ GLvoid Gui::Render(Scene &scene)
 						}
 					}
 				}
-				
-				
+
+
 				ImGui::PopStyleVar();
 
 				//ImGui::EndChildFrame();
@@ -556,7 +559,7 @@ GLvoid Gui::Render(Scene &scene)
 		}
 	}
 
-	ImGui::SetScrollHere(1.0f);
+	ImGui::SetScrollHereY(1.0f);
 	// EndChild: MessageList
 	ImGui::EndChild();
 
@@ -604,9 +607,9 @@ GLvoid Gui::init()
 	root_file_path_ = path;
 #endif
 #ifdef __linux__
-
+    root_file_path_ = fs::current_path().parent_path();
 #endif
-	
+
 }
 
 GLvoid Gui::customGuiStyle()
@@ -623,7 +626,7 @@ GLvoid Gui::customGuiStyle()
 	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
 	// - Read 'misc/fonts/README.txt' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash
-	io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 10.0f);
+	//io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 10.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Roboto-Medium.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Cousine-Regular.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/DroidSans.ttf", 12.0f);
@@ -717,7 +720,7 @@ GLvoid Gui::customGuiStyle()
 	style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
 	style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
 	style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
-	style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+	//style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 	style->Colors[ImGuiCol_Tab] = ImVec4(0.2f, 0.2f, 0.2f, 1.00f);
 	style->Colors[ImGuiCol_TabHovered] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 	style->Colors[ImGuiCol_TabActive] = ImVec4(0.4f, 0.4f, 0.4f, 1.00f);

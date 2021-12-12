@@ -1,10 +1,12 @@
 # build folder and build script
 build/
+lib/
 clean.sh
 build_and_run.sh
 
 # VS project files
 .vs/
+.vscode/
 *.sln
 *.vcxproj*
 
@@ -20,11 +22,8 @@ x64/
 # .gch files
 *.gch
 
-# tiles and textures
-assets/tiles/*.*
-assets/textures/*.*
-assets/sprites/*.*
-assets/icons/*.*
+# resources
+resources/
 
 # log file
 log.txt

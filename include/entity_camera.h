@@ -27,6 +27,8 @@
 
 #include <iostream>
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -219,23 +221,28 @@ public:
 	 */
 	void ProcessMouseDrag(float xoffset, float yoffset, float deltaTime)
 	{
-		//std::stringstream msg;
-		//msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
-		//MessageManager::AddMessage(msg, message_t::INFO);
 		// The velocity of dragging the camera depends on the zoom level and the time the hardware needs for one main loop
-		float velocity = DRAG_SPEED * deltaTime * zoom_;
-		distance_ = glm::length(center_ - position_);
+        if ((glm::abs(xoffset) < 50) && (glm::abs(yoffset) < 50))
+        {
+            float velocity = DRAG_SPEED * deltaTime * zoom_;
+    		distance_ = glm::length(center_ - position_);
 
-		// Update the position of the camera
-		position_ += right_ * xoffset * velocity;
-		position_ -= up_ * yoffset * velocity;
+    		// Update the position of the camera
+    		position_ += right_ * xoffset * velocity;
+    		position_ -= up_ * yoffset * velocity;
 
-		// Update the center of the camera
-		//updateCameraCenter();
-		center_ = position_ + distance_ * front_;
-		center_.z = 0.0f;
-		position_ = center_ - distance_ * front_;
-
+    		// Update the center of the camera
+    		//updateCameraCenter();
+    		center_ = position_ + distance_ * front_;
+    		center_.z = 0.0f;
+    		position_ = center_ - distance_ * front_;
+        }
+        else
+        {
+            std::stringstream msg;
+    		msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
+    		MessageManager::AddMessage(msg, message_t::ERROR_T);
+        }
 	}
 
 	/**
@@ -269,7 +276,7 @@ public:
 	 * @param deltaTime This parameter hold the time the hardware needs for one main loop. This prevents faster system to move the camera faster.
 	 * @return Void.
 	 */
-	
+
 	void ProcessMouseRotate(float xoffset, float yoffset, float deltaTime)
 	{
 		if (state_ == CameraState::PERSPECTIVE)
@@ -307,7 +314,7 @@ public:
 			up_ = glm::normalize(glm::cross(front_, right_));
 		}
 	}
-	
+
 
 	/**
 	* @brief Draws the camera center object.
@@ -397,7 +404,7 @@ private:
 
 		// Get the intersection point between camera direction ray and the map mesh. GLM has a function which
 		// takes a ray origin, direction.
-		
+
 		glm::vec3 tmpCenter = center_;
 
 		if (tmpCenter.x != -99.0f && tmpCenter.y != -99.0f && tmpCenter.z != -99.0f)

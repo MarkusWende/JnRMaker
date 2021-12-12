@@ -40,15 +40,17 @@ public:
 	LevelLayer();
 	LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize);                            //!< constructor
 
-    void Draw(glm::mat4 projection, glm::mat4 view);
+	GLvoid AddSprite();
+
+    GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 
     std::string GetHash(GLuint posX, GLuint posY) { return hash_map_.at(posY).at(posX); };
 
     ~LevelLayer();                                               //!< destructor
 
 private:
-    void init();
-    void draw_border();
+    GLvoid init();
+    GLvoid draw_border();
 
     std::string                             name_;
     std::vector<std::vector<std::string>>   hash_map_;
@@ -60,7 +62,7 @@ private:
     glm::vec2                               tile_scale_;
 
     std::vector<glm::vec2>                  translations_;
-    std::vector<GLfloat>                     tile_id_;
+    std::vector<GLfloat>                    tile_id_;
     GLuint                                  quad_vao_;
     GLuint                                  quad_vbo_;
     GLuint                                  tile_trans_vbo_;
