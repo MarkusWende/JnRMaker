@@ -54,18 +54,15 @@ set(JNRMAKER_VERSION_MINOR 1)
 #configure_file("./include/config.h.in" "${PROJECT_BINARY_DIR}/include/config.h")
 include_directories("${PROJECT_BINARY_DIR}")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
+if (UNIX)
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
+endif (UNIX)
 
 
 IF (WIN32)
-    include_directories(
-        D:/Programme/vcpkg/installed/x64-windows/include/
-        )
-
-    link_directories(
-        D:/Programme/vcpkg/installed/x64-windows/lib/
-        )
-ENDIF()
+  include_directories(D:/Programme/vcpkg/installed/x64-windows/include/)
+  link_directories(D:/Programme/vcpkg/installed/x64-windows/lib/)
+ENDIF(WIN32)
 
 #set(GLUT_INCLUDE_DIR "D:/Programme/vcpkg/installed/x64-windows/include")
 #set(SDL2_INCLUDE_DIR "D:/Programme/vcpkg/installed/x64-windows/include")
@@ -109,7 +106,8 @@ IF (WIN32)
   find_package(sdl2-image CONFIG REQUIRED)
   set(Boost_USE_STATIC_LIBS ON)
   #find_package(BOOST 1.68.0 REQUIRED COMPONENTS system filesystem serialization)
-elseif (UNIX)
+endif (WIN32)
+if (UNIX)
   find_package(glfw3 3.2 REQUIRED)
   find_package(SOIL REQUIRED)
   find_package(cereal REQUIRED)
@@ -128,7 +126,7 @@ IF (WIN32)
   file(GLOB SRC_IMGUI "${PROJECT_BINARY_DIR}/../lib/imgui/*.cpp")
 
   # Copy assets folder
-  file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+  #file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
 elseif (UNIX)
   # List of Files
   file(GLOB SRC_MAIN "./src/*.cpp")

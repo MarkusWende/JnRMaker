@@ -97,207 +97,181 @@ int main(int argc, char* argv[])
 #endif
 
 //bool err = false;
-    if (err)
-    {
-        FILE* stream;
-#ifdef _WIN32
-        freopen_s(&stream, "log.txt", "w", stdout);
-        if (stream)
-        {
-            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
-            fclose(stream);
-        }
-#endif // _WIN32
-#ifdef __linux__
-        stream = fopen("./log.txt", "w");
+if (err) {
+  FILE* stream;
+  #ifdef _WIN32
+    freopen_s(&stream, "log.txt", "w", stdout);
+      if (stream) {
         fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
         fclose(stream);
-#endif // __linux__
-        return 1;
+        }
+  #endif // _WIN32
+  #ifdef __linux__
+    stream = fopen("./log.txt", "w");
+    fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
+    fclose(stream);
+  #endif // __linux__
+  return 1;
+} else {
+  const GLubyte* renderer = glGetString(GL_RENDERER);
+  const GLubyte* vendor = glGetString(GL_VENDOR);
+  const GLubyte* version = glGetString(GL_VERSION);
+  const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+  GLint major, minor;
+  glGetIntegerv(GL_MAJOR_VERSION, &major);
+  glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+  FILE* stream;
+
+  #ifdef _WIN32
+    freopen_s(&stream, "log.txt", "w", stdout);
+
+    if (stream) {
+      fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+      fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+      fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+      fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+      fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+      fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+      fclose(stream);
     }
-    else
+  #endif // _WIN32
+  #ifdef __linux__
+    stream = fopen("./log.txt", "w");
+    fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+    fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
+    fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
+    fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
+    fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
+    fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
+    fclose(stream);
+  #endif // __linux__
+}
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  // Setup Dear ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO(); (void)io;
+  //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+
+  // Create gui object
+  Gui appGui;
+  // Create default scene object
+
+  Scene appScene(1200, 800);
+  // Update Gui to display the windows
+  //appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
+  //appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
+
+  //sf::Clock deltaClock;
+
+  // Always save the window size each loop cycle
+  //GLuint oldWidth = window->getSize().x;
+  //GLuint oldHeight = window->getSize().y;
+
+  ProjectManager::SetStatus(project_status_t::IDLE);
+  std::string projectName = "TestProject";
+  ProjectManager::SetName(projectName);
+
+  // Setup Platform/Renderer bindings
+  ImGui_ImplSDL2_InitForOpenGL(window->GetWindow(), window->GetGLContext());
+  ImGui_ImplOpenGL3_Init(window->GetGLSLVersion());
+
+  // Main Loop
+  while (appGui.IsOpen())
+  {
+    processEvents(window->GetWindow(), appScene, appGui);
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(window->GetWindow());
+    ImGui::NewFrame();
+
+    // Update and render 3d scene
+    appScene.Update(window->GetWidth(), window->GetHeight());
+
+    // Update and render gui
+    //appGui.Update(window->GetWidth(), window->GetHeight());
+    appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
+    appGui.Render(appScene);
+
+    appScene.Render();
+
+    ImGui::ShowDemoWindow();
+
+    // If the project name changes, update the window title
+    /*if (myGui.project_name_changed)
     {
-        const GLubyte* renderer = glGetString(GL_RENDERER);
-        const GLubyte* vendor = glGetString(GL_VENDOR);
-        const GLubyte* version = glGetString(GL_VERSION);
-        const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+        SDL_SetWindowTitle(window, ("[" + myGui.project_name + "] - SoundIMP").c_str());
+        myGui.project_name_changed = false;
+    }*/
 
-        GLint major, minor;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
+    // Render ImGui to show the gui
+    ImGui::Render();
 
-        FILE* stream;
+    // Set the background color
+    ImGuiStyle* style = &ImGui::GetStyle();
+    ImColor col = style->Colors[ImGuiCol_PopupBg];
+    glClearColor(col.Value.x, col.Value.y, col.Value.z, col.Value.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-#ifdef _WIN32
-        freopen_s(&stream, "log.txt", "w", stdout);
+    // render end
+    SDL_GL_SwapWindow(window->GetWindow());
 
-        if (stream)
-        {
-            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
-            fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
-            fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
-            fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
-            fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
-            fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
-            fclose(stream);
-        }
-#endif // _WIN32
-#ifdef __linux__
-        stream = fopen("./log.txt", "w");
-        fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
-        fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
-        fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
-        fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
-        fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
-        fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
-        fclose(stream);
-#endif // __linux__
-    }
+    // update
+    glfwPollEvents();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    // if (ProjectManager::GetStatus() == project_status_t::SAVE)
+    // {
+    //     // create and open a character archive for output
+    //     std::ofstream ofs(ProjectManager::GetName() + ".jrm");
 
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    //     // save data to archive
+    //     {
+    //         cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, false));
+    //         //cereal::JSONOutputArchive ar(ofs);
+    //         //cereal::BinaryOutputArchive ar(ofs);
+    //         ar( CEREAL_NVP(appGui) );
+    //         ar( CEREAL_NVP(appScene) );
+    //         //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
 
-    // Create gui object
-    Gui appGui;
-    // Create default scene object
+    //         long double c = pow(0.5, 1000);
+    //         ar ( cereal::make_nvp("a_very_small_value_", c) );
+    //     }
 
-    Scene appScene(1200, 800);
-    // Update Gui to display the windows
-    //appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
-    //appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
+    //     ProjectManager::SetStatus(project_status_t::IDLE);
+    // }
+    // else if (ProjectManager::GetStatus() == project_status_t::LOAD)
+    // {
+    //     std::ifstream is(ProjectManager::GetName() + ".jrm");
+    //     cereal::XMLInputArchive ar(is);
+    //     //cereal::JSONInputArchive ar(is);
+    //     //cereal::BinaryInputArchive ar(is);
 
-    //sf::Clock deltaClock;
+    //     GLuint width;
+    //     GLuint height;
 
-    // Always save the window size each loop cycle
-    //GLuint oldWidth = window->getSize().x;
-    //GLuint oldHeight = window->getSize().y;
+    //     ar( appGui );
+    //     ar( appScene );
+    //     //ar( width, height);
 
-    ProjectManager::SetStatus(project_status_t::IDLE);
-    std::string projectName = "TestProject";
-    ProjectManager::SetName(projectName);
+    //     //window->setSize({ width, height });
 
-    // Setup Platform/Renderer bindings
-    ImGui_ImplSDL2_InitForOpenGL(window->GetWindow(), window->GetGLContext());
-    ImGui_ImplOpenGL3_Init(window->GetGLSLVersion());
+    //     ProjectManager::SetStatus(project_status_t::IDLE);
+    // }
+    
+  }
 
-    // Main Loop
-    while (appGui.IsOpen())
-    {
-        processEvents(window->GetWindow(), appScene, appGui);
+  //window->close();
+  //window = nullptr;
+  //ImGui::SFML::Shutdown();
 
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame(window->GetWindow());
-        ImGui::NewFrame();
-
-        // Update and render 3d scene
-        appScene.Update(window->GetWidth(), window->GetHeight());
-
-        // Update and render gui
-        //appGui.Update(window->GetWidth(), window->GetHeight());
-        appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
-        appGui.Render(appScene);
-
-        appScene.Render();
-
-        ImGui::ShowDemoWindow();
-
-        // If the project name changes, update the window title
-        /*if (myGui.project_name_changed)
-        {
-            SDL_SetWindowTitle(window, ("[" + myGui.project_name + "] - SoundIMP").c_str());
-            myGui.project_name_changed = false;
-        }*/
-
-        // Render ImGui to show the gui
-
-        ImGui::Render();
-
-        // Set the background color
-        ImGuiStyle* style = &ImGui::GetStyle();
-        ImColor col = style->Colors[ImGuiCol_PopupBg];
-        glClearColor(col.Value.x, col.Value.y, col.Value.z, col.Value.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(0); // You may want this if using this code in an OpenGL 3+ context where shaders may be bound
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        // render end
-        SDL_GL_SwapWindow(window->GetWindow());
-
-        // update
-        glfwPollEvents();
-
-        /*
-        ImGui::SFML::Update(*window, deltaClock.restart());
-        // If the window size change, update gui and scene
-        if (oldWidth != window->getSize().x || oldHeight != window->getSize().y)
-            appGui.WindowUpdate(appScene, window->getSize().x, window->getSize().y);
-
-        // Render Gui
-        appGui.Render(appScene);
-        // Render Scene
-
-        appScene.Render(appWindow.GetMousePosition());
-        // Clear window and render it
-        window->clear();
-        //ImGui::SFML::Render(*window);
-        //window->display();
-        // Save old window size
-        oldWidth = window->getSize().x;
-        oldHeight = window->getSize().y;
-
-        */
-        /*
-        if (ProjectManager::GetStatus() == project_status_t::SAVE)
-        {
-            // create and open a character archive for output
-            std::ofstream ofs(ProjectManager::GetName() + ".jrm");
-
-            // save data to archive
-            {
-                cereal::XMLOutputArchive ar(ofs, cereal::XMLOutputArchive::Options(6, true, false));
-                //cereal::JSONOutputArchive ar(ofs);
-                //cereal::BinaryOutputArchive ar(ofs);
-                ar( CEREAL_NVP(appGui) );
-                ar( CEREAL_NVP(appScene) );
-                //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
-
-                long double c = pow(0.5, 1000);
-                ar ( cereal::make_nvp("a_very_small_value_", c) );
-            }
-
-            ProjectManager::SetStatus(project_status_t::IDLE);
-        }
-        else if (ProjectManager::GetStatus() == project_status_t::LOAD)
-        {
-            std::ifstream is(ProjectManager::GetName() + ".jrm");
-            cereal::XMLInputArchive ar(is);
-            //cereal::JSONInputArchive ar(is);
-            //cereal::BinaryInputArchive ar(is);
-
-            GLuint width;
-            GLuint height;
-
-            ar( appGui );
-            ar( appScene );
-            //ar( width, height);
-
-            //window->setSize({ width, height });
-
-            ProjectManager::SetStatus(project_status_t::IDLE);
-        }
-        */
-    }
-
-    //window->close();
-    //window = nullptr;
-    //ImGui::SFML::Shutdown();
-
-    return 0;
+  return 0;
 }

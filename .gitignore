@@ -1,6 +1,8 @@
 # build folder and build script
 build/
 lib/
+lib/imgui/
+lib/googletest/
 clean.sh
 build_and_run.sh
 
