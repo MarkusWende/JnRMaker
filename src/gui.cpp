@@ -33,7 +33,7 @@ Gui::Gui()
 	init();
 	customGuiStyle();
 
-	active_tilemap_name_ = "D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\tiles\\game-tiles_cut.png";
+	active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
 	//active_tilemap_name_ = "assets/tiles/game-tiles_cut.png";
 	tilemap_list_.push_back(active_tilemap_name_);
 	TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);

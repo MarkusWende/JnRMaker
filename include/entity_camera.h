@@ -222,7 +222,7 @@ public:
 	void ProcessMouseDrag(float xoffset, float yoffset, float deltaTime)
 	{
 		// The velocity of dragging the camera depends on the zoom level and the time the hardware needs for one main loop
-        if ((glm::abs(xoffset) < 50) && (glm::abs(yoffset) < 50))
+        if ((glm::abs(xoffset) < 400) && (glm::abs(yoffset) < 400))
         {
             float velocity = DRAG_SPEED * deltaTime * zoom_;
     		distance_ = glm::length(center_ - position_);

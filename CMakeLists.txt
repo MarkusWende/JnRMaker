@@ -54,13 +54,14 @@ set(JNRMAKER_VERSION_MINOR 1)
 #configure_file("./include/config.h.in" "${PROJECT_BINARY_DIR}/include/config.h")
 include_directories("${PROJECT_BINARY_DIR}")
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
+
 
 IF (WIN32)
     include_directories(
         D:/Programme/vcpkg/installed/x64-windows/include/
         )
-         
+
     link_directories(
         D:/Programme/vcpkg/installed/x64-windows/lib/
         )
@@ -95,31 +96,64 @@ ENDIF()
 #     message(ERROR "OPENGL not found!")
 # endif(NOT OPENGL_FOUND)
 
+set(OpenGL_GL_PRFERENCE "LEGACY")
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(GLFW3 REQUIRED)
-find_package(soil CONFIG REQUIRED)
-find_package(cereal CONFIG REQUIRED)
-find_package(SDL2 CONFIG REQUIRED)
-find_package(sdl2-image CONFIG REQUIRED)
+
+IF (WIN32)
+  find_package(GLFW3 REQUIRED)
+  find_package(soil CONFIG REQUIRED)
+  find_package(cereal CONFIG REQUIRED)
+  find_package(SDL2 CONFIG REQUIRED)
+  find_package(sdl2-image CONFIG REQUIRED)
+  set(Boost_USE_STATIC_LIBS ON)
+  #find_package(BOOST 1.68.0 REQUIRED COMPONENTS system filesystem serialization)
+elseif (UNIX)
+  find_package(glfw3 3.2 REQUIRED)
+  find_package(SOIL REQUIRED)
+  find_package(cereal REQUIRED)
+  find_package(SDL2 REQUIRED)
+  find_package(SDL2_image REQUIRED)
+  #find_package(BOOST 1.67 COMPONENTS system filesystem serialization REQUIRED)
+endif (UNIX)
 
 # link boost serialization
-set(Boost_USE_STATIC_LIBS ON)
-find_package(BOOST 1.68.0 REQUIRED COMPONENTS system filesystem serialization)
+#set(Boost_USE_STATIC_LIBS ON)
+#find_package(BOOST 1.68.0 REQUIRED COMPONENTS system filesystem serialization)
 
-# List of Files
-file(GLOB SRC_MAIN "${PROJECT_BINARY_DIR}/../src/*.cpp")
-file(GLOB SRC_IMGUI "${PROJECT_BINARY_DIR}/../lib/imgui/*.cpp")
+IF (WIN32)
+  # List of Files
+  file(GLOB SRC_MAIN "${PROJECT_BINARY_DIR}/../src/*.cpp")
+  file(GLOB SRC_IMGUI "${PROJECT_BINARY_DIR}/../lib/imgui/*.cpp")
 
-# Copy assets folder
-file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+  # Copy assets folder
+  file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+elseif (UNIX)
+  # List of Files
+  file(GLOB SRC_MAIN "./src/*.cpp")
+  file(GLOB SRC_IMGUI "./lib/imgui/*.cpp")
+
+  # Copy assets folder
+  file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+endif (UNIX)
 
 # Define sources and executable
 set(EXECUTABLE_NAME "JnRMaker")
 add_executable(${EXECUTABLE_NAME} ${SRC_IMGUI} ${SRC_MAIN})
 
-target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES} GLEW::GLEW glfw ${GLUT_glut_LIBRARY} ${Boost_LIBRARIES} ${Boost_serialization_LIBRARY} soil SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image)
+IF (WIN32)
+  target_link_libraries(${EXECUTABLE_NAME} GLEW::GLEW glfw ${GLUT_glut_LIBRARY})
+#  target_link_libraries(${EXECUTABLE_NAME} ${Boost_LIBRARIES} ${Boost_serialization_LIBRARY})
+  target_link_libraries(${EXECUTABLE_NAME} soil)
+  target_link_libraries(${EXECUTABLE_NAME} SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image)
+elseif (UNIX)
+  target_link_libraries(${EXECUTABLE_NAME} ${OPENGL_LIBRARIES} GLEW::GLEW glfw ${GLUT_glut_LIBRARY})
+#  target_link_libraries(${EXECUTABLE_NAME} ${Boost_LIBRARIES} ${Boost_serialization_LIBRARY})
+  target_link_libraries(${EXECUTABLE_NAME} ${SOIL_LIBRARY})
+  target_link_libraries(${EXECUTABLE_NAME} ${SDL2_LIBRARIES} SDL2::Image)
+  target_link_libraries(${EXECUTABLE_NAME} -ldl stdc++fs)
+endif (UNIX)
 target_include_directories(${EXECUTABLE_NAME} PUBLIC ${OPENGL_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${SOIL_INCLUDE_DIR})
 
 # target_link_libraries( ${EXECUTABLE_NAME} SDL2::SDL2main SDL2::SDL2)

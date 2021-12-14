@@ -50,23 +50,23 @@ Scene::Scene(GLuint width, GLuint height)
 #endif
 
 
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.frag", nullptr, "sprite");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.frag",  nullptr, "llayer");
+    ResourceManager::LoadShader("src/shaders/scene.vert", "src/shaders/scene.frag", nullptr, "scene");
+    ResourceManager::LoadShader("src/shaders/solid.vert", "src/shaders/solid.frag", nullptr, "solid");
+    ResourceManager::LoadShader("src/shaders/sprite.vert", "src/shaders/sprite.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("src/shaders/line.vert", "src/shaders/line.frag",  nullptr, "line");
+    ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
 
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_16x16.png", GL_TRUE, "default_border_16x16");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_24x24.png", GL_TRUE, "default_border_24x24");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_32x32.png", GL_TRUE, "default_border_32x32");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_64x64.png", GL_TRUE, "default_border_64x64");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_border_16x16.png", GL_TRUE, "default_border_16x16");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
+    ResourceManager::LoadTexture("resources/assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
 
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
