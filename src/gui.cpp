@@ -38,7 +38,7 @@ Gui::Gui()
 	MessageManager::AddMessage(msg, message_t::INFO);
 
 #ifdef _WIN32
-	active_tilemap_name_ = "D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\tiles\\game-tiles_cut.png";
+	active_tilemap_name_ = "../resources/assets/tiles/game-tiles_cut.png";
 #endif // _WIN32
 #ifdef __linux__
 	active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";

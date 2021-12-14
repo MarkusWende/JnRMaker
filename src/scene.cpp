@@ -49,23 +49,23 @@ Scene::Scene(GLuint width, GLuint height)
 	MessageManager::AddMessage(msg, message_t::INFO);
 
 #ifdef _WIN32
-	ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\sprite.frag", nullptr, "sprite");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\level_layer.frag",  nullptr, "llayer");
+	ResourceManager::LoadShader("shaders/scene.vert", "shaders/scene.frag", nullptr, "scene");
+    ResourceManager::LoadShader("shaders/solid.vert", "shaders/solid.frag", nullptr, "solid");
+    ResourceManager::LoadShader("shaders/sprite.vert", "shaders/sprite.frag", nullptr, "sprite");
+    ResourceManager::LoadShader("shaders/line.vert", "shaders/line.frag",  nullptr, "line");
+    ResourceManager::LoadShader("shaders/level_layer.vert", "shaders/level_layer.frag",  nullptr, "llayer");
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
 
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_16x16.png", GL_TRUE, "default_border_16x16");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_24x24.png", GL_TRUE, "default_border_24x24");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_32x32.png", GL_TRUE, "default_border_32x32");
-    ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_64x64.png", GL_TRUE, "default_border_64x64");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_border_16x16.png", GL_TRUE, "default_border_16x16");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
+    ResourceManager::LoadTexture("../resources/assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
 #endif // _WIN32
 #ifdef __linux__
     //chdir(fs::current_path().parent_path().string().c_str());

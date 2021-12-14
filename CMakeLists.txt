@@ -122,11 +122,12 @@ endif (UNIX)
 
 IF (WIN32)
   # List of Files
-  file(GLOB SRC_MAIN "${PROJECT_BINARY_DIR}/../src/*.cpp")
-  file(GLOB SRC_IMGUI "${PROJECT_BINARY_DIR}/../lib/imgui/*.cpp")
+  file(GLOB SRC_MAIN "src/*.cpp")
+  file(GLOB SRC_IMGUI "lib/imgui/*.cpp")
 
   # Copy assets folder
-  #file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+  file(COPY "resources/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/resources")
+  file(COPY "src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")
 elseif (UNIX)
   # List of Files
   file(GLOB SRC_MAIN "./src/*.cpp")
