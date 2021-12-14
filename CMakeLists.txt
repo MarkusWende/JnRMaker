@@ -133,7 +133,8 @@ elseif (UNIX)
   file(GLOB SRC_IMGUI "./lib/imgui/*.cpp")
 
   # Copy assets folder
-  file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
+  file(COPY "resources/" DESTINATION "${PROJECT_BINARY_DIR}/resources")
+  file(COPY "src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/src/shaders")
 endif (UNIX)
 
 # Define sources and executable

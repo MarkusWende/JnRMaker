@@ -44,6 +44,9 @@ Scene::Scene(GLuint width, GLuint height)
     active_sprite_name_ = "empty";
     active_layer_ = layer_t::BACK;
 
+	std::stringstream msg;
+	msg << "scene.cpp: " << fs::current_path().string().c_str();
+	MessageManager::AddMessage(msg, message_t::INFO);
 
 #ifdef _WIN32
 	ResourceManager::LoadShader("D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.vert", "D:\\Workspace\\Software\\C++\\JnRMaker\\src\\shaders\\scene.frag", nullptr, "scene");
@@ -65,7 +68,8 @@ Scene::Scene(GLuint width, GLuint height)
     ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\resources\\assets\\sprites\\default_border_64x64.png", GL_TRUE, "default_border_64x64");
 #endif // _WIN32
 #ifdef __linux__
-    chdir(fs::current_path().parent_path().string().c_str());
+    //chdir(fs::current_path().parent_path().string().c_str());
+    //std::cout << fs::current_path().parent_path().string().c_str();
 
     ResourceManager::LoadShader("src/shaders/scene.vert", "src/shaders/scene.frag", nullptr, "scene");
     ResourceManager::LoadShader("src/shaders/solid.vert", "src/shaders/solid.frag", nullptr, "solid");
