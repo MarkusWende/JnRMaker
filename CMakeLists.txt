@@ -27,6 +27,7 @@ endif (UNIX)
 
 
 IF (WIN32)
+  set(DCMAKE_TOOLCHAIN_FILE "D:/Programme/vcpkg/scripts/buildsystems/vcpkg.cmake")
   include_directories(D:/Programme/vcpkg/installed/x64-windows/include/)
   link_directories(D:/Programme/vcpkg/installed/x64-windows/lib/)
 ENDIF(WIN32)
