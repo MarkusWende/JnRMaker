@@ -1,8 +1,7 @@
 # build folder and build script
-build/
-lib/
-lib/imgui/
-lib/googletest/
+bin
+build
+lib
 clean.sh
 build_and_run.sh
 
@@ -29,3 +28,6 @@ resources/
 
 # log file
 log.txt
+
+# executable
+JnRMaker

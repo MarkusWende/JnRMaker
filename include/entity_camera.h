@@ -239,9 +239,9 @@ public:
         }
         else
         {
-            std::stringstream msg;
-    		msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
-    		MessageManager::AddMessage(msg, message_t::ERROR_T);
+        	std::stringstream msg;
+    			msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
+    			MessageManager::AddMessage(msg, message_t::ERROR_T);
         }
 	}
 

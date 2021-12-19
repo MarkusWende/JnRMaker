@@ -1,37 +1,3 @@
-# cmake_minimum_required(VERSION 3.6)
-# project (JnRMaker)
-
-# find_package(OpenGL REQUIRED)
-# find_package(GLEW REQUIRED)
-# find_package(GLFW REQUIRED)
-# find_package(SOIL REQUIRED)
-
-# # List of Files
-# file(GLOB SRC_MAIN "${PROJECT_BINARY_DIR}/../src/*.cpp")
-# file(GLOB SRC_IMGUI "${PROJECT_BINARY_DIR}/../lib/imgui_old/*.cpp")
-
-# # Copy assets folder
-# file(COPY "./resources/assets" DESTINATION ${PROJECT_BINARY_DIR})
-
-# # Define sources and executable
-# set(EXECUTABLE_NAME "JnRMaker")
-# add_executable(${EXECUTABLE_NAME} ${SRC_IMGUI} ${SRC_MAIN})
-
-# set(SOURCE_FILES main.cpp Shader.h Shader.cpp)
-# add_executable(my_opengl_executable ${SOURCE_FILES})
-
-# target_link_libraries(my_opengl_executable ${OPENGL_LIBRARIES} GLEW::GLEW ${GLFW_LIBRARY} ${SOIL_LIBRARY})
-# target_include_directories(my_opengl_executable PUBLIC ${OPENGL_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${SOIL_INCLUDE_DIR})
-
-# set_target_properties(my_opengl_executable PROPERTIES
-#     CXX_STANDARD 17
-#     CXX_STANDARD_REQUIRED ON
-# )
-
-
-
-
-
 #Change this if you need to target a specific CMake version
 cmake_minimum_required (VERSION 3.6)
 set(CMAKE_BUILD_TYPE Debug)
@@ -56,6 +22,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 
 if (UNIX)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
+  set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 endif (UNIX)
 
 
