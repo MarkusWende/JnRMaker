@@ -33,13 +33,7 @@ Gui::Gui()
 	init();
 	customGuiStyle();
 
-#ifdef _WIN32
 	active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
-#endif // _WIN32
-#ifdef __linux__
-	active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
-#endif // __linux__
-
 	
 	//active_tilemap_name_ = "assets/tiles/game-tiles_cut.png";
 	tilemap_list_.push_back(active_tilemap_name_);

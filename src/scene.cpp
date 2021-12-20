@@ -48,26 +48,7 @@ Scene::Scene(GLuint width, GLuint height)
 	msg << "scene.cpp: " << fs::current_path().string().c_str();
 	MessageManager::AddMessage(msg, message_t::INFO);
     */
-#ifdef _WIN32
-	ResourceManager::LoadShader("shaders/scene.vert", "shaders/scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("shaders/solid.vert", "shaders/solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("shaders/sprite.vert", "shaders/sprite.frag", nullptr, "sprite");
-    ResourceManager::LoadShader("shaders/line.vert", "shaders/line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("shaders/level_layer.vert", "shaders/level_layer.frag",  nullptr, "llayer");
-    //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-    //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
-
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_16x16.png", GL_TRUE, "default_border_16x16");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
-#endif // _WIN32
-#ifdef __linux__
     //chdir(fs::current_path().parent_path().string().c_str());
     //std::cout << fs::current_path().parent_path().string().c_str();
 
@@ -88,7 +69,6 @@ Scene::Scene(GLuint width, GLuint height)
     ResourceManager::LoadTexture("resources/assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
     ResourceManager::LoadTexture("resources/assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
     ResourceManager::LoadTexture("resources/assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
-#endif // __linux__
 
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
