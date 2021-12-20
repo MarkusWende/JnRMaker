@@ -58,22 +58,25 @@ Gui::~Gui()
 
 GLvoid Gui::WindowUpdate(GLuint width, GLuint height)
 {
-	width_ = width;
-	height_ = height;
+	if (glm::abs(width_ - width) > 5 || glm::abs(height_ - height) > 5)
+	{
+		width_ = width;
+		height_ = height;
 
-	WindowUpdate();
+		WindowUpdate();
+	}
 }
 
 GLvoid Gui::WindowUpdate()
 {
-	window_scene_.w = width_ * window_scene_.wPercent;
-	window_scene_.h = height_ * window_scene_.hPercent;
+	window_scene_.w = (GLuint)(width_ * (glm::round(window_scene_.wPercent * 100.0f) / 100.0f));
+	window_scene_.h = (GLuint)(height_ * (glm::round(window_scene_.hPercent * 100.0f) / 100.0f));
 
-	window_messages_.w = width_ * window_messages_.wPercent;
-	window_messages_.h = height_ * (1.0f - window_scene_.hPercent);
+	window_messages_.w = (GLuint)(width_ * (glm::round(window_messages_.wPercent * 100.0f) / 100.0f));
+	window_messages_.h = (GLuint)(height_ * (1.0f - (glm::round(window_scene_.hPercent * 100.0f) / 100.0f)));
 
-	window_sidebar_right_.w = width_ * (1.0f - window_scene_.wPercent);
-	window_sidebar_right_.h = height_ * window_scene_.hPercent;
+	window_sidebar_right_.w = (GLuint)(width_ * (1.0f - (glm::round(window_scene_.wPercent * 100.0f) / 100.0f)));
+	window_sidebar_right_.h = (GLuint)(height_ * (glm::round(window_scene_.hPercent * 100.0f) / 100.0f));
 
 	update_sence_ = true;
 }
@@ -83,6 +86,8 @@ GLvoid Gui::Render(Scene &scene)
 	if (update_sence_)
 	{
 		scene.Update(window_scene_.w-5, window_scene_.h-25);
+		scene.GetCamera("SceneCamera")->SetSceneWidth(window_scene_.wPercent);
+		scene.GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
 		update_sence_ = false;
 	}
 
@@ -271,8 +276,8 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::EndTabBar();
 		}
 
-		GLuint windowWidth = ImGui::GetWindowWidth();
-		GLuint windowHeight = ImGui::GetWindowHeight();
+		GLuint windowWidth = ImGui::GetWindowWidth() - 1;
+		GLuint windowHeight = ImGui::GetWindowHeight() - 1;
 
 		if ((windowWidth != window_scene_.w) || (windowHeight != window_scene_.h))
 		{
@@ -498,8 +503,8 @@ GLvoid Gui::Render(Scene &scene)
 
 		}
 
-		GLuint windowWidth = ImGui::GetWindowWidth();
-		GLuint windowHeight = ImGui::GetWindowHeight();
+		GLuint windowWidth = ImGui::GetWindowWidth() - 1;
+		GLuint windowHeight = ImGui::GetWindowHeight() - 1;
 
 		if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
 		{

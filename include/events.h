@@ -36,7 +36,7 @@
 #include "scene.h"
 #include "gui.h"
 
-unsigned int lastTime, currentTime;
+GLuint lastTime, currentTime;
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
@@ -45,6 +45,8 @@ void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
 {
     lastTime = currentTime;
     currentTime = SDL_GetTicks();
+    float deltaTime = (float)(currentTime - lastTime) / 1000.0f;
+
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
@@ -68,13 +70,10 @@ void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
 
                 if ((x != 107.0f && y < 1000.0f) && (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
                 {
-                    scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, 0.002f);
+                    scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, deltaTime);
                 }
                 else if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    //std::stringstream msg;
-                    //msg << "x: " << x << "\ty: " << y;
-                    //MessageManager::AddMessage(msg, message_t::INFO);
                     scene.PlaceSprite();
                 }
             }
@@ -85,13 +84,13 @@ void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
 
                 if (x != 107.0f && y < 1000.0f)
                 {
-                    scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, 0.002f);
+                    scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, deltaTime);
                 }
             }
             if (event.type == SDL_MOUSEWHEEL)
             {
                 float y = event.wheel.y;
-                scene.GetCamera("SceneCamera")->ProcessMouseScroll(y, 0.2f);
+                scene.GetCamera("SceneCamera")->ProcessMouseScroll(y, deltaTime);
             }
         }
 

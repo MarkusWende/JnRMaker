@@ -212,6 +212,7 @@ GLvoid Scene::Update(GLuint width, GLuint height)
 
         ResourceManager::ResizeFramebuffer("scene", width_, height_);
         ResourceManager::ResizeFramebuffer("imguiScene", width_, height_);
+
     }
 
     //e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);

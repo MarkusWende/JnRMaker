@@ -191,11 +191,7 @@ if (err) {
     ImGui_ImplSDL2_NewFrame(window->GetWindow());
     ImGui::NewFrame();
 
-    // Update and render 3d scene
-    appScene.Update(window->GetWidth(), window->GetHeight());
-
     // Update and render gui
-    //appGui.Update(window->GetWidth(), window->GetHeight());
     appGui.WindowUpdate(window->GetWidth(), window->GetHeight());
     appGui.Render(appScene);
 

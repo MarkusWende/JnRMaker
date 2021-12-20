@@ -61,8 +61,8 @@ enum class CameraState {
 const float YAW = 180.0f;							/**< Default camera yaw. */
 const float PITCH = 0.0f;							/**< Default camera pitch. */
 const float ROLL = 0.0f;								/**< Default camera roll. */
-const float SCROLL_SPEED = 1.0f;								/**< Default camera scroll (zoom in and out) speed. */
-const float DRAG_SPEED = 0.8f;							/**< Default camera drag speed. */
+const float SCROLL_SPEED = 2.0f;								/**< Default camera scroll (zoom in and out) speed. */
+const float DRAG_SPEED = 0.1f;							/**< Default camera drag speed. */
 const float STRAFE_SPEED = 1.0f;								/**< Default camera strafe speed. */
 const float ROTATE_SPEED = 70.0f;							/**< Default sensitivity to rotate the camera. */
 const float ZOOM = 40.0f;							/**< Default zoom level. */
@@ -107,6 +107,9 @@ public:
 	float		GetDistance() { return distance_; }												/**< @brief Get the distance between the carera center and camera position. @return A float value. */
 
 	// Setters
+	GLvoid		SetSceneWidth(GLfloat width_in_percent) {scene_width_percent_ = width_in_percent;};
+	GLvoid		SetSceneHeight(GLfloat height_in_percent) {scene_height_percent_ = height_in_percent;};
+
 	/**
 	 * @brief Sets the camera state to the given parameter and reinitialize the camera with the default state settings.
 	 * @param newState The new camera state {ORTHOGRAPHIC or PERSPECTIVE}.
@@ -222,27 +225,27 @@ public:
 	void ProcessMouseDrag(float xoffset, float yoffset, float deltaTime)
 	{
 		// The velocity of dragging the camera depends on the zoom level and the time the hardware needs for one main loop
-        if ((glm::abs(xoffset) < 400) && (glm::abs(yoffset) < 400))
-        {
-            float velocity = DRAG_SPEED * deltaTime * zoom_;
-    		distance_ = glm::length(center_ - position_);
+		if ((glm::abs(xoffset) < 400) && (glm::abs(yoffset) < 400))
+		{
+			float velocity = DRAG_SPEED * deltaTime * zoom_;
+			distance_ = glm::length(center_ - position_);
 
-    		// Update the position of the camera
-    		position_ += right_ * xoffset * velocity;
-    		position_ -= up_ * yoffset * velocity;
+			// Update the position of the camera
+			position_ += right_ * xoffset * velocity / scene_width_percent_;
+			position_ -= up_ * yoffset * velocity / scene_height_percent_;
 
-    		// Update the center of the camera
-    		//updateCameraCenter();
-    		center_ = position_ + distance_ * front_;
-    		center_.z = 0.0f;
-    		position_ = center_ - distance_ * front_;
-        }
-        else
-        {
-        	std::stringstream msg;
-    			msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
-    			MessageManager::AddMessage(msg, message_t::ERROR_T);
-        }
+			// Update the center of the camera
+			//updateCameraCenter();
+			center_ = position_ + distance_ * front_;
+			center_.z = 0.0f;
+			position_ = center_ - distance_ * front_;
+		}
+		else
+		{
+				std::stringstream msg;
+					msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
+					MessageManager::AddMessage(msg, message_t::ERROR_T);
+		}
 	}
 
 	/**
@@ -283,8 +286,8 @@ public:
 		{
 			// The velocity of rotating the camera depends the time the hardware needs for one main loop
 			float velocity = ROTATE_SPEED * deltaTime;
-			float yaw = xoffset * velocity;
-			float pitch = yoffset * velocity;
+			float yaw = xoffset * velocity / scene_width_percent_;
+			float pitch = yoffset * velocity / scene_height_percent_;
 
 			// Update pitch and yaw
 			yaw_ += yaw;
@@ -377,6 +380,8 @@ private:
 
 		//model_center_ = std::make_unique<Sphere>("CameraSphere", 1.0f, 6, 3, false);
 		//model_center_->Scale(0.01f);
+		scene_height_percent_ = 1.0f;
+		scene_width_percent_ = 1.0f;
 	}
 
 	/**
@@ -420,11 +425,15 @@ private:
 	glm::vec3			up_;							/**< Camera up vector. */
 	glm::vec3			right_;							/**< Camera right vector.*/
 	glm::vec3			world_up_;						/**< Camera world up vector. */
+	
 	float				distance_;						/**< Distance between camera position and center. */
 	float				zoom_;							/**< Camera zoom level. */
 	float				yaw_;							/**< Camera yaw angle. */
 	float				pitch_;							/**< Camera pitch angle. */
 	float				roll_;							/**< Camera roll angle. */
+
+	GLfloat				scene_width_percent_;			/**< Scene width in percentage. */
+	GLfloat				scene_height_percent_;			/**< Scene height in percentage. */
 
 	CameraState			state_;							/**< Camera state. */
 	std::unique_ptr<Cube>	focus_model_;
