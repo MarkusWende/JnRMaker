@@ -61,10 +61,10 @@ enum class CameraState {
 const float YAW = 180.0f;							/**< Default camera yaw. */
 const float PITCH = 0.0f;							/**< Default camera pitch. */
 const float ROLL = 0.0f;								/**< Default camera roll. */
-const float SCROLL_SPEED = 2.0f;								/**< Default camera scroll (zoom in and out) speed. */
-const float DRAG_SPEED = 0.1f;							/**< Default camera drag speed. */
-const float STRAFE_SPEED = 1.0f;								/**< Default camera strafe speed. */
-const float ROTATE_SPEED = 70.0f;							/**< Default sensitivity to rotate the camera. */
+const float SCROLL_SPEED = 3.0f;								/**< Default camera scroll (zoom in and out) speed. */
+const float DRAG_SPEED = 0.16f;							/**< Default camera drag speed. */
+const float STRAFE_SPEED = 0.1f;								/**< Default camera strafe speed. */
+const float ROTATE_SPEED = 14.0f;							/**< Default sensitivity to rotate the camera. */
 const float ZOOM = 40.0f;							/**< Default zoom level. */
 const float ZOOM_MAX = 45.0f;							/**< Maximal zoom level. Should not be higher then 45.0f. */
 const float ZOOM_MIN = 1.0f;								/**< Minimal zoom level. Should not be lower then 1.0f. */

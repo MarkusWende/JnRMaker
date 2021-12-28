@@ -111,7 +111,7 @@ public:
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
 
 private:
-    friend class cereal::access;
+    /* friend class cereal::access;
     template <class Archive>
     void save(Archive& ar, std::uint32_t const version) const
     {
@@ -132,7 +132,7 @@ private:
             ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
             TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
         }
-    }
+    } */
 
     GLuint                      width_;                     /**< Width of the application window. */
     GLuint                      height_;                    /**< Height of the application window. */
@@ -140,9 +140,9 @@ private:
     GuiWindow                   window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
     GuiWindow                   window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
     GLuint                      main_menubar_height_;       /**< Main menu bar height. */
-    std::string                 active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
-    std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
-    std::vector<std::string>    tilemap_list_;
+    //std::string                 active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
+    //std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
+    //std::vector<std::string>    tilemap_list_;
     gui_state_t                 state_;
     fs::path					root_file_path_;
     GLboolean                   file_browser_add_tiles_;
@@ -160,7 +160,7 @@ private:
 	    */
     GLvoid customGuiStyle();
 
-    GLvoid fileBrowserAddTile(fs::path& path, GLboolean extension_only, fs::path extension);
+    GLvoid fileBrowserAddTile(Scene& scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 };
 CEREAL_CLASS_VERSION(Gui, 1);

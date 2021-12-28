@@ -30,6 +30,7 @@
 #define LEVEL_LAYER_H
 
 #include "scene_entity.h"
+#include "tilemap.h"
 
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
@@ -40,7 +41,9 @@ public:
 	LevelLayer();
 	LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize);                            //!< constructor
 
-	GLvoid AddSprite();
+    GLuint GetHeight() {return height_;};
+    GLuint GetWidth() {return width_;};
+	GLvoid AddSprite(GLfloat mapID, GLfloat spriteID);
 
     GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 
@@ -67,6 +70,7 @@ private:
     GLuint                                  quad_vbo_;
     GLuint                                  tile_trans_vbo_;
     GLuint                                  tile_id_vbo_;
+    std::unique_ptr<Tilemap>                tilemap_;
 };
 CEREAL_CLASS_VERSION(LevelLayer, 1);
 

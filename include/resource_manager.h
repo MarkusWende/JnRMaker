@@ -54,6 +54,7 @@ class ResourceManager
 {
 public:
   static std::map<std::string, Texture2D>		Textures;							/**< Texture vector. Stores every texture used in the application. */
+  static std::map<std::string, TextureAtlas> TextureAtlases;							/**< Texture vector. Stores every texture used in the application. */
   //static std::map<std::string, std::unique_ptr<sf::RenderTexture>> RenderTextures;    /**< Contains all SFML render textures. */
   static std::map<std::string, Framebuffer>	Framebuffers;						        /**< Framebuffer vector. Stores every framebuffer used in the application. */
   static std::map<std::string, Shader>		Shaders;							/**< Shader vector. Stores every shader used in the application. */
@@ -84,6 +85,17 @@ public:
     */
   static Texture2D LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
 
+    /**
+    * @brief Loads (and generates) a texture from file.
+    * @param name Resource name of the texture.
+    * @param alpha Set the alpha channel true or false.
+    * @param spriteSize
+    * @param spriteScale
+    * @return Texture2D Return the texture object.
+    */
+  static TextureAtlas CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
+  static TextureAtlas CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);
+  static TextureAtlas GetTextureAtlas(std::string name);
   /**
 	* @brief Create an texture from id.
 	* @return GLvoid.
@@ -161,6 +173,9 @@ private:
      * @return Texture2D Return the texture object.
      */
   static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
+
+  static TextureAtlas createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
+  static TextureAtlas createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);
 
   /**
      * @brief Generate a framebuffer.

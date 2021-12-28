@@ -30,6 +30,7 @@
 #include "../include/message_manager.h"
 
 std::map<std::string, Texture2D>    ResourceManager::Textures;
+std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
 //std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 std::map<std::string, Framebuffer>  ResourceManager::Framebuffers;
 std::map<std::string, Shader>       ResourceManager::Shaders;
@@ -49,6 +50,23 @@ Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std:
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
+}
+
+TextureAtlas ResourceManager::CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+{
+    TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
+    return TextureAtlases[name];
+}
+
+TextureAtlas ResourceManager::CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
+{
+    TextureAtlases[name] = createTextureAtlasFromFile(alpha, spriteSize, spriteScale, file);
+    return TextureAtlases[name];
+}
+
+TextureAtlas ResourceManager::GetTextureAtlas(std::string name)
+{
+    return TextureAtlases[name];
 }
 
 //GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
@@ -157,10 +175,73 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     // Load image
     int width, height;
     unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    
+    if (NULL == image)
+    {
+        std::stringstream msg;
+        msg << SOIL_last_result() << ": " << file;
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+    
     // Now generate texture
     texture.Generate(width, height, image);
     // And finally free image data
     SOIL_free_image_data(image);
+    return texture;
+}
+
+TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+{
+    TextureAtlas texture;
+
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+    else {
+        texture.Internal_Format = GL_RGB;
+        texture.Image_Format = GL_RGB;
+    }
+
+    // Now generate texture
+    texture.Generate(spriteSize, spriteScale);
+    // And finally free image data
+    //SOIL_free_image_data(image);
+
+    return texture;
+}
+
+TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
+{
+    TextureAtlas texture;
+
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+    else {
+        texture.Internal_Format = GL_RGB;
+        texture.Image_Format = GL_RGB;
+    }
+
+    // Load image
+    int width, height;
+    unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    
+    if (NULL == image)
+    {
+        std::stringstream msg;
+        msg << SOIL_last_result() << ": " << file;
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+
+    // Now generate texture
+    texture.Generate(width, height, image, spriteSize, spriteScale);
+    // And finally free image data
+    //SOIL_free_image_data(image);
+
     return texture;
 }
 

@@ -105,10 +105,14 @@ public:
 
 	GLuint	GetWidth() { return width_; };
 	GLuint	GetHeight() { return height_; };
-	GLuint	GetMapWidth() { return map_pixel_width_; };
-	GLuint	GetMapHeight() { return map_pixel_height_; };
+	GLuint	GetMapWidth() { return map_width_; };
+	GLuint	GetMapHeight() { return map_height_; };
+	glm::vec2 GetSpriteSize() { return sprite_size_; };
+	glm::vec2 GetSpriteScale() { return sprite_scale_; };
 	Camera* GetCamera(std::string cameraName) { return e_cameras_.find(cameraName)->second.get(); };
 	Sprite* GetSprite(std::string spriteName) { return e_sprites_.find(spriteName)->second.get(); };
+	std::string GetActiveTilemap() { return active_tilemap_name_; };
+	std::string GetActiveSprite() { return active_sprite_name_; };
 
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
@@ -165,8 +169,6 @@ private:
 	//std::map<std::string, std::vector<std::vector<std::string>>> 	e_level_;					/**< Store the hashes of the drawn sprites in each layer used. */
 	std::map<std::string, std::unique_ptr<LevelLayer>> 				e_level_layers_;			/**< Store the hashes of the drawn sprites in each layer used. */
 	Player											e_player_;
-	GLuint											map_pixel_width_;			/**< Width of the map in pixels. */
-	GLuint											map_pixel_height_;			/**< Height of the map in pixels. */
 	GLuint											width_;			/**< Height of the map in pixels. */
 	GLuint											height_;			/**< Height of the map in pixels. */
 	std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
@@ -174,10 +176,13 @@ private:
 	//std::vector<sf::Vertex> 						grid_;
 	GLboolean										add_sprite_flag_;
 	GLboolean										mouse_over_scene_;
+	GLboolean										mouse_over_map_;
 	GLboolean										map_is_null_;
 	GLuint											map_width_;					/**< Width of the map. */
 	GLuint											map_height_;				/**< Height of the map. */
 	layer_t											active_layer_;
+	glm::vec2										sprite_size_;
+	glm::vec2										sprite_scale_;
 	//sf::VertexArray									map_bg_vao_;
 	//std::vector<std::vector<GLuint>>				map_bg_;
 	//sf::VertexArray									map_pg_vao_;
@@ -188,6 +193,7 @@ private:
 	glm::vec3						mouse_ray_end_;
 	glm::vec2						mouse_position_;
 	GLuint							vao_;
+	GLuint											current_tile_id_;
 
 };
 CEREAL_CLASS_VERSION(Scene, 1);

@@ -29,121 +29,84 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
-//#include <SFML/Graphics/RenderWindow.hpp>
-//#include <SFML/Window/Event.hpp>
-
-//#include "imgui/imgui-SFML.h"
 #include "scene.h"
 #include "gui.h"
-
-GLuint lastTime, currentTime;
+#include "../lib/imgui/imgui.h"
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(SDL_Window* window, Scene &scene, Gui& gui)
+void processEvents(Scene &scene, Gui &gui)
 {
-    lastTime = currentTime;
-    currentTime = SDL_GetTicks();
-    float deltaTime = (float)(currentTime - lastTime) / 1000.0f;
+    if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
+	{
+        gui.Close();
+	}
+        
+    ImGuiIO& io = ImGui::GetIO();
 
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
+    if (scene.IsMouseOverScene())
     {
-    //ImGui::SFML::ProcessEvent(event);
+        float x = io.MouseDelta.x;
+        float y = io.MouseDelta.y;
+        float wheelY = io.MouseWheel;
 
-        if (event.type == SDL_QUIT)
+        float deltaTime = io.DeltaTime;
+
+        scene.SetMousePosition(glm::vec2(io.MousePos.x, io.MousePos.y));
+        
+        // Mouse dragging
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+	    {
+            if (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE)
+            {
+                scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, deltaTime);
+            }
+        }
+        
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
-            gui.Close();
+            if ((scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC) ||
+                    (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
+            {
+                scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, deltaTime);
+            }
         }
 
-        if (scene.IsMouseOverScene())
+        if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
         {
-            // Pass the mouse position to the scene. The mouse position is import to calculate intersections.
-            // TODO (Markus): Create a setter method for this.
-            scene.SetMousePosition(glm::vec2(event.motion.x, event.motion.y));
-
-            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))
-            {
-                float x = event.motion.xrel;
-                float y = event.motion.yrel;
-
-                if ((x != 107.0f && y < 1000.0f) && (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
+            if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, deltaTime);
+                    scene.PlaceSprite();
                 }
-                else if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+        }
+
+        // Mouse clicks, single
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+	    {
+            if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 1)
+            {
+                if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
                     scene.PlaceSprite();
                 }
             }
-            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT))
+            else if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 2)
             {
-                float x = event.motion.xrel;
-                float y = event.motion.yrel;
-
-                if (x != 107.0f && y < 1000.0f)
+                if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, deltaTime);
+                    std::stringstream msg;
+                    msg << "Deleted...";
+                    MessageManager::AddMessage(msg, message_t::INFO);
                 }
             }
-            if (event.type == SDL_MOUSEWHEEL)
-            {
-                float y = event.wheel.y;
-                scene.GetCamera("SceneCamera")->ProcessMouseScroll(y, deltaTime);
-            }
-        }
+	    }
 
-        if (event.type == SDL_KEYDOWN)
+        // Mouse wheel
+        if (io.MouseWheel != 0.0f)
         {
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_ESCAPE:
-                gui.Close();
-                break;
-            default:
-                break;
-            }
+            scene.GetCamera("SceneCamera")->ProcessMouseScroll(wheelY, deltaTime);
         }
-        /*
-        if (event.type == sf::Event::Resized)
-        {
-            // update the view to the new size of the window
-            sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-            window.setView(sf::View(visibleArea));
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-        {
-            gui.Close();
-        }
-
-        if (scene.IsMouseOverScene())
-        {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                scene.SetAddSpriteFlag();
-            }
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-            {
-                sf::Vector2i pos = sf::Mouse::getPosition(window);
-                if (event.type == sf::Event::MouseButtonPressed)
-                {
-                    //scene.GetCamera("Editor")->SetMousePos(pos.x, pos.y);
-                }
-                else
-                {
-                    scene.GetCamera("FreeCamera")->Move(pos.x, pos.y);
-                }
-            }
-
-            if (event.type == sf::Event::MouseWheelScrolled)
-            {
-                //scene.GetCamera("Editor")->Zoom(event.mouseWheelScroll.delta);
-                //scene.GetCamera("Editor")->ZoomAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, event.mouseWheelScroll.delta);
-            }
-        }
-        */
     }
 }
 

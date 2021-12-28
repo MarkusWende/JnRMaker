@@ -35,13 +35,13 @@ Scene::Scene(GLuint width, GLuint height)
 
     add_sprite_flag_ = false;
     mouse_over_scene_ = false;
+    mouse_over_map_ = false;
     map_is_null_ = true;
     map_height_ = 0;
     map_width_ = 0;
-
-    // Load tilemap
-    active_tilemap_name_ = "default";
-    active_sprite_name_ = "empty";
+    sprite_size_ = glm::vec2(0);
+    sprite_scale_ = glm::vec2(0);
+    current_tile_id_ = 0;
     active_layer_ = layer_t::BACK;
 
 	/* std::stringstream msg;
@@ -57,20 +57,12 @@ Scene::Scene(GLuint width, GLuint height)
     ResourceManager::LoadShader("src/shaders/sprite.vert", "src/shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("src/shaders/line.vert", "src/shaders/line.frag",  nullptr, "line");
     ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
+    ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_24x24.png", GL_TRUE, "default_empty_24x24");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_32x32.png", GL_TRUE, "default_empty_32x32");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_empty_64x64.png", GL_TRUE, "default_empty_64x64");
-
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_16x16.png", GL_TRUE, "default_border_16x16");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_24x24.png", GL_TRUE, "default_border_24x24");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_32x32.png", GL_TRUE, "default_border_32x32");
-    ResourceManager::LoadTexture("resources/assets/sprites/default_border_64x64.png", GL_TRUE, "default_border_64x64");
-
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
+    e_solids_.insert(std::make_pair("TestQuad", new Quad("TestQuad")));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
     e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem("MainCS", glm::vec3(0))));
 
@@ -81,6 +73,7 @@ Scene::Scene(GLuint width, GLuint height)
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //generateGrid();
     ResourceManager::CreateFramebuffer("scene", width_, height_);
+    //ResourceManager::CreateFramebuffer("minimap", width_, height_);
     ResourceManager::CreateFramebuffer("imguiScene", width_, height_);
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
@@ -115,6 +108,7 @@ Scene::~Scene() { }
 
 GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
+    map_is_null_ = true;
     // Delete grid if it exists and create new one
     if (!e_grids_.empty())
     {
@@ -123,16 +117,31 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     e_grids_.insert(std::make_pair("XYGrid", new Grid("XYGrid", true, width, height)));
     map_width_ = width;
     map_height_ = height;
+    sprite_size_ = spriteSize;
+    sprite_scale_ = spriteScale;
 
     // Move camera to the center of the grid
     e_cameras_["SceneCamera"]->Move(((GLfloat)width)/2.0f, ((GLfloat)height)/2.0f);
 
+    // Load default tilemap
+    //active_tilemap_name_ = "default";
+    //active_sprite_name_ = "empty";
+
+
+    // Load default sprites
+    std::stringstream keyEmpty, keyBorder;
+    keyEmpty << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
+    keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
+    std::stringstream fileDefaultEmpty;
+    std::stringstream fileDefaultBorder;
+    fileDefaultEmpty << "resources/assets/sprites/" << keyEmpty.str().c_str() << ".png";
+    fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
+    ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
     // Create default brush
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
-    std::stringstream key;
-    key << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
-    e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(key.str()));
+    e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(keyEmpty.str()));
 
     // Create level
     if (!e_level_layers_.empty())
@@ -140,18 +149,18 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
         e_level_layers_.clear();
     }
     //std::vector<std::vector<std::string>> layer(height, std::vector<std::string>(width, "null"));
-    map_pixel_width_ = width * spriteSize.x;
-    map_pixel_height_ = height * spriteSize.y;
     e_level_layers_.insert(std::make_pair("Player", new LevelLayer("Player", width, height, spriteSize)));
-    //e_level_layers_.insert(std::make_pair("Layer_Foreground", layer));
-    //e_level_layers_.insert(std::make_pair("Layer_Background", layer));
-    //ResourceManager::CreateFramebuffer("Player", map_pixel_width_, map_pixel_height_);
-    //ResourceManager::CreateFramebuffer("Layer_Foreground", map_pixel_width_, map_pixel_height_);
-    //ResourceManager::CreateFramebuffer("Layer_Background", map_pixel_width_, map_pixel_height_);
+    ResourceManager::CreateTextureAtlasFromFile("Player", GL_TRUE, glm::vec2(16,16), glm::vec2(1,1), "resources/assets/tiles/fEO6a.png");
 
-    // Draw border
-    /*
+    // Create framebuffers to store the sprites that are used in the map
+    //ResourceManager::CreateTextureAtlasEmpty("default", GL_TRUE, spriteSize, spriteScale);
+    //TilemapManager::AddTilemap("layer_player_tiles", spriteSize, spriteScale);
+    //Tilemap *tilemap = TilemapManager::GetTilemap("layer_player_tiles");
+    //tilemap->AddTile();
+    // Insert default_empty brush sprite to the Player sprite framebuffer
+
     map_is_null_ = false;
+    /*
     map_width_ = width;
     map_height_ = height;
     //generateGrid();
@@ -264,9 +273,9 @@ GLvoid Scene::Render()
     // Sprite tools
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Brush
-    std::string brushKey = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_);
+    //std::string brushKey = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_);
 
-    Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
+    //Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
 
     if (e_sprites_.find("brush") != e_sprites_.end())
     {
@@ -279,10 +288,22 @@ GLvoid Scene::Render()
         if (mouse_ray_start_.y < 0.0f)
             ySign = -1.0f;
 
-        e_sprites_["brush"]->Move(glm::vec3((float)cubePosX + xSign + 0.5f, (float)cubePosY + ySign + 0.5f, 0.0f));
-        e_sprites_["brush"]->Draw(projection, view);
-    }
+        glm::vec2 tileField = glm::vec2((float)cubePosX + xSign, (float)cubePosY + ySign);
 
+        if (tileField.x >= 0 && tileField.y >= 0 && tileField.x < map_width_ && tileField.y < map_height_)
+        {
+            glm::vec3 brushPos = glm::vec3((float)cubePosX + xSign + 0.5f, (float)cubePosY + ySign + 0.5f, 0.0f);
+            e_sprites_["brush"]->Move(brushPos);
+            e_sprites_["brush"]->Draw(projection, view);
+
+            current_tile_id_ = tileField.y * (map_width_) + tileField.x;
+            mouse_over_map_ = true;
+        }
+        else
+        {
+            mouse_over_map_ = false;
+        }
+    }
     // Draw level
     if (e_level_layers_.find("Player") != e_level_layers_.end())
     {
@@ -298,8 +319,8 @@ GLvoid Scene::Render()
         {
             e_cameras_["SceneCamera"]->DrawCenter(projection, view);
         }
-        /*
-        ResourceManager::GetShader("floor").Use();
+        
+        /* ResourceManager::GetShader("floor").Use();
         ResourceManager::GetShader("floor").SetMatrix4("projection", projection);
         ResourceManager::GetShader("floor").SetMatrix4("view", view);
 
@@ -307,11 +328,7 @@ GLvoid Scene::Render()
         ResourceManager::GetShader("floor").SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
         ResourceManager::GetShader("floor").SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         ResourceManager::GetShader("floor").SetVector3f("color", 0.5f, 0.5f, 0.5f);
-        ResourceManager::GetShader("floor").SetFloat("alpha", 1.0f);
-        */
-        glm::mat4 model = glm::mat4(1.0f);
-
-
+        ResourceManager::GetShader("floor").SetFloat("alpha", 1.0f); */
 
         //model = glm::translate(model, glm::vec3(0.0, 0.1f, 0.0));
         //model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f)); // a smaller cube
@@ -332,25 +349,25 @@ GLvoid Scene::Render()
             //ss << "Offset: (" << offset.x << "|" << offset.y << "|" << offset.z << ")\t\tCameraCenter: (" << center.x << "|" << center.y << "|" << center.z << ")";
             //MessageManager::AddMessage(ss , MESSAGE_TYPE_INFO);
         }
-        /*
+        
         //glm::vec4 col = { 1.0f, 0.2f, 0.2f, 1.0f };
-        int cubePosX = (int)mouse_ray_start_.x;
-        int cubePosY = (int)mouse_ray_start_.y;
+        //int cubePosX = (int)mouse_ray_start_.x;
+        //int cubePosY = (int)mouse_ray_start_.y;
+        /* glm::mat4 model = glm::mat4(1.0f);
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3((float)cubePosX+0.5f, (float)cubePosY+0.5f, 0.0f));
+        model = glm::translate(model, glm::vec3(5.0f, 5.0f, 0.5f));
         //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f)); // a smaller cube
-        ResourceManager::GetShader("solid").Use();
-        ResourceManager::GetShader("solid").SetMatrix4("projection", projection);
-        ResourceManager::GetShader("solid").SetMatrix4("view", view);
-        ResourceManager::GetShader("solid").SetMatrix4("model", model);
-        ResourceManager::GetShader("solid").SetVector3f("dirLight.direction", -0.3f, -1.0f, -0.1f);
-        ResourceManager::GetShader("solid").SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
-        ResourceManager::GetShader("solid").SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-        ResourceManager::GetShader("solid").SetVector3f("color", 1.0f, 1.0f, 1.0f);
-        ResourceManager::GetShader("solid").SetFloat("alpha", 1.0f);
-        e_solids_["TestCube"]->Draw();
-        */
+        model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f)); // a smaller cube
+        ResourceManager::GetShader("tile").Use();
+        ResourceManager::GetShader("tile").SetMatrix4("projection", projection);
+        ResourceManager::GetShader("tile").SetMatrix4("view", view);
+        ResourceManager::GetShader("tile").SetMatrix4("model", model);
+        ResourceManager::GetShader("tile").SetFloat("aLayer", 1.0f);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("default").ID);
+        e_solids_["TestQuad"]->Draw();
+ */
+        
+        
         //glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f);
         //M.MapModel.Intersection({ 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, offset);
 
@@ -614,17 +631,16 @@ GLvoid Scene::Render()
 
 GLvoid Scene::PlaceSprite()
 {
-    if (!e_level_layers_.empty())
+    if (!map_is_null_ && mouse_over_map_)
     {
         if (active_layer_ != layer_t::FORE)
         {
+            std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_);
             std::stringstream msg;
-            msg << "tileMap: " << active_tilemap_name_ << "\tsprite: " << active_sprite_name_;
+            msg << "key: " << key;
             MessageManager::AddMessage(msg, message_t::INFO);
 
-            ResourceManager::LoadTexture("D:\\Workspace\\Software\\C++\\JnRMaker\\build\\Debug\\assets\\sprites\\default_empty_16x16.png", GL_TRUE, "default_empty_16x16");
-
-            //e_level_layers_["Player"]->
+            e_level_layers_["Player"]->AddSprite(current_tile_id_, 5.0f);
         }
     }
 }

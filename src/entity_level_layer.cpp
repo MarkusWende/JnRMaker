@@ -57,9 +57,11 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &tile_id_vbo_);
 };
 
-GLvoid AddSprite()
+GLvoid LevelLayer::AddSprite(GLfloat mapID, GLfloat spriteID)
 {
-    
+    tile_id_.at(mapID) = spriteID;
+    glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
 }
 
 GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
@@ -70,9 +72,7 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     //model = glm::translate(model, center_);
     ResourceManager::GetShader("llayer").SetMatrix4("model", model);
-    std::stringstream borderTex;
-    borderTex << "default_border_" << tile_size_.x << "x" << tile_size_.y;
-    ResourceManager::GetTexture(borderTex.str()).Bind();
+    glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("Player").ID);
     glBindVertexArray(quad_vao_);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_);
 }
@@ -147,7 +147,7 @@ GLvoid LevelLayer::draw_border()
     //tile_size_
     std::string key = ResourceManager::getNameHash("default", "border");
     // draw left and right border
-    for (int i = 0; i < height_; i++)
+    for (size_t i = 0; i < height_; i++)
     {
         hash_map_.at(i).at(0) = key;
         hash_map_.at(i).at(width_ - 1) = key;
@@ -162,22 +162,24 @@ GLvoid LevelLayer::draw_border()
     tile_id_.clear();
     std::string emptyHash = ResourceManager::getNameHash("default", "empty");
 
+    GLuint counter = 0;
     for (size_t i = 0; i < height_; i++)
     {
         for (size_t j = 0; j < width_; j++)
         {
             if (hash_map_.at(i).at(j).compare(emptyHash) != 0)
             {
-                tile_id_.push_back(1.0f);
+                tile_id_.push_back(0.0f);
             }
             else
             {
-                tile_id_.push_back(0.0f);
+                tile_id_.push_back(-1.0f);
             }
         }
     }
 
-    //tile_id_.at(54) = 1.0f;
+    tile_id_.at(54) = 15.0f;
+    tile_id_.at(31) = 2.0f;
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     //void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
     //memcpy(ptr, data, sizeof(data));

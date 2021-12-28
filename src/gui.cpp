@@ -33,12 +33,10 @@ Gui::Gui()
 	init();
 	customGuiStyle();
 
-	active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
+	//active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
 	
-	//active_tilemap_name_ = "assets/tiles/game-tiles_cut.png";
-	tilemap_list_.push_back(active_tilemap_name_);
-	TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);
-	//std::cout << "blub.\n";
+	//tilemap_list_.push_back(active_tilemap_name_);
+	//TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);
 }
 
 Gui::~Gui()
@@ -95,10 +93,6 @@ GLvoid Gui::Render(Scene &scene)
 				{
 					ProjectManager::SetStatus(project_status_t::LOAD);
 				}
-				if (ImGui::MenuItem("Open"))
-				{
-					file_browser_add_tiles_ = true;
-				}
 				if (ImGui::MenuItem("Quit"))
 				{
 					state_ = gui_state_t::GUI_CLOSE;
@@ -106,7 +100,16 @@ GLvoid Gui::Render(Scene &scene)
 
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Edit"))
+			if (ImGui::BeginMenu("Tiles"))
+			{
+				if (ImGui::MenuItem("Open"))
+				{
+					// Open new tile
+					file_browser_add_tiles_ = true;
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Help"))
 			{
 				if (ImGui::MenuItem("Test Info"))
 				{
@@ -139,7 +142,7 @@ GLvoid Gui::Render(Scene &scene)
 
 	if (file_browser_add_tiles_)
 	{
-		fileBrowserAddTile(root_file_path_, true, ".png");
+		fileBrowserAddTile(scene, root_file_path_, true, ".png");
 	}
 
 	ImGuiStyle* style = &ImGui::GetStyle();
@@ -176,7 +179,7 @@ GLvoid Gui::Render(Scene &scene)
 					ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene.GetWidth() + xOff, scene.GetHeight() + yOff));
 					//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene.GetWidth(), scene.GetHeight()));
 					ImVec2 mousePos = ImGui::GetMousePos();
-					if (mousePos.x > xOff && mousePos.x < (scene.GetWidth() + xOff))
+					if ((mousePos.x > xOff && mousePos.x < (scene.GetWidth() + xOff)) && !file_browser_add_tiles_)
 					{
 						if (mousePos.y > yOff && mousePos.y < (scene.GetHeight() + yOff))
 						{
@@ -241,22 +244,25 @@ GLvoid Gui::Render(Scene &scene)
 
 			if (ImGui::BeginTabItem("Memory"))
 			{
-				//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("tex_used_tiles");
+				Tilemap* tilemap = TilemapManager::GetTilemap("default");
+				TextureAtlas tex = ResourceManager::GetTextureAtlas("default");
+				GLuint64 texID = tex.ID;
 
 				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
 				ImGui::Text("Tiles used and which will be saved.");
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
-				ImGui::BeginChildFrame(2, ImVec2(window_scene_.w, 50.0f));
+				ImGui::BeginChildFrame(2, ImVec2(window_scene_.w, 200.0f));
 				{
 					ImGui::Separator();
 
-					/*
-					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(tex->getSize().x, tex->getSize().y),
-						sf::FloatRect(0, (float)tex->getSize().y, (float)tex->getSize().x, -(float)tex->getSize().y),
-						sf::Color(255, 255, 255, 255),
-						sf::Color(0, 255, 0, 0));
-						*/
+					
+					ImGui::Image((ImTextureID)texID,
+						ImVec2(128, 128),
+						ImVec2(0,0),
+						ImVec2(1,1),
+						ImColor(255, 255, 255, 255),
+						ImColor(0, 255, 0, 255));
+						
 				}
 				ImGui::EndChildFrame();
 				ImGui::PopStyleColor();
@@ -294,11 +300,12 @@ GLvoid Gui::Render(Scene &scene)
 		if (!scene.IsMapNull())
 		{
 			ImGui::SetCursorPos(ImVec2(15.f, 5.f));
-			GLuint width = scene.GetMapWidth();
-			GLuint height = scene.GetMapHeight();
-			height = (int)((350.0f / (float)width) * (float)height);
-			ImGui::BeginChild("Minimap", ImVec2(400, height + 30));
+			glm::vec2 mapSize = glm::vec2((float)scene.GetMapWidth(), (float)scene.GetMapHeight());
+			mapSize = mapSize * scene.GetSpriteSize() * scene.GetSpriteScale();
+			//height = (int)((350.0f / (float)width) * (float)height);
+			ImGui::BeginChild("Minimap", ImVec2(400, 30));
 			ImGui::Text("Minimap");
+			ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
 
 			//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
 			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
@@ -339,107 +346,94 @@ GLvoid Gui::Render(Scene &scene)
 			ImGui::SliderInt2("width x height", mapSize, 1, 255);
 			ImGui::Separator();
 
-			if (ImGui::Button("Create"))
-			{
+			if (ImGui::Button("Create")) {
 				std::string delimiter = "x";
 				size_t pos = 0;
 				std::vector<std::string> tokens;
 				std::string s = spriteSizeStr;
-				while ((pos = s.find(delimiter)) != std::string::npos)
-				{
+				while ((pos = s.find(delimiter)) != std::string::npos) {
 					tokens.push_back(s.substr(0, pos));
 					s.erase(0, pos + delimiter.length());
 				}
 				tokens.push_back(s);
 
-				if (tokens.size() == 2)
-				{
+				if (tokens.size() == 2) {
 					int width = std::stoi(tokens.at(0));
 					int height = std::stoi(tokens.at(1));
 
-					if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height))
-					{
+					if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height)) {
 						scene.CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
 					}
 				}
 			}
 
 			static int selected = 0;
-			for (int n = 0; n < 3; n++)
-			{
+			for (int n = 0; n < 3; n++) {
 				char buf[32];
 				sprintf(buf, "Layer %d", n);
 				if (ImGui::Selectable(buf, selected == n))
 					selected = n;
 			}
 
-			if (selected == 0)
-			{
+			if (selected == 0) {
 				scene.SetActiveLayer(layer_t::BACK);
 			}
-			else if (selected == 1)
-			{
+			else if (selected == 1) {
 				scene.SetActiveLayer(layer_t::PLAYER);
 			}
-			else if (selected == 2)
-			{
+			else if (selected == 2) {
 				scene.SetActiveLayer(layer_t::FORE);
 			}
 		}
 
-		if (ImGui::CollapsingHeader("Camera"))
-		{
+		if (ImGui::CollapsingHeader("Camera")) {
 			ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene.GetCamera("SceneCamera")->GetPosition().x, scene.GetCamera("SceneCamera")->GetPosition().y, scene.GetCamera("SceneCamera")->GetPosition().z);
 			ImGui::Text("Yaw: %.2f", scene.GetCamera("SceneCamera")->GetYaw());
 			ImGui::Text("Pitch: %.2f", scene.GetCamera("SceneCamera")->GetPitch());
 			ImGui::Text("Roll: %.2f", scene.GetCamera("SceneCamera")->GetRoll());
 			ImGui::Text("Zoom: %.2f", scene.GetCamera("SceneCamera")->GetZoom());
 
-			if (ImGui::Button("Reset"))
-			{
+			if (ImGui::Button("Reset")) {
 				scene.GetCamera("SceneCamera")->Reset();
 			}
 
 			CameraState cState = scene.GetCamera("SceneCamera")->GetState();
-			if (ImGui::Button("Persp"))
-			{
+			if (ImGui::Button("Persp")) {
 				scene.GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
 				cState = CameraState::PERSPECTIVE;
 			}
-			if (ImGui::Button("Ortho"))
-			{
+			if (ImGui::Button("Ortho")) {
 				scene.GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
 				cState = CameraState::ORTHOGRAPHIC;
 			}
 		}
 
-
-		if (ImGui::CollapsingHeader("Tiles"))
+		if (!TilemapManager::IsEmpty())
 		{
-			if (!tilemap_list_.empty())
+			if (ImGui::CollapsingHeader("Tiles"))
 			{
-				if (ImGui::BeginCombo("##TilemapCombo", active_tilemap_name_.c_str()))
+				if (ImGui::BeginCombo("##TilemapCombo", scene.GetActiveTilemap().c_str()))
 				{
-					for (size_t n = 0; n < tilemap_list_.size(); n++)
+					for (auto const& [key, val] : TilemapManager::Tilemaps)
 					{
-						std::string item = tilemap_list_.at(n);
-						ImGui::PushID(n);
-						if (ImGui::Selectable(tilemap_list_.at(n).c_str(), item.compare(active_tilemap_name_)))
-						{
-							active_tilemap_name_ = item;
-						}
-
-						ImGui::PopID();
+							ImGui::PushID(key.c_str());
+							if (ImGui::Selectable(key.c_str(), key.compare(scene.GetActiveTilemap())))
+							{
+								scene.SetActiveTilemap(key);
+							}
+							ImGui::PopID();
 					}
 					ImGui::EndCombo();
 				}
 
-				ImGui::BeginChild("TileSelector", ImVec2(0, 500), true, ImGuiWindowFlags_HorizontalScrollbar);
-
-
+				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
+				Tilemap* tilemap = TilemapManager::GetTilemap(scene.GetActiveTilemap());
+				ImGui::BeginChild("TileSelector",
+					ImVec2(0, ((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f) * tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y),
+					true,
+					ImGuiWindowFlags_HorizontalScrollbar
+				);
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-
-				Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
 
 				GLuint i = 0;
 				ImGuiListClipper clipper(tilemap->NumCols());
@@ -453,8 +447,8 @@ GLvoid Gui::Render(Scene &scene)
 							std::stringstream sprKey;
 							sprKey << "r" << row << "c" << col;
 							GLuint64 tile = tilemap->GetTile(sprKey.str())->ID;
-							GLuint width = 16 * 4;
-							GLuint height = 16 * 4;
+							GLuint width = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+							GLuint height = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 							ImGui::PushID(i);
 							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
@@ -462,13 +456,23 @@ GLvoid Gui::Render(Scene &scene)
 							if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
 								ImGui::SetMouseCursor(7);
 
-							if (ImGui::ImageButton((ImTextureID)tile, ImVec2(width, height), ImVec2(0, 0), ImVec2(1, 1), 1, ImVec4(0, 0, 0, 0), ImVec4(0.8, 0.8, 0.8, 1)))
+							if (
+								ImGui::ImageButton(
+									(ImTextureID)tile,
+									ImVec2(width, height),
+									ImVec2(0, 0),
+									ImVec2(1, 1),
+									1,
+									ImVec4(0, 0, 0, 0),
+									ImVec4(0.8, 0.8, 0.8, 1))
+								)
 							{
-								active_sprite_name_ = sprKey.str();
-								scene.SetActiveTilemap(active_tilemap_name_);
-								scene.SetActiveSprite(active_sprite_name_);
-								Texture2D *brushTex = tilemap->GetTile(sprKey.str());
-								scene.GetSprite("brush")->AssignTextureByName(*brushTex);
+								if (!scene.IsMapNull())
+								{
+									scene.SetActiveSprite(sprKey.str());
+									Texture2D *brushTex = tilemap->GetTile(sprKey.str());
+									scene.GetSprite("brush")->AssignTextureByName(*brushTex);
+								}
 							}
 
 							ImGui::PopStyleColor(2);
@@ -493,6 +497,172 @@ GLvoid Gui::Render(Scene &scene)
 
 		}
 
+	if (ImGui::CollapsingHeader("Inputs, Navigation & Focus"))
+    {
+        ImGuiIO& io = ImGui::GetIO();
+
+        // Display ImGuiIO output flags
+        ImGui::Text("WantCaptureMouse: %d", io.WantCaptureMouse);
+        ImGui::Text("WantCaptureMouseUnlessPopupClose: %d", io.WantCaptureMouseUnlessPopupClose);
+        ImGui::Text("WantCaptureKeyboard: %d", io.WantCaptureKeyboard);
+        ImGui::Text("WantTextInput: %d", io.WantTextInput);
+        ImGui::Text("WantSetMousePos: %d", io.WantSetMousePos);
+        ImGui::Text("NavActive: %d, NavVisible: %d", io.NavActive, io.NavVisible);
+
+        // Display Mouse state
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Mouse State");
+        if (ImGui::TreeNode("Mouse State"))
+        {
+            if (ImGui::IsMousePosValid())
+                ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
+            else
+                ImGui::Text("Mouse pos: <INVALID>");
+            ImGui::Text("Mouse delta: (%g, %g)", io.MouseDelta.x, io.MouseDelta.y);
+
+            int count = IM_ARRAYSIZE(io.MouseDown);
+            ImGui::Text("Mouse down:");         for (int i = 0; i < count; i++) if (ImGui::IsMouseDown(i))      { ImGui::SameLine(); ImGui::Text("b%d (%.02f secs)", i, io.MouseDownDuration[i]); }
+            ImGui::Text("Mouse clicked:");      for (int i = 0; i < count; i++) if (ImGui::IsMouseClicked(i))   { ImGui::SameLine(); ImGui::Text("b%d (%d)", i, ImGui::GetMouseClickedCount(i)); }
+            ImGui::Text("Mouse released:");     for (int i = 0; i < count; i++) if (ImGui::IsMouseReleased(i))  { ImGui::SameLine(); ImGui::Text("b%d", i); }
+            ImGui::Text("Mouse wheel: %.1f", io.MouseWheel);
+            ImGui::Text("Pen Pressure: %.1f", io.PenPressure); // Note: currently unused
+            ImGui::TreePop();
+        }
+
+        // Display Keyboard/Mouse state
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Keyboard & Navigation State");
+        if (ImGui::TreeNode("Keyboard & Navigation State"))
+        {
+            ImGui::Text("Keys down:");          for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyDown(i))        { ImGui::SameLine(); ImGui::Text("%d (0x%X) (%.02f secs)", i, i, io.KeysDownDuration[i]); }
+            ImGui::Text("Keys pressed:");       for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyPressed(i))     { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
+            ImGui::Text("Keys release:");       for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++) if (ImGui::IsKeyReleased(i))    { ImGui::SameLine(); ImGui::Text("%d (0x%X)", i, i); }
+            ImGui::Text("Keys mods: %s%s%s%s", io.KeyCtrl ? "CTRL " : "", io.KeyShift ? "SHIFT " : "", io.KeyAlt ? "ALT " : "", io.KeySuper ? "SUPER " : "");
+            ImGui::Text("Chars queue:");        for (int i = 0; i < io.InputQueueCharacters.Size; i++) { ImWchar c = io.InputQueueCharacters[i]; ImGui::SameLine();  ImGui::Text("\'%c\' (0x%04X)", (c > ' ' && c <= 255) ? (char)c : '?', c); } // FIXME: We should convert 'c' to UTF-8 here but the functions are not public.
+
+            ImGui::Text("NavInputs down:");     for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputs[i] > 0.0f)              { ImGui::SameLine(); ImGui::Text("[%d] %.2f (%.02f secs)", i, io.NavInputs[i], io.NavInputsDownDuration[i]); }
+            ImGui::Text("NavInputs pressed:");  for (int i = 0; i < IM_ARRAYSIZE(io.NavInputs); i++) if (io.NavInputsDownDuration[i] == 0.0f) { ImGui::SameLine(); ImGui::Text("[%d]", i); }
+
+            ImGui::Button("Hovering me sets the\nkeyboard capture flag");
+            if (ImGui::IsItemHovered())
+                ImGui::CaptureKeyboardFromApp(true);
+            ImGui::SameLine();
+            ImGui::Button("Holding me clears the\nthe keyboard capture flag");
+            if (ImGui::IsItemActive())
+                ImGui::CaptureKeyboardFromApp(false);
+            ImGui::TreePop();
+        }
+
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Tabbing");
+        if (ImGui::TreeNode("Tabbing"))
+        {
+            ImGui::Text("Use TAB/SHIFT+TAB to cycle through keyboard editable fields.");
+            static char buf[32] = "hello";
+            ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
+            ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
+            ImGui::InputText("3", buf, IM_ARRAYSIZE(buf));
+            ImGui::PushAllowKeyboardFocus(false);
+            ImGui::InputText("4 (tab skip)", buf, IM_ARRAYSIZE(buf));
+            ImGui::SameLine(); //HelpMarker("Item won't be cycled through when using TAB or Shift+Tab.");
+            ImGui::PopAllowKeyboardFocus();
+            ImGui::InputText("5", buf, IM_ARRAYSIZE(buf));
+            ImGui::TreePop();
+        }
+
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Focus from code");
+        if (ImGui::TreeNode("Focus from code"))
+        {
+            bool focus_1 = ImGui::Button("Focus on 1"); ImGui::SameLine();
+            bool focus_2 = ImGui::Button("Focus on 2"); ImGui::SameLine();
+            bool focus_3 = ImGui::Button("Focus on 3");
+            int has_focus = 0;
+            static char buf[128] = "click on a button to set focus";
+
+            if (focus_1) ImGui::SetKeyboardFocusHere();
+            ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
+            if (ImGui::IsItemActive()) has_focus = 1;
+
+            if (focus_2) ImGui::SetKeyboardFocusHere();
+            ImGui::InputText("2", buf, IM_ARRAYSIZE(buf));
+            if (ImGui::IsItemActive()) has_focus = 2;
+
+            ImGui::PushAllowKeyboardFocus(false);
+            if (focus_3) ImGui::SetKeyboardFocusHere();
+            ImGui::InputText("3 (tab skip)", buf, IM_ARRAYSIZE(buf));
+            if (ImGui::IsItemActive()) has_focus = 3;
+            ImGui::SameLine(); //HelpMarker("Item won't be cycled through when using TAB or Shift+Tab.");
+            ImGui::PopAllowKeyboardFocus();
+
+            if (has_focus)
+                ImGui::Text("Item with focus: %d", has_focus);
+            else
+                ImGui::Text("Item with focus: <none>");
+
+            // Use >= 0 parameter to SetKeyboardFocusHere() to focus an upcoming item
+            static float f3[3] = { 0.0f, 0.0f, 0.0f };
+            int focus_ahead = -1;
+            if (ImGui::Button("Focus on X")) { focus_ahead = 0; } ImGui::SameLine();
+            if (ImGui::Button("Focus on Y")) { focus_ahead = 1; } ImGui::SameLine();
+            if (ImGui::Button("Focus on Z")) { focus_ahead = 2; }
+            if (focus_ahead != -1) ImGui::SetKeyboardFocusHere(focus_ahead);
+            ImGui::SliderFloat3("Float3", &f3[0], 0.0f, 1.0f);
+
+            ImGui::TextWrapped("NB: Cursor & selection are preserved when refocusing last used item in code.");
+            ImGui::TreePop();
+        }
+
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Dragging");
+        if (ImGui::TreeNode("Dragging"))
+        {
+            ImGui::TextWrapped("You can use ImGui::GetMouseDragDelta(0) to query for the dragged amount on any widget.");
+            for (int button = 0; button < 3; button++)
+            {
+                ImGui::Text("IsMouseDragging(%d):", button);
+                ImGui::Text("  w/ default threshold: %d,", ImGui::IsMouseDragging(button));
+                ImGui::Text("  w/ zero threshold: %d,", ImGui::IsMouseDragging(button, 0.0f));
+                ImGui::Text("  w/ large threshold: %d,", ImGui::IsMouseDragging(button, 20.0f));
+            }
+
+            ImGui::Button("Drag Me");
+            if (ImGui::IsItemActive())
+                ImGui::GetForegroundDrawList()->AddLine(io.MouseClickedPos[0], io.MousePos, ImGui::GetColorU32(ImGuiCol_Button), 4.0f); // Draw a line between the button and the mouse cursor
+
+            // Drag operations gets "unlocked" when the mouse has moved past a certain threshold
+            // (the default threshold is stored in io.MouseDragThreshold). You can request a lower or higher
+            // threshold using the second parameter of IsMouseDragging() and GetMouseDragDelta().
+            ImVec2 value_raw = ImGui::GetMouseDragDelta(0, 0.0f);
+            ImVec2 value_with_lock_threshold = ImGui::GetMouseDragDelta(0);
+            ImVec2 mouse_delta = io.MouseDelta;
+            ImGui::Text("GetMouseDragDelta(0):");
+            ImGui::Text("  w/ default threshold: (%.1f, %.1f)", value_with_lock_threshold.x, value_with_lock_threshold.y);
+            ImGui::Text("  w/ zero threshold: (%.1f, %.1f)", value_raw.x, value_raw.y);
+            ImGui::Text("io.MouseDelta: (%.1f, %.1f)", mouse_delta.x, mouse_delta.y);
+            ImGui::TreePop();
+        }
+
+        //IMGUI_DEMO_MARKER("Inputs, Navigation & Focus/Mouse cursors");
+        if (ImGui::TreeNode("Mouse cursors"))
+        {
+            const char* mouse_cursors_names[] = { "Arrow", "TextInput", "ResizeAll", "ResizeNS", "ResizeEW", "ResizeNESW", "ResizeNWSE", "Hand", "NotAllowed" };
+            IM_ASSERT(IM_ARRAYSIZE(mouse_cursors_names) == ImGuiMouseCursor_COUNT);
+
+            ImGuiMouseCursor current = ImGui::GetMouseCursor();
+            ImGui::Text("Current mouse cursor = %d: %s", current, mouse_cursors_names[current]);
+            ImGui::Text("Hover to see mouse cursors:");
+            ImGui::SameLine();/*  HelpMarker(
+                "Your application can render a different mouse cursor based on what ImGui::GetMouseCursor() returns. "
+                "If software cursor rendering (io.MouseDrawCursor) is set ImGui will draw the right cursor for you, "
+                "otherwise your backend needs to handle it."); */
+            for (int i = 0; i < ImGuiMouseCursor_COUNT; i++)
+            {
+                char label[32];
+                sprintf(label, "Mouse cursor %d: %s", i, mouse_cursors_names[i]);
+                ImGui::Bullet(); ImGui::Selectable(label, false);
+                if (ImGui::IsItemHovered())
+                    ImGui::SetMouseCursor(i);
+            }
+            ImGui::TreePop();
+        }
+    }
+
 		GLuint windowWidth = ImGui::GetWindowWidth() - 1;
 		GLuint windowHeight = ImGui::GetWindowHeight() - 1;
 
@@ -511,75 +681,75 @@ GLvoid Gui::Render(Scene &scene)
 	// Messages Window
 	//if (false)
 	{
-	ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
-	ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
-	ImGui::Begin("Messages", NULL, ImGuiWindowFlags_NoTitleBar |
-		ImGuiWindowFlags_NoMove |
-		ImGuiWindowFlags_NoCollapse);
+		ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
+		ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+		ImGui::Begin("Messages", NULL, 	ImGuiWindowFlags_NoTitleBar |
+										ImGuiWindowFlags_NoMove |
+										ImGuiWindowFlags_NoCollapse);
 
-	static float wrap_width = 1200.0f;
-	ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
-	ImGui::SetCursorPos(ImVec2(0.f, 18.f));
-	ImGui::Separator();
+		static float wrap_width = 1200.0f;
+		ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
+		ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+		ImGui::Separator();
 
-	// BeginChild: MessageList
-	ImGui::SetCursorPos(ImVec2(0.f, 21.f));
-	ImGui::BeginChild("##MessageList", ImVec2(0, window_messages_.h - 50), false, ImGuiWindowFlags_HorizontalScrollbar);
+		// BeginChild: MessageList
+		ImGui::SetCursorPos(ImVec2(0.f, 21.f));
+		ImGui::BeginChild("##MessageList", ImVec2(0, window_messages_.h - 50), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-	std::vector<Message>* ptrMessages;
-	ptrMessages = MessageManager::GetMessages();
-	if (ptrMessages->size() > 0)
-	{
-		ImGuiListClipper clipper(ptrMessages->size());
-		while (clipper.Step())
+		std::vector<Message>* ptrMessages;
+		ptrMessages = MessageManager::GetMessages();
+		if (ptrMessages->size() > 0)
 		{
-			for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+			ImGuiListClipper clipper(ptrMessages->size());
+			while (clipper.Step())
 			{
-				ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-				ImGui::TextColored(ImVec4(1, 1, 1, 1), ptrMessages->at(it).timeinfo.c_str());
-				ImGui::SameLine(0, 2);
-				ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+				{
+					ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+					ImGui::TextColored(ImVec4(1, 1, 1, 1), ptrMessages->at(it).timeinfo.c_str());
+					ImGui::SameLine(0, 2);
+					ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-				std::string word;
-				std::stringstream ss(ptrMessages->at(it).msg);
+					std::string word;
+					std::stringstream ss(ptrMessages->at(it).msg);
 
-				ImGui::SameLine(0, 5);
-				if (ptrMessages->at(it).type == message_t::ERROR_T)
-				{
-					ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + ptrMessages->at(it).msg).c_str());
-				}
-				else if (ptrMessages->at(it).type == message_t::INFO)
-				{
-					ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + ptrMessages->at(it).msg).c_str());
-				}
-				else if (ptrMessages->at(it).type == message_t::WARNING)
-				{
-					ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + ptrMessages->at(it).msg).c_str());
-				}
-				else
-				{
-					ImGui::Text("%s", ptrMessages->at(it).msg.c_str());
+					ImGui::SameLine(0, 5);
+					if (ptrMessages->at(it).type == message_t::ERROR_T)
+					{
+						ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + ptrMessages->at(it).msg).c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::INFO)
+					{
+						ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + ptrMessages->at(it).msg).c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::WARNING)
+					{
+						ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + ptrMessages->at(it).msg).c_str());
+					}
+					else
+					{
+						ImGui::Text("%s", ptrMessages->at(it).msg.c_str());
+					}
 				}
 			}
 		}
-	}
 
-	ImGui::SetScrollHereY(1.0f);
-	// EndChild: MessageList
-	ImGui::EndChild();
+		ImGui::SetScrollHereY(1.0f);
+		// EndChild: MessageList
+		ImGui::EndChild();
 
-	GLuint windowHeight = ImGui::GetWindowHeight();
+		GLuint windowHeight = ImGui::GetWindowHeight();
 
-	if (windowHeight != window_messages_.h)
-	{
-		window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
+		if (windowHeight != window_messages_.h)
+		{
+			window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
 
-		WindowUpdate();
-	}
+			WindowUpdate();
+		}
 
-	ImGui::End();
-	ImGui::PopStyleVar();
+		ImGui::End();
+		ImGui::PopStyleVar();
 	}
 
 	// Imgui Demo Window
@@ -591,7 +761,7 @@ GLvoid Gui::Render(Scene &scene)
 GLvoid Gui::init()
 {
 	window_scene_.wPercent = 0.7f;
-	window_scene_.hPercent = 0.9f;
+	window_scene_.hPercent = 0.7f;
 
 	window_messages_.wPercent = 1.0f;
 	window_messages_.hPercent = 1.0f - window_scene_.hPercent;
@@ -613,7 +783,7 @@ GLvoid Gui::init()
 	root_file_path_ = path;
 #endif
 #ifdef __linux__
-    root_file_path_ = fs::current_path().parent_path();
+    root_file_path_ = fs::current_path();
 #endif
 
 }
@@ -637,15 +807,15 @@ GLvoid Gui::customGuiStyle()
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Cousine-Regular.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/DroidSans.ttf", 12.0f);
 	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialuni.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/arial.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbd.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbi.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/ariali.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/ariblk.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/Karla-Regular.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/ProggyClean.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/vrinda.ttf", 12.0f);
-  //io.Fonts->AddFontFromFileTTF("../assets/fonts/vrindab.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arial.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbd.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbi.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ariali.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ariblk.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Karla-Regular.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ProggyClean.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/vrinda.ttf", 12.0f);
+	//io.Fonts->AddFontFromFileTTF("../assets/fonts/vrindab.ttf", 12.0f);
 	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
 	//IM_ASSERT(font != NULL);
 
@@ -736,7 +906,7 @@ GLvoid Gui::customGuiStyle()
 }
 
 
-GLvoid Gui::fileBrowserAddTile(fs::path& path, GLboolean extensionOnly, fs::path extension)
+GLvoid Gui::fileBrowserAddTile(Scene& scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
 {
 	//prepare for file browser popup
 	ImGui::SetNextWindowSize(ImVec2(800, 580));
@@ -822,10 +992,12 @@ GLvoid Gui::fileBrowserAddTile(fs::path& path, GLboolean extensionOnly, fs::path
 			}
 			else
 			{
-				active_tilemap_name_ = str;
-				tilemap_list_.push_back(str);
-				ResourceManager::LoadTexture(active_tilemap_name_.c_str(), GL_TRUE, active_tilemap_name_);
-				TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 2.0f, 2.0f }, active_tilemap_name_);
+				//active_tilemap_name_ = str;
+				//tilemap_list_.push_back(str);
+				//ResourceManager::LoadTexture(str.c_str(), GL_TRUE, str);
+				// TODO: find or ask for sprite size and scale
+				TilemapManager::AddTilemap(str, { 16, 16 }, { 1.0f, 1.0f }, str);
+				scene.SetActiveTilemap(str);
 				file_browser_add_tiles_ = false;
 				ImGui::CloseCurrentPopup();
 			}
