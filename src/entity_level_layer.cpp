@@ -44,8 +44,18 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     height_pixels_ = height * spriteSize.y;
     tile_scale_ = { 1.0f, 1.0f };
     tile_size_ = spriteSize;
-    hash_map_.resize(height, std::vector<std::string>(width, ResourceManager::getNameHash("default", "empty")));
+    //tile_id_max_ = 0.0f;
+    hash_map_.resize(height, std::vector<std::string>(width, "empty"));
 
+    std::stringstream keyBorder;
+    keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
+    std::stringstream fileDefaultBorder;
+    fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
+
+    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
+    //tilemap_ = std::make_unique<Tilemap>(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
+    
     init();
 };
 
@@ -57,11 +67,31 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &tile_id_vbo_);
 };
 
-GLvoid LevelLayer::AddSprite(GLfloat mapID, GLfloat spriteID)
+GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
 {
-    tile_id_.at(mapID) = spriteID;
+    Tilemap* tiles = TilemapManager::GetTilemap(name_);
+    std::vector<std::string> tileHashes = tiles->GetHashs();
+    if (!tiles->HashExists(key))
+    {
+        tiles->AddTile(key, texID);
+        //tile_id_max_ = tile_id_max_ + 1.0f;
+        //tile_hash_id_map_.insert(std::make_pair(key.c_str(), tile_id_max_));
+        tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
+
+        /* std::stringstream msg;
+        for (auto const& [hashKey, hashVal] : tile_hash_id_map_)
+		{
+            msg << hashKey << ":" << hashVal << "\t";
+        }
+        MessageManager::AddMessage(msg, message_t::INFO); */
+    }
+    else
+    {
+        tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
+    
 }
 
 GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
@@ -72,7 +102,9 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     //model = glm::translate(model, center_);
     ResourceManager::GetShader("llayer").SetMatrix4("model", model);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("Player").ID);
+    //tilemap_->GetTexArray().Bind();
+    TilemapManager::GetTilemap(name_)->GetTexArray().Bind();
+    //ResourceManager::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_);
 }
@@ -145,7 +177,7 @@ GLvoid LevelLayer::draw_border()
 {
     //ResourceManager::
     //tile_size_
-    std::string key = ResourceManager::getNameHash("default", "border");
+    std::string key = "border";
     // draw left and right border
     for (size_t i = 0; i < height_; i++)
     {
@@ -160,7 +192,7 @@ GLvoid LevelLayer::draw_border()
     }
 
     tile_id_.clear();
-    std::string emptyHash = ResourceManager::getNameHash("default", "empty");
+    std::string emptyHash = "empty";
 
     GLuint counter = 0;
     for (size_t i = 0; i < height_; i++)
@@ -178,12 +210,6 @@ GLvoid LevelLayer::draw_border()
         }
     }
 
-    tile_id_.at(54) = 15.0f;
-    tile_id_.at(31) = 2.0f;
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
-    //void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    //memcpy(ptr, data, sizeof(data));
     glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
-    //glBufferData(GL_ARRAY_BUFFER, tile_id_.size() * sizeof(tile_id_.data()), &tile_id_[0], GL_STATIC_DRAW);
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

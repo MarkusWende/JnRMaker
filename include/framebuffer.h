@@ -58,7 +58,7 @@ public:
 	 * @param height Framebuffer height.
 	 * @return void
 	 */
-	void Generate(GLuint width, GLuint height);
+	void Generate(GLuint width, GLuint height, GLenum type);
 
 	void Resize(GLuint width, GLuint height);
 
@@ -86,6 +86,7 @@ private:
 	GLuint filter_min_;								/**< Filtering mode if texture pixels < screen pixels. */
 	GLuint filter_max_;								/**< Filtering mode if texture pixels > screen pixels. */
 	GLuint rbo_;
+	GLenum tex_type_;
 };
 
 #endif	/* FRAMEBUFFER_H */

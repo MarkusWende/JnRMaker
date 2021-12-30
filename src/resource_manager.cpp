@@ -30,7 +30,7 @@
 #include "../include/message_manager.h"
 
 std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
+//std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
 //std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 std::map<std::string, Framebuffer>  ResourceManager::Framebuffers;
 std::map<std::string, Shader>       ResourceManager::Shaders;
@@ -52,7 +52,7 @@ Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std:
     return Textures[name];
 }
 
-TextureAtlas ResourceManager::CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+/* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
     return TextureAtlases[name];
@@ -67,7 +67,7 @@ TextureAtlas ResourceManager::CreateTextureAtlasFromFile(std::string name, GLboo
 TextureAtlas ResourceManager::GetTextureAtlas(std::string name)
 {
     return TextureAtlases[name];
-}
+} */
 
 //GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
 //{
@@ -124,9 +124,9 @@ Texture2D ResourceManager::GetTexture(std::string name)
     return Textures[name];
 }
 
-Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height)
+Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type)
 {
-    Framebuffers[name] = generateFramebuffer(width, height);
+    Framebuffers[name] = generateFramebuffer(width, height, type);
     return Framebuffers[name];
 }
 
@@ -190,7 +190,7 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     return texture;
 }
 
-TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+/* TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlas texture;
 
@@ -205,7 +205,7 @@ TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2
     }
 
     // Now generate texture
-    texture.Generate(spriteSize, spriteScale);
+    texture.Generate(spriteSize);
     // And finally free image data
     //SOIL_free_image_data(image);
 
@@ -238,20 +238,20 @@ TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::v
     }
 
     // Now generate texture
-    texture.Generate(width, height, image, spriteSize, spriteScale);
+    texture.Generate(width, height, image, spriteSize);
     // And finally free image data
     //SOIL_free_image_data(image);
 
     return texture;
-}
+} */
 
-Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height)
+Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height, GLenum type)
 {
     // create framebuffer object
     Framebuffer fb;
 
     // generate framebuffer
-    fb.Generate(width, height);
+    fb.Generate(width, height, type);
 
     return fb;
 }

@@ -139,7 +139,7 @@ public:
 	void Delete();
 };
 
-class TextureAtlas
+class TextureArray
 {
 public:
 	// Holds the ID of the texture object, used for all texture operations to reference to this particlar texture
@@ -155,11 +155,12 @@ public:
 	GLuint Wrap_R; // Wrapping mode on T axis
 	GLuint Filter_Min; // Filtering mode if texture pixels < screen pixels
 	GLuint Filter_Mag; // Filtering mode if texture pixels > screen pixels
+	GLuint Mip_Level;
 	// Constructor (sets default texture modes)
-	TextureAtlas();
+	TextureArray();
 	// Generates texture from image data
-	void Generate(glm::vec2 spriteSize, glm::vec2 spriteScale);
-	void Generate(GLuint width, GLuint height, unsigned char* data, glm::vec2 spriteSize, glm::vec2 spriteScale);
+	void Generate(glm::vec2 spriteSize);
+	void Generate(GLuint width, GLuint height, unsigned char* data, glm::vec2 spriteSize);
 	// Binds the texture as the current active GL_TEXTURE_2D texture object
 	void Bind() const;
 

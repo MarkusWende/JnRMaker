@@ -244,9 +244,9 @@ GLvoid Gui::Render(Scene &scene)
 
 			if (ImGui::BeginTabItem("Memory"))
 			{
-				Tilemap* tilemap = TilemapManager::GetTilemap("default");
-				TextureAtlas tex = ResourceManager::GetTextureAtlas("default");
-				GLuint64 texID = tex.ID;
+				//Tilemap* tilemap = TilemapManager::GetTilemap("default");
+				//TextureAtlas tex = ResourceManager::GetTextureAtlas("default");
+				GLuint64 texID = 1;
 
 				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
 				ImGui::Text("Tiles used and which will be saved.");
@@ -416,50 +416,56 @@ GLvoid Gui::Render(Scene &scene)
 				{
 					for (auto const& [key, val] : TilemapManager::Tilemaps)
 					{
+						if(key != "")
+						{
 							ImGui::PushID(key.c_str());
 							if (ImGui::Selectable(key.c_str(), key.compare(scene.GetActiveTilemap())))
 							{
 								scene.SetActiveTilemap(key);
 							}
 							ImGui::PopID();
+						}
 					}
 					ImGui::EndCombo();
 				}
 
 				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
 				Tilemap* tilemap = TilemapManager::GetTilemap(scene.GetActiveTilemap());
+				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
+
 				ImGui::BeginChild("TileSelector",
-					ImVec2(0, ((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f) * tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y),
+					ImVec2(0, ((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f) * tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y + 5.0f),
 					true,
 					ImGuiWindowFlags_HorizontalScrollbar
 				);
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 				GLuint i = 0;
-				ImGuiListClipper clipper(tilemap->NumCols());
+				ImGuiListClipper clipper(tilemap->NumRows());
 
 				while (clipper.Step())
 				{
-					for (int col = clipper.DisplayStart; col < clipper.DisplayEnd; col++)
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
 					{
-						for (GLuint row = 0; row < tilemap->NumRows(); row++)
+						for (GLuint col = 0; col < tilemap->NumCols(); col++)
 						{
-							std::stringstream sprKey;
-							sprKey << "r" << row << "c" << col;
-							GLuint64 tile = tilemap->GetTile(sprKey.str())->ID;
-							GLuint width = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
-							GLuint height = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
+							//std::stringstream sprKey;
+							//sprKey << "r" << row << "c" << col;
+							GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i))->ID;
+							GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+							GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 							ImGui::PushID(i);
 							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
 							// Change mouse cursor to hand
 							if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
+							{
 								ImGui::SetMouseCursor(7);
-
+							}
 							if (
 								ImGui::ImageButton(
 									(ImTextureID)tile,
-									ImVec2(width, height),
+									ImVec2(buttonWidth, buttonHeight),
 									ImVec2(0, 0),
 									ImVec2(1, 1),
 									1,
@@ -469,15 +475,19 @@ GLvoid Gui::Render(Scene &scene)
 							{
 								if (!scene.IsMapNull())
 								{
-									scene.SetActiveSprite(sprKey.str());
-									Texture2D *brushTex = tilemap->GetTile(sprKey.str());
+									scene.SetActiveSprite(tilemapHashes.at(i));
+									Texture2D *brushTex = tilemap->GetTile(tilemapHashes.at(i));
 									scene.GetSprite("brush")->AssignTextureByName(*brushTex);
+
+									/* std::stringstream msg;
+									msg << tilemapHashes.at(i);
+									MessageManager::AddMessage(msg, message_t::INFO); */
 								}
 							}
 
 							ImGui::PopStyleColor(2);
 							ImGui::PopID();
-							if (row < tilemap->NumRows() - 1)
+							if (col < (tilemap->NumCols() - 1))
 								ImGui::SameLine();
 							i++;
 						}

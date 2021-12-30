@@ -61,7 +61,7 @@ public:
 	 * @param scale The global scale of aall the sprite along the x and y axis.
    * @return GLvoid.
 	 */
-  //static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale);
+  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale);
 
   /**
     * @brief Add a new tilemap to the map of tilemaps.

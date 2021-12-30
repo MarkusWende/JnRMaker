@@ -57,7 +57,7 @@ Scene::Scene(GLuint width, GLuint height)
     ResourceManager::LoadShader("src/shaders/sprite.vert", "src/shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("src/shaders/line.vert", "src/shaders/line.frag",  nullptr, "line");
     ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
-    ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
+    //ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
@@ -72,9 +72,9 @@ Scene::Scene(GLuint width, GLuint height)
     // Create framebuffers
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //generateGrid();
-    ResourceManager::CreateFramebuffer("scene", width_, height_);
+    ResourceManager::CreateFramebuffer("scene", width_, height_, GL_TEXTURE_2D);
     //ResourceManager::CreateFramebuffer("minimap", width_, height_);
-    ResourceManager::CreateFramebuffer("imguiScene", width_, height_);
+    ResourceManager::CreateFramebuffer("imguiScene", width_, height_, GL_TEXTURE_2D);
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
        // positions   // texCoords
@@ -150,11 +150,14 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     }
     //std::vector<std::vector<std::string>> layer(height, std::vector<std::string>(width, "null"));
     e_level_layers_.insert(std::make_pair("Player", new LevelLayer("Player", width, height, spriteSize)));
-    ResourceManager::CreateTextureAtlasFromFile("Player", GL_TRUE, glm::vec2(16,16), glm::vec2(1,1), "resources/assets/tiles/fEO6a.png");
+    //ResourceManager::CreateTextureAtlasFromFile("Player", GL_TRUE, glm::vec2(16,16), glm::vec2(1,1), "resources/assets/tiles/fEO6a.png");
 
     // Create framebuffers to store the sprites that are used in the map
     //ResourceManager::CreateTextureAtlasEmpty("default", GL_TRUE, spriteSize, spriteScale);
-    //TilemapManager::AddTilemap("layer_player_tiles", spriteSize, spriteScale);
+    //TilemapManager::AddTilemap("Player", spriteSize, spriteScale, "resources/assets/tiles/fEO6a.png");
+    //TilemapManager::AddTilemap("Testing", spriteSize, spriteScale);
+    //TilemapManager::GetTilemap("Testing")->AddTile(keyEmpty.str(), e_sprites_["brush"]->GetTexture()->ID);
+    active_tilemap_name_ = "Player";
     //Tilemap *tilemap = TilemapManager::GetTilemap("layer_player_tiles");
     //tilemap->AddTile();
     // Insert default_empty brush sprite to the Player sprite framebuffer
@@ -257,6 +260,16 @@ GLvoid Scene::Render()
     //std::stringstream msg;
     //msg << "x: " << mouse_ray_start_.x << "\ty: " << mouse_ray_start_.y << "\tz: " << mouse_ray_start_.z;
     //MessageManager::AddMessage(msg, message_t::INFO);
+
+    // Grid
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    {
+        if (e_grids_.find("XYGrid") != e_grids_.end())
+        {
+            e_grids_["XYGrid"]->Draw(projection, view);
+        }
+    }
+
 
     // Coordinate System
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -487,15 +500,6 @@ GLvoid Scene::Render()
         */
     }
 
-    // Grid
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    {
-        if (e_grids_.find("XYGrid") != e_grids_.end())
-        {
-            e_grids_["XYGrid"]->Draw(projection, view);
-        }
-    }
-
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -612,7 +616,6 @@ GLvoid Scene::Render()
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Render to our imgui framebuffer
-
     glBindFramebuffer(GL_FRAMEBUFFER, ResourceManager::GetFramebuffer("imguiScene").GetID());
     glViewport(0, 0, width_, height_); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
@@ -626,7 +629,6 @@ GLvoid Scene::Render()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 GLvoid Scene::PlaceSprite()
@@ -635,12 +637,14 @@ GLvoid Scene::PlaceSprite()
     {
         if (active_layer_ != layer_t::FORE)
         {
-            std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_);
+            /* std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_); */
             std::stringstream msg;
-            msg << "key: " << key;
+            msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO);
 
-            e_level_layers_["Player"]->AddSprite(current_tile_id_, 5.0f);
+            e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
+
+            //TilemapManager::GetTilemap("Testing")->AddTile(active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
         }
     }
 }
