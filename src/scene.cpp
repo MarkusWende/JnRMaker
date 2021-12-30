@@ -123,11 +123,6 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     // Move camera to the center of the grid
     e_cameras_["SceneCamera"]->Move(((GLfloat)width)/2.0f, ((GLfloat)height)/2.0f);
 
-    // Load default tilemap
-    //active_tilemap_name_ = "default";
-    //active_sprite_name_ = "empty";
-
-
     // Load default sprites
     std::stringstream keyEmpty, keyBorder;
     keyEmpty << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
@@ -138,60 +133,22 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
     ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
     ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
+
     // Create default brush
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
     e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(keyEmpty.str()));
+    active_sprite_name_ = keyEmpty.str().c_str();
 
     // Create level
     if (!e_level_layers_.empty())
     {
         e_level_layers_.clear();
     }
-    //std::vector<std::vector<std::string>> layer(height, std::vector<std::string>(width, "null"));
     e_level_layers_.insert(std::make_pair("Player", new LevelLayer("Player", width, height, spriteSize)));
-    //ResourceManager::CreateTextureAtlasFromFile("Player", GL_TRUE, glm::vec2(16,16), glm::vec2(1,1), "resources/assets/tiles/fEO6a.png");
-
-    // Create framebuffers to store the sprites that are used in the map
-    //ResourceManager::CreateTextureAtlasEmpty("default", GL_TRUE, spriteSize, spriteScale);
-    //TilemapManager::AddTilemap("Player", spriteSize, spriteScale, "resources/assets/tiles/fEO6a.png");
-    //TilemapManager::AddTilemap("Testing", spriteSize, spriteScale);
-    //TilemapManager::GetTilemap("Testing")->AddTile(keyEmpty.str(), e_sprites_["brush"]->GetTexture()->ID);
     active_tilemap_name_ = "Player";
-    //Tilemap *tilemap = TilemapManager::GetTilemap("layer_player_tiles");
-    //tilemap->AddTile();
-    // Insert default_empty brush sprite to the Player sprite framebuffer
 
     map_is_null_ = false;
-    /*
-    map_width_ = width;
-    map_height_ = height;
-    //generateGrid();
-    map_pixel_width_ = map_width_ * spriteSize.x * spriteScale.x;
-    map_pixel_height_ = map_height_ * spriteSize.y * spriteScale.y;
-
-    ResourceManager::CreateRenderTexture(32, 32, "tex_used_tiles");
-    ResourceManager::ResizeRenderTexture(map_pixel_width_, map_pixel_height_, "minimap");
-
-    //e_cameras_["Editor"]->Size(width_, height_);
-    //e_cameras_["Editor"]->Center(width_ / 2, height_ / 2);
-
-    map_bg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
-    map_pg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
-    map_fg_ = std::vector<std::vector<GLuint>>(height, std::vector<GLuint>(width, 0));
-
-    map_bg_vao_.clear();
-    map_bg_vao_.setPrimitiveType(sf::Quads);
-    map_bg_vao_.resize(map_width_ * map_height_* 4);
-
-    map_pg_vao_.clear();
-    map_pg_vao_.setPrimitiveType(sf::Quads);
-    map_pg_vao_.resize(map_width_ * map_height_ * 4);
-
-    map_fg_vao_.clear();
-    map_fg_vao_.setPrimitiveType(sf::Quads);
-    map_fg_vao_.resize(map_width_ * map_height_ * 4);
-    */
 }
 
 GLvoid Scene::Update(GLuint width, GLuint height)
@@ -638,9 +595,9 @@ GLvoid Scene::PlaceSprite()
         if (active_layer_ != layer_t::FORE)
         {
             /* std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_); */
-            std::stringstream msg;
+            /* std::stringstream msg;
             msg << "key: " << active_sprite_name_;
-            MessageManager::AddMessage(msg, message_t::INFO);
+            MessageManager::AddMessage(msg, message_t::INFO); */
 
             e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
 

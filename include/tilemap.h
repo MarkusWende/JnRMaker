@@ -229,9 +229,9 @@ private:
         num_rows_ = tex.Height / sprite_size_.y;
         num_cols_ = tex.Width / sprite_size_.x;
 
-        std::stringstream msg;
+        /* std::stringstream msg;
         msg << "rows: " << num_rows_ << "\tcols: " << num_cols_;
-        MessageManager::AddMessage(msg, message_t::INFO);
+        MessageManager::AddMessage(msg, message_t::INFO); */
 
         for (GLuint i = 0; i < num_cols_; i++)
         {
