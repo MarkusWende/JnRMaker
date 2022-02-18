@@ -88,10 +88,15 @@ endif (UNIX)
 #set(Boost_USE_STATIC_LIBS ON)
 #find_package(BOOST 1.68.0 REQUIRED COMPONENTS system filesystem serialization)
 
+# Dear ImGui
+set(IMGUI_DIR lib/imgui/)
+include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+
 IF (WIN32)
   # List of Files
   file(GLOB SRC_MAIN "src/*.cpp")
-  file(GLOB SRC_IMGUI "lib/imgui/*.cpp")
+  #file(GLOB SRC_IMGUI "lib/imgui/*.cpp")
+  #file(GLOB SRC_IMGUI "lib/imgui/backends/*.cpp")
 
   # Copy assets folder
   file(COPY "resources/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/resources")
@@ -109,7 +114,7 @@ endif (UNIX)
 
 # Define sources and executable
 set(EXECUTABLE_NAME "JnRMaker")
-add_executable(${EXECUTABLE_NAME} ${SRC_IMGUI} ${SRC_MAIN})
+add_executable(${EXECUTABLE_NAME} ${SRC_MAIN} ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_tables.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
 
 IF (WIN32)
   target_link_libraries(${EXECUTABLE_NAME} GLEW::GLEW glfw ${GLUT_glut_LIBRARY})
