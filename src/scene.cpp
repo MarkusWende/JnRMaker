@@ -129,8 +129,8 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
     std::stringstream fileDefaultEmpty;
     std::stringstream fileDefaultBorder;
-    fileDefaultEmpty << "resources/assets/sprites/" << keyEmpty.str().c_str() << ".png";
-    fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    fileDefaultEmpty << "data/assets/sprites/" << keyEmpty.str().c_str() << ".png";
+    fileDefaultBorder << "data/assets/sprites/" << keyBorder.str().c_str() << ".png";
     ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
     ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
 

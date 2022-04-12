@@ -31,21 +31,21 @@
 
 #include "scene.h"
 #include "gui.h"
-#include "../lib/imgui/imgui.h"
+#include "imgui.h"
 
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(Scene &scene, Gui &gui)
+void processEvents(Scene* scene, Gui* gui)
 {
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
 	{
-        gui.Close();
+        gui->Close();
 	}
         
     ImGuiIO& io = ImGui::GetIO();
 
-    if (scene.IsMouseOverScene())
+    if (scene->IsMouseOverScene())
     {
         float x = io.MouseDelta.x;
         float y = io.MouseDelta.y;
@@ -53,31 +53,31 @@ void processEvents(Scene &scene, Gui &gui)
 
         float deltaTime = io.DeltaTime;
 
-        scene.SetMousePosition(glm::vec2(io.MousePos.x, io.MousePos.y));
+        scene->SetMousePosition(glm::vec2(io.MousePos.x, io.MousePos.y));
         
         // Mouse dragging
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 	    {
-            if (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE)
+            if (scene->GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE)
             {
-                scene.GetCamera("SceneCamera")->ProcessMouseRotate(x, y, deltaTime);
+                scene->GetCamera("SceneCamera")->ProcessMouseRotate(x, y, deltaTime);
             }
         }
         
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
-            if ((scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC) ||
-                    (scene.GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
+            if ((scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC) ||
+                    (scene->GetCamera("SceneCamera")->GetState() == CameraState::PERSPECTIVE))
             {
-                scene.GetCamera("SceneCamera")->ProcessMouseDrag(x, y, deltaTime);
+                scene->GetCamera("SceneCamera")->ProcessMouseDrag(x, y, deltaTime);
             }
         }
 
         if (ImGui::IsMouseDragging(ImGuiMouseButton_Left))
         {
-            if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+            if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene.PlaceSprite();
+                    scene->PlaceSprite();
                 }
         }
 
@@ -86,14 +86,14 @@ void processEvents(Scene &scene, Gui &gui)
 	    {
             if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 1)
             {
-                if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+                if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene.PlaceSprite();
+                    scene->PlaceSprite();
                 }
             }
             else if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 2)
             {
-                if (scene.GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+                if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
                     std::stringstream msg;
                     msg << "Deleted...";
@@ -105,7 +105,7 @@ void processEvents(Scene &scene, Gui &gui)
         // Mouse wheel
         if (io.MouseWheel != 0.0f)
         {
-            scene.GetCamera("SceneCamera")->ProcessMouseScroll(wheelY, deltaTime);
+            scene->GetCamera("SceneCamera")->ProcessMouseScroll(wheelY, deltaTime);
         }
     }
 }

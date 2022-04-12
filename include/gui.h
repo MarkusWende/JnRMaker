@@ -37,7 +37,7 @@
 #include "tilemap_manager.h"
 #include "scene.h"
 
-#include "../lib/imgui/imgui.h"
+#include "imgui.h"
 //#include "imgui/imgui-SFML.h"
 
 //#include <SFML/OpenGL.hpp>
@@ -105,7 +105,7 @@ public:
 	 * @return GLvoid.
 	 */
     //GLvoid Render(Scene &scene);
-    GLvoid Render(Scene& scene);
+    GLvoid Render(Scene* scene);
 
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
@@ -160,7 +160,7 @@ private:
 	    */
     GLvoid customGuiStyle();
 
-    GLvoid fileBrowserAddTile(Scene& scene, fs::path& path, GLboolean extension_only, fs::path extension);
+    GLvoid fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 };
 CEREAL_CLASS_VERSION(Gui, 1);

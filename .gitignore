@@ -4,6 +4,9 @@ build
 lib
 clean.sh
 build_and_run.sh
+desktop-win/build
+desktop-linux/build
+emscripten/build
 
 # VS project files
 .vs/
@@ -24,7 +27,7 @@ x64/
 *.gch
 
 # resources
-resources/
+data/
 
 # log file
 log.txt

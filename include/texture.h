@@ -31,7 +31,7 @@
 #include <vector>
 
 #include <GL/glew.h>
-#include <SOIL/SOIL.h>
+//#include <SOIL/SOIL.h>
 #include "glm/glm.hpp"
 
 #include "message_manager.h"

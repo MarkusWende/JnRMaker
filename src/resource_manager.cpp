@@ -29,6 +29,8 @@
 #include "../include/resource_manager.h"
 #include "../include/message_manager.h"
 
+#include "stb_image.h"
+
 std::map<std::string, Texture2D>    ResourceManager::Textures;
 //std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
 //std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
@@ -172,21 +174,25 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
         texture.Internal_Format = GL_RGB;
         texture.Image_Format = GL_RGB;
     }
-    // Load image
-    int width, height;
-    unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+
+    // Load from file
+    int image_width = 0;
+    int image_height = 0;
+    //unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    unsigned char* image_data = stbi_load(file, &image_width, &image_height, NULL, texture.Image_Format == GL_RGBA ? 4 : 3);
     
-    if (NULL == image)
+    if (NULL == image_data)
     {
         std::stringstream msg;
-        msg << SOIL_last_result() << ": " << file;
+        msg << stbi_failure_reason() << ": " << file;
         MessageManager::AddMessage(msg, message_t::ERROR_T);
     }
     
     // Now generate texture
-    texture.Generate(width, height, image);
-    // And finally free image data
-    SOIL_free_image_data(image);
+    texture.Generate(image_width, image_height, image_data);
+
+    stbi_image_free(image_data);
+
     return texture;
 }
 

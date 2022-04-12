@@ -69,8 +69,8 @@ void JNRWindow::CreateNewWindow(int width, int height, const char* name) {
 	gl_context_ = SDL_GL_CreateContext(window_);
 
 	// VSync
-	SDL_GL_SetSwapInterval(1);		// enable
-	//SDL_GL_SetSwapInterval(0);			// disable
+	//SDL_GL_SetSwapInterval(1);		// enable
+	SDL_GL_SetSwapInterval(0);			// disable
 
 	// load software icon
 	SDL_Surface* icon = IMG_Load("icon.png");

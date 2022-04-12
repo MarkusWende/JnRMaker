@@ -33,7 +33,7 @@ Gui::Gui()
 	init();
 	customGuiStyle();
 
-	//active_tilemap_name_ = "resources/assets/tiles/game-tiles_cut.png";
+	//active_tilemap_name_ = "data/assets/tiles/game-tiles_cut.png";
 	
 	//tilemap_list_.push_back(active_tilemap_name_);
 	//TilemapManager::AddTilemap(active_tilemap_name_, { 16, 16 }, { 1.0f, 1.0f }, active_tilemap_name_);
@@ -69,13 +69,13 @@ GLvoid Gui::WindowUpdate()
 	update_sence_ = true;
 }
 
-GLvoid Gui::Render(Scene &scene)
+GLvoid Gui::Render(Scene *scene)
 {
 	if (update_sence_)
 	{
-		scene.Update(window_scene_.w-5, window_scene_.h-25);
-		scene.GetCamera("SceneCamera")->SetSceneWidth(window_scene_.wPercent);
-		scene.GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
+		scene->Update(window_scene_.w-5, window_scene_.h-25);
+		scene->GetCamera("SceneCamera")->SetSceneWidth(window_scene_.wPercent);
+		scene->GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
 		update_sence_ = false;
 	}
 
@@ -162,7 +162,7 @@ GLvoid Gui::Render(Scene &scene)
 		{
 			if (ImGui::BeginTabItem("Viewport"))
 			{
-				//if (!scene.IsMapNull())
+				//if (!scene->IsMapNull())
 				{
 					GLfloat yOff = 45;
 					GLfloat xOff = 3;
@@ -170,29 +170,29 @@ GLvoid Gui::Render(Scene &scene)
 					/*
 					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
 					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
-						sf::FloatRect(0, (float)scene.GetHeight(), (float)scene.GetWidth(), -(float)scene.GetHeight()),
+						sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
+						sf::FloatRect(0, (float)scene->GetHeight(), (float)scene->GetWidth(), -(float)scene->GetHeight()),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
 						*/
 					GLuint64 fbID = ResourceManager::GetFramebuffer("scene").GetTextureID();
-					ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene.GetWidth() + xOff, scene.GetHeight() + yOff));
-					//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene.GetWidth(), scene.GetHeight()));
+					ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
+					//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
 					ImVec2 mousePos = ImGui::GetMousePos();
-					if ((mousePos.x > xOff && mousePos.x < (scene.GetWidth() + xOff)) && !file_browser_add_tiles_)
+					if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
 					{
-						if (mousePos.y > yOff && mousePos.y < (scene.GetHeight() + yOff))
+						if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 						{
-							scene.SetMouseOverScene(true);
+							scene->SetMouseOverScene(true);
 						}
 						else
 						{
-							scene.SetMouseOverScene(false);
+							scene->SetMouseOverScene(false);
 						}
 					}
 					else
 					{
-						scene.SetMouseOverScene(false);
+						scene->SetMouseOverScene(false);
 					}
 				}
 
@@ -201,11 +201,11 @@ GLvoid Gui::Render(Scene &scene)
 
 			if (ImGui::BeginTabItem("Depth"))
 			{
-				scene.SetMouseOverScene(false);
+				scene->SetMouseOverScene(false);
 
 				//GLuint texId = ResourceManager::GetTextureID("viewport");
 
-				//ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene.GetWidth(), scene.GetHeight() + 50));
+				//ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene->GetWidth(), scene->GetHeight() + 50));
 				//ImGui::Image(textureID, size, uv0, uv1, sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
 
 				/*
@@ -228,13 +228,13 @@ GLvoid Gui::Render(Scene &scene)
 				{
 
 					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(scene.GetWidth(), scene.GetHeight()),
-						sf::FloatRect(offset.x, (float)scene.GetHeight(), (float)scene.GetWidth() + offset.x, -(float)scene.GetHeight()),
+						sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
+						sf::FloatRect(offset.x, (float)scene->GetHeight(), (float)scene->GetWidth() + offset.x, -(float)scene->GetHeight()),
 						sf::Color(255, 255, 255, 255),
 						sf::Color(0, 255, 0, 255));
 
 
-					//ImGui::GetWindowDrawList()->AddImage(textureID, ImVec2(0, 25), ImVec2(scene.GetWidth(), scene.GetHeight()));
+					//ImGui::GetWindowDrawList()->AddImage(textureID, ImVec2(0, 25), ImVec2(scene->GetWidth(), scene->GetHeight()));
 				}
 				ImGui::EndChildFrame();
 				ImGui::PopStyleColor();
@@ -297,11 +297,11 @@ GLvoid Gui::Render(Scene &scene)
 											ImGuiWindowFlags_NoMove |
 											ImGuiWindowFlags_NoCollapse);
 
-		if (!scene.IsMapNull())
+		if (!scene->IsMapNull())
 		{
 			ImGui::SetCursorPos(ImVec2(15.f, 5.f));
-			glm::vec2 mapSize = glm::vec2((float)scene.GetMapWidth(), (float)scene.GetMapHeight());
-			mapSize = mapSize * scene.GetSpriteSize() * scene.GetSpriteScale();
+			glm::vec2 mapSize = glm::vec2((float)scene->GetMapWidth(), (float)scene->GetMapHeight());
+			mapSize = mapSize * scene->GetSpriteSize() * scene->GetSpriteScale();
 			//height = (int)((350.0f / (float)width) * (float)height);
 			ImGui::BeginChild("Minimap", ImVec2(400, 30));
 			ImGui::Text("Minimap");
@@ -312,7 +312,7 @@ GLvoid Gui::Render(Scene &scene)
 			/*
 			ImGui::Image(tex->getTexture(),
 				sf::Vector2f(350, height),
-				sf::FloatRect(0, (float)scene.GetMapHeight(), (float)scene.GetMapWidth(), -(float)scene.GetMapHeight()),
+				sf::FloatRect(0, (float)scene->GetMapHeight(), (float)scene->GetMapWidth(), -(float)scene->GetMapHeight()),
 				sf::Color(255, 255, 255, 255),
 				sf::Color(0, 255, 0, 255));
 				*/
@@ -362,7 +362,7 @@ GLvoid Gui::Render(Scene &scene)
 					int height = std::stoi(tokens.at(1));
 
 					if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height)) {
-						scene.CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
+						scene->CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
 					}
 				}
 			}
@@ -376,34 +376,34 @@ GLvoid Gui::Render(Scene &scene)
 			}
 
 			if (selected == 0) {
-				scene.SetActiveLayer(layer_t::BACK);
+				scene->SetActiveLayer(layer_t::BACK);
 			}
 			else if (selected == 1) {
-				scene.SetActiveLayer(layer_t::PLAYER);
+				scene->SetActiveLayer(layer_t::PLAYER);
 			}
 			else if (selected == 2) {
-				scene.SetActiveLayer(layer_t::FORE);
+				scene->SetActiveLayer(layer_t::FORE);
 			}
 		}
 
 		if (ImGui::CollapsingHeader("Camera")) {
-			ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene.GetCamera("SceneCamera")->GetPosition().x, scene.GetCamera("SceneCamera")->GetPosition().y, scene.GetCamera("SceneCamera")->GetPosition().z);
-			ImGui::Text("Yaw: %.2f", scene.GetCamera("SceneCamera")->GetYaw());
-			ImGui::Text("Pitch: %.2f", scene.GetCamera("SceneCamera")->GetPitch());
-			ImGui::Text("Roll: %.2f", scene.GetCamera("SceneCamera")->GetRoll());
-			ImGui::Text("Zoom: %.2f", scene.GetCamera("SceneCamera")->GetZoom());
+			ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene->GetCamera("SceneCamera")->GetPosition().x, scene->GetCamera("SceneCamera")->GetPosition().y, scene->GetCamera("SceneCamera")->GetPosition().z);
+			ImGui::Text("Yaw: %.2f", scene->GetCamera("SceneCamera")->GetYaw());
+			ImGui::Text("Pitch: %.2f", scene->GetCamera("SceneCamera")->GetPitch());
+			ImGui::Text("Roll: %.2f", scene->GetCamera("SceneCamera")->GetRoll());
+			ImGui::Text("Zoom: %.2f", scene->GetCamera("SceneCamera")->GetZoom());
 
 			if (ImGui::Button("Reset")) {
-				scene.GetCamera("SceneCamera")->Reset();
+				scene->GetCamera("SceneCamera")->Reset();
 			}
 
-			CameraState cState = scene.GetCamera("SceneCamera")->GetState();
+			CameraState cState = scene->GetCamera("SceneCamera")->GetState();
 			if (ImGui::Button("Persp")) {
-				scene.GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
+				scene->GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
 				cState = CameraState::PERSPECTIVE;
 			}
 			if (ImGui::Button("Ortho")) {
-				scene.GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
+				scene->GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
 				cState = CameraState::ORTHOGRAPHIC;
 			}
 		}
@@ -616,16 +616,16 @@ GLvoid Gui::Render(Scene &scene)
 			{
 				if (ImGui::BeginTabItem("Tiles"))
 				{
-					if (ImGui::BeginCombo("##TilemapCombo", scene.GetActiveTilemap().c_str()))
+					if (ImGui::BeginCombo("##TilemapCombo", scene->GetActiveTilemap().c_str()))
 					{
 						for (auto const& [key, val] : TilemapManager::Tilemaps)
 						{
 							if(key != "")
 							{
 								ImGui::PushID(key.c_str());
-								if (ImGui::Selectable(key.c_str(), key.compare(scene.GetActiveTilemap())))
+								if (ImGui::Selectable(key.c_str(), key.compare(scene->GetActiveTilemap())))
 								{
-									scene.SetActiveTilemap(key);
+									scene->SetActiveTilemap(key);
 								}
 								ImGui::PopID();
 							}
@@ -634,7 +634,7 @@ GLvoid Gui::Render(Scene &scene)
 					}
 
 					static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-					Tilemap* tilemap = TilemapManager::GetTilemap(scene.GetActiveTilemap());
+					Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
 					std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
 					ImGui::BeginChild("TileSelector",
@@ -681,11 +681,11 @@ GLvoid Gui::Render(Scene &scene)
 										ImVec4(0.8, 0.8, 0.8, 1))
 									)
 								{
-									if (!scene.IsMapNull())
+									if (!scene->IsMapNull())
 									{
-										scene.SetActiveSprite(tilemapHashes.at(i));
+										scene->SetActiveSprite(tilemapHashes.at(i));
 										Texture2D *brushTex = tilemap->GetTile(tilemapHashes.at(i));
-										scene.GetSprite("brush")->AssignTextureByName(*brushTex);
+										scene->GetSprite("brush")->AssignTextureByName(*brushTex);
 
 										/* std::stringstream msg;
 										msg << tilemapHashes.at(i);
@@ -943,7 +943,7 @@ GLvoid Gui::customGuiStyle()
 }
 
 
-GLvoid Gui::fileBrowserAddTile(Scene& scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
+GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
 {
 	//prepare for file browser popup
 	ImGui::SetNextWindowSize(ImVec2(800, 580));
@@ -1034,7 +1034,7 @@ GLvoid Gui::fileBrowserAddTile(Scene& scene, fs::path& path, GLboolean extension
 				//ResourceManager::LoadTexture(str.c_str(), GL_TRUE, str);
 				// TODO: find or ask for sprite size and scale
 				TilemapManager::AddTilemap(str, { 16, 16 }, { 1.0f, 1.0f }, str);
-				scene.SetActiveTilemap(str);
+				scene->SetActiveTilemap(str);
 				file_browser_add_tiles_ = false;
 				ImGui::CloseCurrentPopup();
 			}

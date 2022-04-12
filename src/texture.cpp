@@ -2,6 +2,11 @@
 
 #include "../include/texture.h"
 
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+#endif
+
 
 Texture2D::Texture2D()
 	: Width(0), Height(0), Internal_Format(GL_RGBA), Image_Format(GL_RGBA), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_NEAREST), Filter_Mag(GL_NEAREST)
@@ -48,20 +53,21 @@ void TextureCM::Generate(std::vector<std::string>* faces)
 
 	for (unsigned int i = 0; i < faces->size(); i++)
 	{
-		unsigned char* image = SOIL_load_image(faces->at(i).c_str(), &width, &height, &nrChannels, 0);
+		//unsigned char* image = SOIL_load_image(faces->at(i).c_str(), &width, &height, &nrChannels, 0);
+		unsigned char* image = stbi_load(faces->at(i).c_str(), &width, &height, &nrChannels, 0);
 		if (image)
 		{
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
 			);
-			SOIL_free_image_data(image);
+			stbi_image_free(image);
 		}
 		else
 		{
 			std::stringstream msg;
-			msg << "Cubemap tex failed to load at path: " << faces->at(i);
+			msg << "Cubemap tex failed to load at path: " << faces->at(i) << "\treason: " << stbi_failure_reason();
 			MessageManager::AddMessage(msg, message_t::ERROR_T);
-			SOIL_free_image_data(image);
+			stbi_image_free(image);
 		}
 	}
 

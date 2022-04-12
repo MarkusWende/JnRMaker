@@ -50,7 +50,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     std::stringstream keyBorder;
     keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
     std::stringstream fileDefaultBorder;
-    fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    fileDefaultBorder << "data/assets/sprites/" << keyBorder.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
 
     TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
