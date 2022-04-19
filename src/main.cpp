@@ -153,7 +153,7 @@ int main(int, char**)
 
         if (stream)
         {
-            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", TimeHelper::GetTimeinfo().c_str());
             fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
             fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
             fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);

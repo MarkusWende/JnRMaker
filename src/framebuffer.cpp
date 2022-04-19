@@ -98,12 +98,12 @@ void Framebuffer::Generate(GLuint width, GLuint height, GLenum type)
 	{
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 		{
-			fprintf(stream, "%s\tFramebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u\n", time_helper::GetTimeinfo().c_str(), id_, width_, height_);
+			fprintf(stream, "%s\tFramebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u\n", TimeHelper::GetTimeinfo().c_str(), id_, width_, height_);
 			status = true;
 		}
 		else
 		{
-			fprintf(stream, "%s\t[Error]: Framebuffer could not be initialized.\n", time_helper::GetTimeinfo().c_str());
+			fprintf(stream, "%s\t[Error]: Framebuffer could not be initialized.\n", TimeHelper::GetTimeinfo().c_str());
 			status = false;
 		}
             	fclose(stream);
