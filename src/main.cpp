@@ -266,7 +266,9 @@ static void main_loop(void* arg)
     ImGui::NewFrame();
 
     // Update and render gui
-    appGui->WindowUpdate(1400, 720);
+    int width, height;
+    SDL_GetWindowSize(g_Window, &width, &height);
+    appGui->WindowUpdate(width, height);
     processEvents(appScene, appGui);
     appGui->Render(appScene);
     appGui->DrawMessageWindow();
