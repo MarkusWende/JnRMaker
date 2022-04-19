@@ -115,6 +115,18 @@ public:
     //GLvoid Render(Scene &scene);
     GLvoid Render(Scene* scene);
 
+    /**
+	 * @brief Draw the message window.
+	 * @return Bool Void.
+	 */
+	void DrawMessageWindow();
+
+    /**
+	 * @brief Show a backend information window.
+	 * @return Bool Void.
+	 */
+	void ShowBackendCheckerWindow();
+
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
 
@@ -171,6 +183,7 @@ private:
 	    * @return GLvoid.
 	    */
     GLvoid customGuiStyle();
+
 #ifdef __EMSCRIPTEN__
     GLvoid fileBrowserAddTile();
     GLvoid listDirectoryContent();

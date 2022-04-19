@@ -52,12 +52,20 @@ Scene::Scene(GLuint width, GLuint height)
     //chdir(fs::current_path().parent_path().string().c_str());
     //std::cout << fs::current_path().parent_path().string().c_str();
 
+#ifdef __EMSCRIPTEN__
+    ResourceManager::LoadShader("src/shaders/es/line.vert", "src/shaders/es/line.frag",  nullptr, "line");
+    ResourceManager::LoadShader("src/shaders/es/level_layer.vert", "src/shaders/es/level_layer.frag",  nullptr, "llayer");
+    ResourceManager::LoadShader("src/shaders/es/scene.vert", "src/shaders/es/scene.frag", nullptr, "scene");
+    ResourceManager::LoadShader("src/shaders/es/solid.vert", "src/shaders/es/solid.frag", nullptr, "solid");
+    ResourceManager::LoadShader("src/shaders/es/sprite.vert", "src/shaders/es/sprite.frag", nullptr, "sprite");
+#else
     ResourceManager::LoadShader("src/shaders/scene.vert", "src/shaders/scene.frag", nullptr, "scene");
     ResourceManager::LoadShader("src/shaders/solid.vert", "src/shaders/solid.frag", nullptr, "solid");
     ResourceManager::LoadShader("src/shaders/sprite.vert", "src/shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("src/shaders/line.vert", "src/shaders/line.frag",  nullptr, "line");
     ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
     //ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
+#endif
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 

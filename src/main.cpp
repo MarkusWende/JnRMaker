@@ -1,3 +1,6 @@
+//#define IMGUI_USER_CONFIG "config.h"
+
+//#include "config.h"
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
@@ -69,10 +72,10 @@ int main(int, char**)
         // For the browser using Emscripten, we are going to use WebGL1 with GL ES2. See the Makefile. for requirement details.
         // It is very likely the generated file won't work in many browsers. Firefox is the only sure bet, but I have successfully
         // run this code on Chrome for Android for example.
-        //const char* glsl_version = "#version 300 es";
+        glsl_version = "#version 300 es";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     #else
         // GL 4.1 + GLSL 410
@@ -82,12 +85,6 @@ int main(int, char**)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     #endif
-    // Setup SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
-    {
-        printf("Error: %s\n", SDL_GetError());
-        return -1;
-    }
 
     // Create window with graphics context
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -118,14 +115,14 @@ int main(int, char**)
         FILE* stream;
         freopen_s(&stream, "log.txt", "w", stdout);
             if (stream) {
-            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
+            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
             fclose(stream);
             }
 #endif // _WIN32
 #ifdef __linux__
         FILE* stream;
         stream = fopen("./log.txt", "w");
-        fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
+        fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
         fclose(stream);
 #endif // __linux__
         return 1;
@@ -140,6 +137,15 @@ int main(int, char**)
         GLint major, minor;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
         glGetIntegerv(GL_MINOR_VERSION, &minor);
+
+        std::stringstream msg;
+        msg << "Successful initialized OpenGL..." << std::endl;
+        msg << "\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
+        msg << "\t\t\tGL Renderer:\t\t\t\t" << renderer << std::endl;
+        msg << "\t\t\tGL Version (string):\t" << version << std::endl;
+        msg << "\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
+        msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion;
+        MessageManager::AddMessage(msg, message_t::INFO);
 
 #ifdef _WIN32
         FILE* stream;
@@ -162,7 +168,7 @@ int main(int, char**)
 
         if (stream)
         {
-            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", time_helper::GetTimeinfo().c_str());
+            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", TimeHelper::GetTimeinfo().c_str());
             fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
             fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
             fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
@@ -260,13 +266,15 @@ static void main_loop(void* arg)
     ImGui::NewFrame();
 
     // Update and render gui
-    appGui->WindowUpdate(1280, 720);
+    appGui->WindowUpdate(1400, 720);
     processEvents(appScene, appGui);
     appGui->Render(appScene);
+    appGui->DrawMessageWindow();
+    appGui->ShowBackendCheckerWindow();
 
     appScene->Render();
 
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     //ImPlot::ShowDemoWindow();
 
     // Rendering

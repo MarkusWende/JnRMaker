@@ -714,69 +714,6 @@ GLvoid Gui::Render(Scene *scene)
 
 					ImGui::EndTabItem();
 				}
-					
-			}
-			
-		
-
-
-			if (ImGui::BeginTabItem("Messages"))
-			{
-
-				static float wrap_width = 1200.0f;
-				//ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
-				//ImGui::SetCursorPos(ImVec2(0.f, 18.f));
-				//ImGui::Separator();
-
-				// BeginChild: MessageList
-				//ImGui::SetCursorPos(ImVec2(0.f, 21.f));
-				ImGui::BeginChild("##MessageList", ImVec2(0, window_messages_.h - 80), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-				std::vector<Message>* ptrMessages;
-				ptrMessages = MessageManager::GetMessages();
-				if (ptrMessages->size() > 0)
-				{
-					ImGuiListClipper clipper(ptrMessages->size());
-					while (clipper.Step())
-					{
-						for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
-						{
-							ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-							ImGui::TextColored(ImVec4(1, 1, 1, 1), ptrMessages->at(it).timeinfo.c_str());
-							ImGui::SameLine(0, 2);
-							ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
-
-							std::string word;
-							std::stringstream ss(ptrMessages->at(it).msg);
-
-							ImGui::SameLine(0, 5);
-							if (ptrMessages->at(it).type == message_t::ERROR_T)
-							{
-								ImGui::TextColored(ImVec4(0.8, 0.2, 0, 1), ("[Error]\t" + ptrMessages->at(it).msg).c_str());
-							}
-							else if (ptrMessages->at(it).type == message_t::INFO)
-							{
-								ImGui::TextColored(ImVec4(0, 0.8, 0, 1), ("[Info]\t " + ptrMessages->at(it).msg).c_str());
-							}
-							else if (ptrMessages->at(it).type == message_t::WARNING)
-							{
-								ImGui::TextColored(ImVec4(0.7, 0.7, 0, 1), ("[Warning]  " + ptrMessages->at(it).msg).c_str());
-							}
-							else
-							{
-								ImGui::Text("%s", ptrMessages->at(it).msg.c_str());
-							}
-						}
-					}
-				}
-
-		
-
-				ImGui::SetScrollHereY(1.0f);
-				// EndChild: MessageList
-				ImGui::EndChild();
-
-				ImGui::EndTabItem();
 			}
 			ImGui::EndTabBar();
 		}
@@ -793,11 +730,126 @@ GLvoid Gui::Render(Scene *scene)
 		ImGui::End();
 		ImGui::PopStyleVar();
 	}
-
-	// Imgui Demo Window
-	ImGui::ShowDemoWindow();
 }
 
+void Gui::DrawMessageWindow()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, ((io.DisplaySize.y - 200) > 0) ? (200 - main_menubar_height_) : 0));
+    ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 200 + main_menubar_height_));
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
+    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
+    ImGui::Begin("Messages", NULL,	ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoMove |
+                                    ImGuiWindowFlags_NoScrollbar |
+                                    ImGuiWindowFlags_NoScrollWithMouse |
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoResize |
+                                    ImGuiWindowFlags_NoDocking);
+	float wrap_width = io.DisplaySize.x - 50.0f;
+    //ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
+    //ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+    //ImGui::Separator();
+
+    // BeginChild: MessageList
+    ImGui::SetCursorPos(ImVec2(5.f, 20.f));
+    ImGui::BeginChild("##MessageList", ImVec2(0, 160), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+    std::vector<Message>* ptrMessages;
+    ptrMessages = MessageManager::GetMessages();
+    if (ptrMessages->size() > 0)
+    {
+        ImGuiListClipper clipper((int)ptrMessages->size());
+        while (clipper.Step())
+        {
+            for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+            {
+                ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", ptrMessages->at(it).timeinfo.c_str());
+                ImGui::SameLine(0, 2);
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+
+                std::string word;
+                std::stringstream ss(ptrMessages->at(it).msg);
+
+                ImGui::SameLine(0, 5);
+                if (ptrMessages->at(it).type == message_t::ERROR_T)
+                {
+                    ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.0f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
+                }
+                else if (ptrMessages->at(it).type == message_t::INFO)
+                {
+                    ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 1.0f), "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
+                }
+                else if (ptrMessages->at(it).type == message_t::WARNING)
+                {
+                    ImGui::TextColored(ImVec4(0.92f, 0.56f, 0.9f, 1.0f), "[Warning]  %s", ptrMessages->at(it).msg.c_str());
+                }
+                else if (ptrMessages->at(it).type == message_t::DEBUG)
+                {
+                    ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+                }
+                else if (ptrMessages->at(it).type == message_t::DEBUG_WS)
+                {
+                    ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+                }
+            }
+        }
+    }
+
+    // EndChild: MessageList
+    ImGui::EndChild();
+    ImGui::SetScrollHereY(1.0f);
+    // EndChild: MessageList
+    ImGui::End();
+}
+
+void Gui::ShowBackendCheckerWindow()
+{
+    ImGui::Begin("Dear ImGui Backend Checker");
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::Text("Dear ImGui %s Backend Checker", ImGui::GetVersion());
+    ImGui::Text("io.BackendPlatformName: %s", io.BackendPlatformName ? io.BackendPlatformName : "NULL");
+    ImGui::Text("io.BackendRendererName: %s", io.BackendRendererName ? io.BackendRendererName : "NULL");
+    ImGui::Separator();
+    
+    if (ImGui::TreeNode("0001: Renderer: Large Mesh Support"))
+    {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        {
+            static int vtx_count = 60000;
+            ImGui::SliderInt("VtxCount##1", &vtx_count, 0, 100000);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            for (int n = 0; n < vtx_count / 4; n++)
+            {
+                float off_x = (float)(n % 100) * 3.0f;
+                float off_y = (float)(n % 100) * 1.0f;
+                ImU32 col = IM_COL32(((n * 17) & 255), ((n * 59) & 255), ((n * 83) & 255), 255);
+                draw_list->AddRectFilled(ImVec2(p.x + off_x, p.y + off_y), ImVec2(p.x + off_x + 50, p.y + off_y + 50), col);
+            }
+            ImGui::Dummy(ImVec2(300 + 50, 100 + 50));
+            ImGui::Text("VtxBuffer.Size = %d", draw_list->VtxBuffer.Size);
+        }
+        {
+            static int vtx_count = 60000;
+            ImGui::SliderInt("VtxCount##2", &vtx_count, 0, 100000);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            for (int n = 0; n < vtx_count / (10*4); n++)
+            {
+                float off_x = (float)(n % 100) * 3.0f;
+                float off_y = (float)(n % 100) * 1.0f;
+                ImU32 col = IM_COL32(((n * 17) & 255), ((n * 59) & 255), ((n * 83) & 255), 255);
+                draw_list->AddText(ImVec2(p.x + off_x, p.y + off_y), col, "ABCDEFGHIJ");
+            }
+            ImGui::Dummy(ImVec2(300 + 50, 100 + 20));
+            ImGui::Text("VtxBuffer.Size = %d", draw_list->VtxBuffer.Size);
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
+}
 
 // PRIVATE
 GLvoid Gui::init()

@@ -36,13 +36,13 @@ Message MessageManager::AddMessage(std::stringstream& msg, message_t type)
   Message tmpMsg;
 
   tmpMsg.msg = msg.str();
-  tmpMsg.timeinfo = time_helper::GetTimeinfo();
+  tmpMsg.timeinfo = TimeHelper::GetTimeinfo();
   tmpMsg.type = type;
 
-  messages.push_back(tmpMsg);
+  messages.insert(messages.begin(), tmpMsg);
 
   if (messages.size() > MAX_STORED_MSG)
-    messages.erase(messages.begin());
+    messages.pop_back();
 
   msg.str("");
 

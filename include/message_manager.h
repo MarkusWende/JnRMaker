@@ -26,14 +26,11 @@
  */
 
 
-#ifndef MESSAGE_MANAGER_H
-#define MESSAGE_MANAGER_H
+#pragma once
 
 #include <map>
 #include <vector>
 #include <sstream>
-
-//#include <SFML/OpenGL.hpp>
 
 #include "time_helper.h"
 
@@ -46,6 +43,8 @@ enum class message_t {
   ERROR_T = 0,                          /**< Error message. */
   WARNING = 1,                          /**< Warning message. */
   INFO = 2,                             /**< Info message. */
+  DEBUG = 3,                            /**< Debug message. */
+  DEBUG_WS = 4,                         /**< Websocket debug message. */
 };
 
 /**
@@ -84,5 +83,3 @@ private:
   MessageManager() { };                             //!< constructor
   ~MessageManager() { };                            //!< destructor
 };
-
-#endif
