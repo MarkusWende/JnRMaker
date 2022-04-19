@@ -121,7 +121,7 @@ target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 #add_definitions("-s EXPORTED_FUNCTIONS='[\"_sync_tunnel\"]'")
 
 # These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
-set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-O2 -sUSE_WEBGL2=1 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1 -sINITIAL_MEMORY=134217728 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -sFETCH -lidbfs.js -lembind --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-O2 -s USE_WEBGL2=1 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=134217728 -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
 
 # When the build is complete we will run the 'cmake-post-build.sh' script.
 add_custom_command(
