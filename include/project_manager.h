@@ -32,6 +32,9 @@
 #include <string>
 #include <fstream>
 
+#ifdef __EMSCRIPTEN__
+
+#else
 #include <cereal/archives/xml.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
@@ -40,6 +43,7 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/map.hpp>
+#endif
 
 /**
  * @brief Enumeration for message types.

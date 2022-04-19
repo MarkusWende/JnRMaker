@@ -64,18 +64,26 @@ namespace fs = std::experimental::filesystem;
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
 struct GuiWindow {
+#ifdef __EMSCRIPTEN__
+
+#else
     template <class Archive>
     void serialize( Archive & ar, std::uint32_t const version )
     {
         ar( CEREAL_NVP(wPercent), CEREAL_NVP(hPercent) );
     }
+#endif
 
     GLuint w;                     /**< Width in pixel of the gui window. */
     GLuint h;                     /**< Height in pixel of the gui window. */
     GLdouble wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
     GLdouble hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
 };
+#ifdef __EMSCRIPTEN__
+
+#else
 CEREAL_CLASS_VERSION(GuiWindow, 1);
+#endif
 
 enum class gui_state_t {
     GUI_ACTIVE = 1,
@@ -144,7 +152,11 @@ private:
     //std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
     //std::vector<std::string>    tilemap_list_;
     gui_state_t                 state_;
+#ifdef __EMSCRIPTEN__
+
+#else
     fs::path					root_file_path_;
+#endif
     GLboolean                   file_browser_add_tiles_;
     GLboolean                   update_sence_;
 
@@ -159,10 +171,19 @@ private:
 	    * @return GLvoid.
 	    */
     GLvoid customGuiStyle();
-
+#ifdef __EMSCRIPTEN__
+    GLvoid fileBrowserAddTile();
+    GLvoid listDirectoryContent();
+#else
     GLvoid fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
+#endif
+    
 };
+#ifdef __EMSCRIPTEN__
+
+#else
 CEREAL_CLASS_VERSION(Gui, 1);
+#endif
 
 #endif	// GUI_H

@@ -72,11 +72,16 @@ void JNRWindow::CreateNewWindow(int width, int height, const char* name) {
 	//SDL_GL_SetSwapInterval(1);		// enable
 	SDL_GL_SetSwapInterval(0);			// disable
 
-	// load software icon
+#ifdef __EMSCRIPTEN__
+    
+#else
+    // load software icon
 	SDL_Surface* icon = IMG_Load("icon.png");
 	// set window icon
 	SDL_SetWindowIcon(window_, icon);
 	//SDL_FreeSurface(icon);
+#endif
+	
 }
 
 int JNRWindow::GetWidth() {

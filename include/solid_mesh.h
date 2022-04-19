@@ -4,6 +4,11 @@
 #include <algorithm>
 //#include <ppl.h>
 #include <vector>
+#ifdef __EMSCRIPTEN__
+#define GLM_FORCE_PURE
+#else
+
+#endif
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

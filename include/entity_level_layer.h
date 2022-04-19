@@ -73,6 +73,11 @@ private:
     //std::map<std::string, GLfloat> 			tile_hash_id_map_;
     //GLfloat                                 tile_id_max_;
 };
+
+#ifdef __EMSCRIPTEN__
+
+#else
 CEREAL_CLASS_VERSION(LevelLayer, 1);
+#endif
 
 #endif

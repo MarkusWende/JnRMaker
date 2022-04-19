@@ -11,6 +11,11 @@
 #include "events.h"
 #include "window.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/fetch.h>
+#endif
+
 
 // #include <GLFW/glfw3.h>
 // #include <iostream>
@@ -109,8 +114,8 @@ int main(int, char**)
     //bool err = false;
     if (err)
     {
-        FILE* stream;
 #ifdef _WIN32
+        FILE* stream;
         freopen_s(&stream, "log.txt", "w", stdout);
             if (stream) {
             fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
@@ -118,6 +123,7 @@ int main(int, char**)
             }
 #endif // _WIN32
 #ifdef __linux__
+        FILE* stream;
         stream = fopen("./log.txt", "w");
         fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", time_helper::GetTimeinfo().c_str(), glewGetErrorString(err));
         fclose(stream);
@@ -135,9 +141,8 @@ int main(int, char**)
         glGetIntegerv(GL_MAJOR_VERSION, &major);
         glGetIntegerv(GL_MINOR_VERSION, &minor);
 
-        FILE* stream;
-
 #ifdef _WIN32
+        FILE* stream;
         freopen_s(&stream, "log.txt", "w", stdout);
 
         if (stream)
@@ -152,6 +157,7 @@ int main(int, char**)
         }
 #endif // _WIN32
 #ifdef __linux__
+        FILE* stream;
         stream = fopen("./log.txt", "w");
 
         if (stream)

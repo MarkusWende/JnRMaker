@@ -27,6 +27,11 @@
 
 #include <iostream>
 
+#ifdef __EMSCRIPTEN__
+#define GLM_FORCE_PURE
+#else
+
+#endif
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <glm/glm.hpp>

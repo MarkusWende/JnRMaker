@@ -117,7 +117,9 @@ public:
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
+#ifdef __EMSCRIPTEN__
 
+#else
 	friend class cereal::access;
 	template <class Archive>
 	void save(Archive& ar, std::uint32_t const version) const
@@ -159,6 +161,7 @@ private:
 		//ar( map_pg_ );
 		//ar( map_bg_ );
 	}
+#endif
 
 	std::map<std::string, std::unique_ptr<Camera>> 					e_cameras_;					/**< All camera entities used in the scene. */
 	std::map<std::string, std::unique_ptr<Sprite>> 					e_sprites_;					/**< All sprite entities used in the scene. */
@@ -196,6 +199,10 @@ private:
 	GLuint											current_tile_id_;
 
 };
+#ifdef __EMSCRIPTEN__
+
+#else
 CEREAL_CLASS_VERSION(Scene, 1);
+#endif
 
 #endif

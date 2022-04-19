@@ -1,6 +1,7 @@
 [submodule "external/imgui"]
 	path = external/imgui
 	url = https://github.com/ocornut/imgui.git
+	branch = docking
 	ignore = dirty
 [submodule "external/googletest"]
 	path = external/googletest
@@ -14,3 +15,6 @@
 	path = external/cereal
 	url = https://github.com/USCiLab/cereal.git
 	ignore = dirty
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git

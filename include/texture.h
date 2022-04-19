@@ -32,6 +32,12 @@
 
 #include <GL/glew.h>
 //#include <SOIL/SOIL.h>
+
+#ifdef __EMSCRIPTEN__
+#define GLM_FORCE_PURE
+#else
+
+#endif
 #include "glm/glm.hpp"
 
 #include "message_manager.h"

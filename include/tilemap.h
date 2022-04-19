@@ -40,6 +40,10 @@
 //#include "entity_solid.h"
 //#include "solid_sprite.h"
 
+#ifdef __EMSCRIPTEN
+#include <GL/glext.h>
+#endif
+
 /**
  * @brief This class represents a tilemap containing sf::Sprites.
  */

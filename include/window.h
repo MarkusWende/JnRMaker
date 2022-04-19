@@ -31,7 +31,12 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <stdio.h>
-#include <SDL2/SDL_image.h>
+
+#ifdef __EMSCRIPTEN__
+    
+#else
+    #include <SDL2/SDL_image.h>
+#endif
 
 class JNRWindow {
 public:

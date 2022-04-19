@@ -1,42 +1,95 @@
-cmake_minimum_required(VERSION 3.4.1)
-project(ANCMonitor)
+cmake_minimum_required (VERSION 3.6)
+project(JnRMaker)
 
 # We are using C++ 17 and will make use of C++ exceptions.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE "Debug")
 
 set(THIRD_PARTY_DIR "../external")
 set(MAIN_SOURCE_DIR "../src")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(MAIN_INCLUDE_DIR "../include")
+include_directories(${MAIN_INCLUDE_DIR})
+
+# # OpenGL
+# set(OpenGL_GL_PRFERENCE "LEGACY")
+# find_package(OpenGL REQUIRED)
+# find_package(glfw3 3.2 REQUIRED)
+# find_package(GLEW REQUIRED)
+# include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR})
+
+# # Soil
+# find_package(soil CONFIG REQUIRED)
+# include_directories(${SOIL_INCLUDE_DIR})
+
+# Cereal
+#add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 
 # Implot
-set(IMPLOT_DIR ${THIRD_PARTY_DIR}/implot)
-include_directories(${IMPLOT_DIR})
+# set(IMPLOT_DIR ${THIRD_PARTY_DIR}/implot)
+# include_directories(${IMPLOT_DIR})
 
 # SDL2
 find_package(SDL2 REQUIRED)
-include_directories(${CMAKE_SOURCE_DIR}/include ${SDL2_INCLUDE_DIRS})
+# find_package(sdl2-image CONFIG REQUIRED)
+include_directories(${SDL2_INCLUDE_DIRS})
 
 # cJSON
-set(CJSON_DIR ${THIRD_PARTY_DIR}/cJSON)
-include_directories(${CJSON_DIR})
+# set(CJSON_DIR ${THIRD_PARTY_DIR}/cJSON)
+# include_directories(${CJSON_DIR})
+
+# # Boost
+# set(Boost_USE_STATIC_LIBS ON)
+# set(Boost_USE_STATIC_RUNTIME ON)
+
+# find_package(Boost 1.69 COMPONENTS system filesystem)
+# IF(Boost_FOUND)
+#     link_directories(${Boost_LIBRARY_DIRS})
+#     include_directories(${Boost_INCLUDE_DIRS})
+# ENDIF(Boost_FOUND)
+
+# stb
+set(STB_DIR ${THIRD_PARTY_DIR}/stb)
+include_directories(${STB_DIR})
+
+# glm
+set(GLM_DIR ${THIRD_PARTY_DIR}/glm)
+include_directories(${GLM_DIR})
+
+# Googletest
+#add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
+
+# # Copy data files
+# file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
+# file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")
 
 add_library(
     app
-    ${MAIN_SOURCE_DIR}/gui.hpp
+    ${MAIN_SOURCE_DIR}/entity_level_layer.cpp
+    ${MAIN_SOURCE_DIR}/entity_solid.cpp
+    ${MAIN_SOURCE_DIR}/framebuffer.cpp
     ${MAIN_SOURCE_DIR}/gui.cpp
-    ${MAIN_SOURCE_DIR}/message_manager.hpp
     ${MAIN_SOURCE_DIR}/message_manager.cpp
-    ${MAIN_SOURCE_DIR}/metric_manager.hpp
-    ${MAIN_SOURCE_DIR}/metric_manager.cpp
-    ${MAIN_SOURCE_DIR}/time_helper.hpp
-    ${MAIN_SOURCE_DIR}/ws_emscripten.hpp
-    ${MAIN_SOURCE_DIR}/ws_emscripten.cpp
+    ${MAIN_SOURCE_DIR}/primitive_cube.cpp
+    ${MAIN_SOURCE_DIR}/primitive_line.cpp
+    ${MAIN_SOURCE_DIR}/primitive_quad.cpp
+    ${MAIN_SOURCE_DIR}/primitive.cpp
+    ${MAIN_SOURCE_DIR}/project_manager.cpp
+    ${MAIN_SOURCE_DIR}/resource_manager.cpp
+    ${MAIN_SOURCE_DIR}/scene.cpp
+    ${MAIN_SOURCE_DIR}/shader.cpp
+    ${MAIN_SOURCE_DIR}/solid_cs.cpp
+    ${MAIN_SOURCE_DIR}/solid_grid.cpp
+    ${MAIN_SOURCE_DIR}/solid_sprite.cpp
+    ${MAIN_SOURCE_DIR}/texture.cpp
+    ${MAIN_SOURCE_DIR}/tilemap.cpp
+    ${MAIN_SOURCE_DIR}/tilemap_manager.cpp
+    ${MAIN_SOURCE_DIR}/window.cpp
 )
 
 add_library(
@@ -55,42 +108,24 @@ add_library(
     ${IMGUI_DIR}/imgui_widgets.cpp
 )
 
-add_library(
-    implot
-    ${IMPLOT_DIR}/implot.h
-    ${IMPLOT_DIR}/implot_internal.h
-    ${IMPLOT_DIR}/implot.cpp
-    ${IMPLOT_DIR}/implot_demo.cpp
-    ${IMPLOT_DIR}/implot_items.cpp
-)
-
-add_library(
-    cjson
-    ${CJSON_DIR}/cJSON.h
-    ${CJSON_DIR}/cJSON_Utils.h
-    ${CJSON_DIR}/cJSON.c
-    ${CJSON_DIR}/cJSON_Utils.c
-)
-
-# The 'ancmonitor' executable
+# The 'jnrmaker' executable
 add_executable(
-    ancmonitor
-    ${MAIN_SOURCE_DIR}/ANCMonitor.cpp
+    jnrmaker
+    ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(ancmonitor app imgui implot cjson ${SDL2_LIBRARIES})
+target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 
-# These properties specify what kind of Emscripten build to perform and are assigned to our 'ancmonitor' executable target.
-set_target_properties(
-    ancmonitor
-    PROPERTIES
-    LINK_FLAGS
-    "-O2 -s USE_SDL=2 -s USE_WEBGL2=1 -s INITIAL_MEMORY=134217728 -lwebsocket.js -lidbfs.js --no-heap-copy --preload-file ../../data/fonts@/fonts"
-)
+#add_definitions("-s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
+#add_definitions("-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
+#add_definitions("-s EXPORTED_FUNCTIONS='[\"_sync_tunnel\"]'")
+
+# These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
+set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-O2 -sUSE_WEBGL2=1 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1 -sINITIAL_MEMORY=134217728 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -sFETCH -lidbfs.js -lembind --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
 
 # When the build is complete we will run the 'cmake-post-build.sh' script.
 add_custom_command(
-    TARGET ancmonitor
+    TARGET jnrmaker
     POST_BUILD
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMAND ./cmake-post-build.sh

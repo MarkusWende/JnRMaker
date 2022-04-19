@@ -4,6 +4,12 @@
 #include <string>
 
 #include <GL/glew.h>
+
+#ifdef __EMSCRIPTEN__
+#define GLM_FORCE_PURE
+#else
+
+#endif
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 

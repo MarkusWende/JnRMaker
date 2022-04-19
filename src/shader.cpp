@@ -6,7 +6,8 @@
 ** Creative Commons, either version 4 of the License, or (at your
 ** option) any later version.
 ******************************************************************/
-#include "../include/shader.h"
+#include "shader.h"
+#include "message_manager.h"
 
 #include <iostream>
 
@@ -125,13 +126,20 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 		if (!success)
 		{
 			glGetShaderInfoLog(object, 1024, NULL, infoLog);
-			FILE* stream;
+
+#ifdef __EMSCRIPTEN__
+			std::stringstream msg;
+			msg << "Compile-time error. Type: " << type << "\tinfo: " << infoLog;
+			MessageManager::AddMessage(msg, message_t::ERROR_T);
+#endif
 #ifdef _WIN32
+			FILE* stream;
 			freopen_s(&stream, "log.txt", "w", stdout);
 			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type, infoLog);
 			fclose(stream);
 #endif // _WIN32
 #ifdef __linux__
+			FILE* stream;
 			stream = fopen("./log.txt", "w");
 			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type, infoLog);
 			fclose(stream);
@@ -144,13 +152,19 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 		if (!success)
 		{
 			glGetProgramInfoLog(object, 1024, NULL, infoLog);
-			FILE* stream;
+#ifdef __EMSCRIPTEN__
+			std::stringstream msg;
+			msg << "Link-time error. Type: " << type << "\tinfo: " << infoLog;
+			MessageManager::AddMessage(msg, message_t::ERROR_T);
+#endif
 #ifdef _WIN32
+			FILE* stream;
 			freopen_s(&stream, "log.txt", "w", stdout);
 			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type, infoLog);
 			fclose(stream);
 #endif // _WIN32
 #ifdef __linux__
+			FILE* stream;
 			stream = fopen("./log.txt", "w");
 			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type, infoLog);
 			fclose(stream);

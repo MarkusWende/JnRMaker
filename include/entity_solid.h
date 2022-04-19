@@ -259,6 +259,9 @@ protected:
     GLfloat pitch_;
     GLfloat roll_;
 
+#ifdef __EMSCRIPTEN__
+
+#else
 	friend class cereal::access;
 	template <class Archive>
 	void serialize(Archive& ar, std::uint32_t const version)
@@ -268,10 +271,17 @@ protected:
 		ar(CEREAL_NVP(name_));
 		ar(CEREAL_NVP(id_));
 	}
+#endif
+	
 
 private:
     ModelNew	            model_;								/**< @brief Every vertex, index, face etc. is stored in the model attribute. */
 };
-CEREAL_CLASS_VERSION(Solid, 1);
+#ifdef __EMSCRIPTEN__
+
+#else
+	CEREAL_CLASS_VERSION(Solid, 1);
+#endif
+
 
 #endif

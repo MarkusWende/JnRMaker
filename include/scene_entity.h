@@ -22,6 +22,12 @@
 #ifndef SCENE_ENTITY_H
 #define SCENE_ENTITY_H
 
+#ifdef __EMSCRIPTEN__
+#define GLM_FORCE_PURE
+#else
+
+#endif
+
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "resource_manager.h"

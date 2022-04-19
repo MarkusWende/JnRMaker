@@ -142,7 +142,12 @@ GLvoid Gui::Render(Scene *scene)
 
 	if (file_browser_add_tiles_)
 	{
-		fileBrowserAddTile(scene, root_file_path_, true, ".png");
+#ifdef __EMSCRIPTEN__
+    fileBrowserAddTile();
+#else
+    fileBrowserAddTile(scene, root_file_path_, true, ".png");
+#endif
+		
 	}
 
 	ImGuiStyle* style = &ImGui::GetStyle();
@@ -818,9 +823,10 @@ GLvoid Gui::init()
 	TCHAR path[256];
 	GetCurrentDirectory(256, path);
 	root_file_path_ = path;
-#endif
-#ifdef __linux__
+#elif __linux__
     root_file_path_ = fs::current_path();
+#elif __EMSCRIPTEN__
+
 #endif
 
 }
@@ -942,7 +948,15 @@ GLvoid Gui::customGuiStyle()
 	style->Colors[ImGuiCol_Separator] = ImVec4(0.4f, 0.4f, 0.4f, 1.00f);
 }
 
+#ifdef __EMSCRIPTEN__
+GLvoid Gui::fileBrowserAddTile()
+{
+}
 
+GLvoid Gui::listDirectoryContent()
+{
+}
+#else
 GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
 {
 	//prepare for file browser popup
@@ -988,7 +1002,10 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				//ImGui::Separator();
 
 				//List of files in the current directory
+
 				listDirectoryContent(path, displayLogicalDrives, isLogicalDrive, extensionOnly, extension, &currentItem, &isSelected);
+
+				
 				if (displayLogicalDrives) {
 					strcpy(newPath, "~\\");
 				}
@@ -1189,3 +1206,4 @@ GLvoid Gui::listDirectoryContent(fs::path path, bool displayLogicalDrives, bool 
 	}
 	ImGui::EndChild();
 }
+#endif
