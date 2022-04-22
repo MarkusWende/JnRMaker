@@ -1,6 +1,6 @@
 #version 300 es
 precision highp float;
-precision highp sampler2D;
+precision lowp sampler2D;
 
 in vec3 Normal;
 in vec3 FragPos;
