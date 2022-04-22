@@ -9,4 +9,4 @@ One of them is [Dear ImGui](https://github.com/ocornut/imgui), which I realy lov
 Another great library is SFML ([github](https://github.com/SFML/SFML)). Check also out the [SFML](https://www.sfml-dev.org/) webpage.
 
 ## Screenshots
-![alt text](https://github.com/MarkusWende/JnRMaker/blob/master/doc/shot_01.png "Screenshot 00")
+![alt text](https://github.com/MarkusWende/JnRMaker/blob/master/doc/shot_02.png "Screenshot 00")
