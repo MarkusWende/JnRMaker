@@ -201,11 +201,11 @@ GLvoid LevelLayer::draw_border()
         {
             if (hash_map_.at(i).at(j).compare(emptyHash) != 0)
             {
-                tile_id_.push_back(-1.0f);
+                tile_id_.push_back(0.0f);
             }
             else
             {
-                tile_id_.push_back(0.0f);
+                tile_id_.push_back(-1.0f);
             }
         }
     }

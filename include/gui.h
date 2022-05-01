@@ -116,10 +116,28 @@ public:
     GLvoid Render(Scene* scene);
 
     /**
-	 * @brief Draw the message window.
+	 * @brief Draw gui windows.
 	 * @return Bool Void.
 	 */
-	void DrawMessageWindow();
+	void Draw(Scene *scene);
+
+    /**
+	 * @brief Draw the explorer window.
+	 * @return Bool Void.
+	 */
+	void DrawExplorerWindow(Scene *scene);
+
+    /**
+	 * @brief Draw the message tab.
+	 * @return Bool Void.
+	 */
+	void DrawMessageTab();
+
+    /**
+	 * @brief Draw the message tab.
+	 * @return Bool Void.
+	 */
+	void DrawTileExplorerTab(Scene *scene);
 
     /**
 	 * @brief Show a backend information window.

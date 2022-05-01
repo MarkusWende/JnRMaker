@@ -272,8 +272,8 @@ static void main_loop(void* arg)
     appGui->WindowUpdate(width, height);
     processEvents(appScene, appGui);
     appGui->Render(appScene);
-    appGui->DrawMessageWindow();
-    appGui->ShowBackendCheckerWindow();
+    appGui->Draw(appScene);
+    //appGui->ShowBackendCheckerWindow();
 
     appScene->Render();
 

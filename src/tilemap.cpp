@@ -40,9 +40,9 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
     tilemap_id_max_ = 0;
 
     // Load image
-    int width, height;
+    int width, height, channels;
     //unsigned char* image = SOIL_load_image(file.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
-    unsigned char* image = stbi_load(file.c_str(), &width, &height, NULL, 4);
+    unsigned char* image = stbi_load(file.c_str(), &width, &height, &channels, 4);
     
     if (NULL == image)
     {
@@ -93,18 +93,8 @@ GLvoid Tilemap::AddTile(const std::string key, GLuint texID)
         /* std::stringstream key;
         key << "r" << 0 << "c" << tilemapSize;
         std::string hashKey = ResourceManager::getNameHash(name_, key.str()); */
-        
-        if (tilemap_textures_.find(key) == tilemap_textures_.end())
-        {
-            tilemap_ids_.insert(std::make_pair(tilemap_id_max_, key));
-            tilemap_id_max_++;
-            tilemap_textures_.insert(std::make_pair(key, new Texture2D()));
-            tilemap_textures_.find(key)->second->Generate(sprite_size_.x, sprite_size_.y, data);
-            num_cols_ = tilemapSize + 1;
-            createTextureArray();
-        }
 
-        #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
         //glBindTexture(GL_TEXTURE_2D, texID);
         glTexSubImage2D(	GL_TEXTURE_2D,
                             0,
@@ -130,6 +120,15 @@ GLvoid Tilemap::AddTile(const std::string key, GLuint texID)
                                 sprite_size_.x * sprite_size_.y * 4,
                                 data);
 #endif
+        if (tilemap_textures_.find(key) == tilemap_textures_.end())
+        {
+            tilemap_ids_.insert(std::make_pair(tilemap_id_max_, key));
+            tilemap_id_max_++;
+            tilemap_textures_.insert(std::make_pair(key, new Texture2D()));
+            tilemap_textures_.find(key)->second->Generate(sprite_size_.x, sprite_size_.y, data);
+            num_cols_ = tilemapSize + 1;
+            createTextureArray();
+        }
     }
     catch(...)
     {
@@ -191,18 +190,7 @@ GLvoid Tilemap::loadTilemapFromTexture()
         for (GLuint j = 0; j < num_rows_; j++)
         {
             unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
-
-            std::stringstream key;
-            key << "r" << j << "c" << i;
-            std::string hashKey = ResourceManager::getNameHash(name_, key.str());
-            
-            tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
-            tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
-            tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, data);
-
-            tilemap_id_max_++;
-
-            #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
             //tex.Bind();
             glTexSubImage2D(	GL_TEXTURE_2D,
                                 0,
@@ -228,6 +216,15 @@ GLvoid Tilemap::loadTilemapFromTexture()
                                     sprite_size_.x * sprite_size_.y * 4,
                                     data);
 #endif
+            std::stringstream key;
+            key << "r" << j << "c" << i;
+            std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+            
+            tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
+            tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
+            tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, data);
+
+            tilemap_id_max_++;
         }
     }
 
@@ -267,14 +264,9 @@ GLvoid Tilemap::createTextureArray()
                             4,
                             subData.data()); */
         //std::copy(subData.begin(), subData.end(), data.begin() + ix * spriteDataSize);
-        for (int row = 0; row < sprite_size_.y; ++row)
-            std::copy(  subData.begin() + row * 64,
-                        subData.begin() + row * 64 + 64,
-                        data.begin() + ix * 64 + row * 64 * tilemap_ids_.size()
-                    );
         //data.insert( data.end(), subData.begin(), subData.end() );
 
-        #ifdef __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
         //unsigned char* subData = (unsigned char*)malloc(spriteDataSize);
         //glBindTexture(GL_TEXTURE_2D, texID);
         //std::vector<unsigned char> subData(spriteDataSize);
@@ -304,6 +296,11 @@ GLvoid Tilemap::createTextureArray()
                                     spriteDataSize,
                                     subData.data());
 #endif
+        for (int row = 0; row < sprite_size_.y; ++row)
+            std::copy(  subData.begin() + row * 64,
+                        subData.begin() + row * 64 + 64,
+                        data.begin() + ix * 64 + row * 64 * tilemap_ids_.size()
+                    );
         ix++;
     }
 
