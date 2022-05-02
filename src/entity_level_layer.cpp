@@ -45,15 +45,24 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     tile_scale_ = { 1.0f, 1.0f };
     tile_size_ = spriteSize;
     //tile_id_max_ = 0.0f;
-    hash_map_.resize(height, std::vector<std::string>(width, "empty"));
+    std::stringstream keyEmptyFile;
+    keyEmptyFile << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
+    std::stringstream keyEmptyPath;
+    keyEmptyPath << "data/assets/sprites/" << keyEmptyFile.str().c_str() << ".png";
+    hash_map_empty_key_ = ResourceManager::getNameHash(name, "r0c0");
+    hash_map_.resize(height, std::vector<std::string>(width, hash_map_empty_key_.c_str()));
 
-    std::stringstream keyBorder;
-    keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
-    std::stringstream fileDefaultBorder;
-    fileDefaultBorder << "data/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    std::stringstream keyBorderFile;
+    keyBorderFile << "default_border_" << spriteSize.x << "x" << spriteSize.y;
+    std::stringstream keyBorderPath;
+    keyBorderPath << "data/assets/sprites/" << keyBorderFile.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
+    hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
 
-    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
+    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyEmptyPath.str().c_str());
+    ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
+    GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
+    TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
     //tilemap_ = std::make_unique<Tilemap>(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
     
     init();
@@ -177,38 +186,52 @@ GLvoid LevelLayer::draw_border()
 {
     //ResourceManager::
     //tile_size_
-    std::string key = "border";
+    // std::stringstream key = "border";
     // draw left and right border
     for (size_t i = 0; i < height_; i++)
     {
-        hash_map_.at(i).at(0) = key;
-        hash_map_.at(i).at(width_ - 1) = key;
+        hash_map_.at(i).at(0) = hash_map_border_key_;
+        hash_map_.at(i).at(width_ - 1) = hash_map_border_key_;
     }
     // draw upper and lower border
     for (size_t i = 1; i < width_ - 1; i++)
     {
-        hash_map_.at(0).at(i) = key;
-        hash_map_.at(height_ - 1).at(i) = key;
+        hash_map_.at(0).at(i) = hash_map_border_key_;
+        hash_map_.at(height_ - 1).at(i) = hash_map_border_key_;
     }
 
     tile_id_.clear();
-    std::string emptyHash = "empty";
+    // std::string emptyHash = "empty";
 
-    GLuint counter = 0;
+    //GLuint counter = 0;
     for (size_t i = 0; i < height_; i++)
     {
         for (size_t j = 0; j < width_; j++)
         {
-            if (hash_map_.at(i).at(j).compare(emptyHash) != 0)
+            if (hash_map_.at(i).at(j).compare(hash_map_empty_key_) != 0)
             {
-                tile_id_.push_back(0.0f);
+                tile_id_.push_back(1.0f);
             }
             else
             {
-                tile_id_.push_back(-1.0f);
+                tile_id_.push_back(-1.0);
             }
         }
     }
+
+    std::stringstream msg;
+    // msg << "height_: " << height_ << std::endl;
+    // msg << "width_: " << width_ << std::endl;
+    for (size_t j = 0; j < hash_map_.size(); j++)
+    {
+        for (size_t i = 0; i < hash_map_.at(j).size(); i++)
+        {
+             msg << hash_map_.at(j).at(i) << " ";
+        }
+        msg << std::endl;
+    }
+    MessageManager::AddMessage(msg, message_t::INFO);
+    
 
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());

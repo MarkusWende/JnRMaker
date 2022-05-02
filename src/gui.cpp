@@ -26,7 +26,7 @@
  */
 
 
-#include "../include/gui.h"
+#include "gui.h"
 
 Gui::Gui()
 {
@@ -606,202 +606,221 @@ GLvoid Gui::Render(Scene *scene)
 
 	// Messages Window
 	//if (false)
+}
+
+void Gui::Draw(Scene *scene)
+{
+	DrawExplorerWindow(scene);
+}
+
+void Gui::DrawExplorerWindow(Scene *scene)
+{
+	ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
+	ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+
+	// ImGuiIO& io = ImGui::GetIO();
+    // ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, ((io.DisplaySize.y - 200) > 0) ? (200 - main_menubar_height_) : 0));
+    // ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 200 + main_menubar_height_));
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
+    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
+    // ImGui::Begin("Explorer", NULL,	ImGuiWindowFlags_NoTitleBar |
+    //                                 //ImGuiWindowFlags_NoMove |
+    //                                 ImGuiWindowFlags_NoScrollbar |
+    //                                 ImGuiWindowFlags_NoScrollWithMouse |
+    //                                 ImGuiWindowFlags_NoCollapse |
+    //                                 //ImGuiWindowFlags_NoResize |
+    //                                 ImGuiWindowFlags_NoDocking);
+	ImGui::Begin("Explorer", NULL, 	ImGuiWindowFlags_NoTitleBar |
+											ImGuiWindowFlags_NoMove |
+											ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::BeginTabBar("ExplorerTabs", ImGuiTabBarFlags_None))
 	{
-		ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
-		ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+		DrawMessageTab();
+		DrawTileExplorerTab(scene);
+		
+		ImGui::EndTabBar();
+	}
 
-		ImGui::Begin("Explorer", NULL, 	ImGuiWindowFlags_NoTitleBar |
-										ImGuiWindowFlags_NoMove |
-										ImGuiWindowFlags_NoCollapse);
+	ImGui::End();
+	ImGui::PopStyleVar();
 
-		if (ImGui::BeginTabBar("ExplorerTabs", ImGuiTabBarFlags_None))
-		{
-			if (!TilemapManager::IsEmpty())
-			{
-				if (ImGui::BeginTabItem("Tiles"))
-				{
-					if (ImGui::BeginCombo("##TilemapCombo", scene->GetActiveTilemap().c_str()))
-					{
-						for (auto const& [key, val] : TilemapManager::Tilemaps)
-						{
-							if(key != "")
-							{
-								ImGui::PushID(key.c_str());
-								if (ImGui::Selectable(key.c_str(), key.compare(scene->GetActiveTilemap())))
-								{
-									scene->SetActiveTilemap(key);
-								}
-								ImGui::PopID();
-							}
-						}
-						ImGui::EndCombo();
-					}
+	GLuint windowHeight = ImGui::GetWindowHeight();
 
-					static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-					Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
-					std::vector<std::string> tilemapHashes = tilemap->GetHashs();
+	if (windowHeight != window_messages_.h)
+	{
+		window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
 
-					ImGui::BeginChild("TileSelector",
-						ImVec2(0,
-							((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
-							* tilemap->GetSpriteSize().y
-							* tilemap->GetSpriteScale().y 
-							* tileButtonScale.y + 5.0f + style->ScrollbarSize),
-						true,
-						ImGuiWindowFlags_HorizontalScrollbar
-					);
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-
-					GLuint i = 0;
-					ImGuiListClipper clipper(tilemap->NumRows());
-
-					while (clipper.Step())
-					{
-						for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
-						{
-							for (GLuint col = 0; col < tilemap->NumCols(); col++)
-							{
-								//std::stringstream sprKey;
-								//sprKey << "r" << row << "c" << col;
-								GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i))->ID;
-								GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
-								GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
-								ImGui::PushID(i);
-								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-								ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
-								// Change mouse cursor to hand
-								if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
-								{
-									ImGui::SetMouseCursor(7);
-								}
-								if (
-									ImGui::ImageButton(
-										(ImTextureID)tile,
-										ImVec2(buttonWidth, buttonHeight),
-										ImVec2(0, 0),
-										ImVec2(1, 1),
-										1,
-										ImVec4(0, 0, 0, 0),
-										ImVec4(0.8, 0.8, 0.8, 1))
-									)
-								{
-									if (!scene->IsMapNull())
-									{
-										scene->SetActiveSprite(tilemapHashes.at(i));
-										Texture2D *brushTex = tilemap->GetTile(tilemapHashes.at(i));
-										scene->GetSprite("brush")->AssignTextureByName(*brushTex);
-
-										/* std::stringstream msg;
-										msg << tilemapHashes.at(i);
-										MessageManager::AddMessage(msg, message_t::INFO); */
-									}
-								}
-
-								ImGui::PopStyleColor(2);
-								ImGui::PopID();
-								if (col < (tilemap->NumCols() - 1))
-									ImGui::SameLine();
-								i++;
-							}
-						}
-					}
-
-
-					ImGui::PopStyleVar();
-
-					ImGui::EndChild();
-
-					ImGui::EndTabItem();
-				}
-			}
-			ImGui::EndTabBar();
-		}
-
-		GLuint windowHeight = ImGui::GetWindowHeight();
-
-		if (windowHeight != window_messages_.h)
-		{
-			window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
-
-			WindowUpdate();
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
+		WindowUpdate();
 	}
 }
 
-void Gui::DrawMessageWindow()
+void Gui::DrawMessageTab()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, ((io.DisplaySize.y - 200) > 0) ? (200 - main_menubar_height_) : 0));
-    ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 200 + main_menubar_height_));
-    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
-    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
-    ImGui::Begin("Messages", NULL,	ImGuiWindowFlags_NoTitleBar |
-                                    ImGuiWindowFlags_NoMove |
-                                    ImGuiWindowFlags_NoScrollbar |
-                                    ImGuiWindowFlags_NoScrollWithMouse |
-                                    ImGuiWindowFlags_NoCollapse |
-                                    ImGuiWindowFlags_NoResize |
-                                    ImGuiWindowFlags_NoDocking);
-	float wrap_width = io.DisplaySize.x - 50.0f;
-    //ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
-    //ImGui::SetCursorPos(ImVec2(0.f, 18.f));
-    //ImGui::Separator();
+    if (ImGui::BeginTabItem("Messages"))
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		float wrap_width = io.DisplaySize.x - 50.0f;
+		//ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
+		//ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+		//ImGui::Separator();
 
-    // BeginChild: MessageList
-    ImGui::SetCursorPos(ImVec2(5.f, 20.f));
-    ImGui::BeginChild("##MessageList", ImVec2(0, 160), false, ImGuiWindowFlags_HorizontalScrollbar);
+		// BeginChild: MessageList
+		//ImGui::SetCursorPos(ImVec2(5.f, 40.f));
+		ImGui::BeginChild("##MessageList", ImVec2(0, 160), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-    std::vector<Message>* ptrMessages;
-    ptrMessages = MessageManager::GetMessages();
-    if (ptrMessages->size() > 0)
-    {
-        ImGuiListClipper clipper((int)ptrMessages->size());
-        while (clipper.Step())
-        {
-            for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
-            {
-                ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-                ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", ptrMessages->at(it).timeinfo.c_str());
-                ImGui::SameLine(0, 2);
-                ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+		std::vector<Message>* ptrMessages;
+		ptrMessages = MessageManager::GetMessages();
+		if (ptrMessages->size() > 0)
+		{
+			ImGuiListClipper clipper((int)ptrMessages->size());
+			while (clipper.Step())
+			{
+				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+				{
+					ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+					ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", ptrMessages->at(it).timeinfo.c_str());
+					ImGui::SameLine(0, 2);
+					ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-                std::string word;
-                std::stringstream ss(ptrMessages->at(it).msg);
+					std::string word;
+					std::stringstream ss(ptrMessages->at(it).msg);
 
-                ImGui::SameLine(0, 5);
-                if (ptrMessages->at(it).type == message_t::ERROR_T)
-                {
-                    ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.0f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
-                }
-                else if (ptrMessages->at(it).type == message_t::INFO)
-                {
-                    ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 1.0f), "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
-                }
-                else if (ptrMessages->at(it).type == message_t::WARNING)
-                {
-                    ImGui::TextColored(ImVec4(0.92f, 0.56f, 0.9f, 1.0f), "[Warning]  %s", ptrMessages->at(it).msg.c_str());
-                }
-                else if (ptrMessages->at(it).type == message_t::DEBUG)
-                {
-                    ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
-                }
-                else if (ptrMessages->at(it).type == message_t::DEBUG_WS)
-                {
-                    ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
-                }
-            }
-        }
-    }
+					ImGui::SameLine(0, 5);
+					if (ptrMessages->at(it).type == message_t::ERROR_T)
+					{
+						ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.0f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::INFO)
+					{
+						ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 1.0f), "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::WARNING)
+					{
+						ImGui::TextColored(ImVec4(0.92f, 0.56f, 0.9f, 1.0f), "[Warning]  %s", ptrMessages->at(it).msg.c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::DEBUG)
+					{
+						ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+					}
+					else if (ptrMessages->at(it).type == message_t::DEBUG_WS)
+					{
+						ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+					}
+				}
+			}
+		}
 
-    // EndChild: MessageList
-    ImGui::EndChild();
-    ImGui::SetScrollHereY(1.0f);
-    // EndChild: MessageList
-    ImGui::End();
+		// EndChild: MessageList
+		ImGui::EndChild();
+		//ImGui::SetScrollHereY(1.0f);
+		// EndChild: MessageList
+		ImGui::EndTabItem();
+	}
+}
+
+void Gui::DrawTileExplorerTab(Scene *scene)
+{
+	if (!TilemapManager::IsEmpty())
+	{
+		ImGuiStyle* style = &ImGui::GetStyle();
+		if (ImGui::BeginTabItem("Tiles"))
+		{
+			if (ImGui::BeginCombo("##TilemapCombo", scene->GetActiveTilemap().c_str()))
+			{
+				for (auto const& [key, val] : TilemapManager::Tilemaps)
+				{
+					if(key != "")
+					{
+						ImGui::PushID(key.c_str());
+						if (ImGui::Selectable(key.c_str(), key.compare(scene->GetActiveTilemap())))
+						{
+							scene->SetActiveTilemap(key);
+						}
+						ImGui::PopID();
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
+			Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
+			std::vector<std::string> tilemapHashes = tilemap->GetHashs();
+
+			ImGui::BeginChild("TileSelector",
+				ImVec2(0,
+					((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
+					* tilemap->GetSpriteSize().y
+					* tilemap->GetSpriteScale().y 
+					* tileButtonScale.y + 5.0f + style->ScrollbarSize),
+				true,
+				ImGuiWindowFlags_HorizontalScrollbar
+			);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+			GLuint i = 0;
+			ImGuiListClipper clipper(tilemap->NumRows());
+
+			while (clipper.Step())
+			{
+				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+				{
+					for (GLuint col = 0; col < tilemap->NumCols(); col++)
+					{
+						//std::stringstream sprKey;
+						//sprKey << "r" << row << "c" << col;
+						GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i))->ID;
+						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
+						ImGui::PushID(i);
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+						// Change mouse cursor to hand
+						if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
+						{
+							ImGui::SetMouseCursor(7);
+						}
+						if (
+							ImGui::ImageButton(
+								(ImTextureID)tile,
+								ImVec2(buttonWidth, buttonHeight),
+								ImVec2(0, 0),
+								ImVec2(1, 1),
+								1,
+								ImVec4(0, 0, 0, 0),
+								ImVec4(0.8, 0.8, 0.8, 1))
+							)
+						{
+							if (!scene->IsMapNull())
+							{
+								scene->SetActiveSprite(tilemapHashes.at(i));
+								Texture2D *brushTex = tilemap->GetTile(tilemapHashes.at(i));
+								scene->GetSprite("brush")->AssignTextureByName(*brushTex);
+
+								/* std::stringstream msg;
+								msg << tilemapHashes.at(i);
+								MessageManager::AddMessage(msg, message_t::INFO); */
+							}
+						}
+
+						ImGui::PopStyleColor(2);
+						ImGui::PopID();
+						if (col < (tilemap->NumCols() - 1))
+							ImGui::SameLine();
+						i++;
+					}
+				}
+			}
+
+
+			ImGui::PopStyleVar();
+
+			ImGui::EndChild();
+
+			ImGui::EndTabItem();
+		}
+	}
 }
 
 void Gui::ShowBackendCheckerWindow()

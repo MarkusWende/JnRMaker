@@ -72,6 +72,8 @@ private:
     GLuint                                  tile_id_vbo_;
     //std::map<std::string, GLfloat> 			tile_hash_id_map_;
     //GLfloat                                 tile_id_max_;
+    std::string                             hash_map_border_key_;
+    std::string                             hash_map_empty_key_;
 };
 
 #ifdef __EMSCRIPTEN__

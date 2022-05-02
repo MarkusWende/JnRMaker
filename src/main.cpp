@@ -102,8 +102,6 @@ int main(int, char**)
     }
     SDL_GL_SetSwapInterval(1); // Enable vsync
 
-
-    glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
     // Initialize OpenGL loader
     glewExperimental = GL_TRUE;
     bool err = glewInit() != GLEW_OK;
@@ -134,9 +132,10 @@ int main(int, char**)
         const GLubyte* version = glGetString(GL_VERSION);
         const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-        GLint major, minor;
+        GLint major, minor, depthBufferBits;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
         glGetIntegerv(GL_MINOR_VERSION, &minor);
+        glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
 
         std::stringstream msg;
         msg << "Successful initialized OpenGL..." << std::endl;
@@ -144,7 +143,8 @@ int main(int, char**)
         msg << "\t\t\tGL Renderer:\t\t\t\t" << renderer << std::endl;
         msg << "\t\t\tGL Version (string):\t" << version << std::endl;
         msg << "\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
-        msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion;
+        msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion << std::endl;
+        msg << "\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
         MessageManager::AddMessage(msg, message_t::INFO);
 
 #ifdef _WIN32
@@ -179,6 +179,7 @@ int main(int, char**)
 #endif // __linux__
     }
 
+    glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -271,8 +272,8 @@ static void main_loop(void* arg)
     appGui->WindowUpdate(width, height);
     processEvents(appScene, appGui);
     appGui->Render(appScene);
-    appGui->DrawMessageWindow();
-    appGui->ShowBackendCheckerWindow();
+    appGui->Draw(appScene);
+    //appGui->ShowBackendCheckerWindow();
 
     appScene->Render();
 
