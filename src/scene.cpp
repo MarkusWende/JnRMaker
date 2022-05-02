@@ -157,6 +157,8 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     active_tilemap_name_ = "Player";
 
     map_is_null_ = false;
+
+    TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
 }
 
 GLvoid Scene::Update(GLuint width, GLuint height)
