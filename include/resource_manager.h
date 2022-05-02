@@ -85,6 +85,8 @@ public:
     */
   static Texture2D LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
 
+  static Texture2D* CreateTexture(unsigned char* data, int width, int height, GLboolean alpha, std::string name);
+
 
   //static TextureAtlas CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);
@@ -112,7 +114,7 @@ public:
      * @param name Resource name of the texture.
      * @return Texture2D Return the texture object.
      */
-  static Texture2D GetTexture(std::string name);
+  static Texture2D* GetTexture(std::string name);
 
   /**
 	 * @brief Get the SFML render texture by name.
@@ -167,6 +169,8 @@ private:
      * @return Texture2D Return the texture object.
      */
   static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
+
+  static Texture2D createTextureFromBuffer(unsigned char* image_data, int image_width, int image_height, GLboolean alpha);
 
   //static TextureAtlas createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);

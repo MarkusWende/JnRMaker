@@ -420,10 +420,10 @@ GLvoid Gui::Render(Scene *scene)
 
 		if (ImGui::CollapsingHeader("Sprites"))
 		{
-			Texture2D tex = ResourceManager::GetTexture("testing123");
+			Texture2D* tex = ResourceManager::GetTexture("testing123");
 			if (
 				ImGui::ImageButton(
-					(ImTextureID)tex.ID,
+					(ImTextureID)tex->ID,
 					ImVec2(64, 16),
 					ImVec2(0, 0),
 					ImVec2(1, 1),
@@ -783,7 +783,7 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 					{
 						//std::stringstream sprKey;
 						//sprKey << "r" << row << "c" << col;
-						GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i)).ID;
+						GLuint tile = tilemap->GetTileID(tilemapHashes.at(i));
 						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
 						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 						ImGui::PushID(i);
@@ -808,8 +808,8 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 							if (!scene->IsMapNull())
 							{
 								scene->SetActiveSprite(tilemapHashes.at(i));
-								Texture2D brushTex = tilemap->GetTile(tilemapHashes.at(i));
-								scene->GetSprite("brush")->AssignTexture(brushTex);
+								GLuint brushTexID = tilemap->GetTileID(tilemapHashes.at(i));
+								scene->GetSprite("brush")->AssignTextureByID(brushTexID);
 
 								std::stringstream msg;
 								msg << tilemapHashes.at(i);

@@ -154,7 +154,7 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
     std::string keyEmptyHash = ResourceManager::getNameHash("Player", "r0c1");
-    e_sprites_.find("brush")->second->AssignTexture(ResourceManager::GetTexture(keyEmptyHash.c_str()));
+    e_sprites_.find("brush")->second->AssignTextureByID(ResourceManager::GetTexture(keyEmptyHash.c_str())->ID);
     active_sprite_name_ = keyEmptyHash.c_str();
 
     map_is_null_ = false;
@@ -610,7 +610,7 @@ GLvoid Scene::PlaceSprite()
             msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO); */
 
-            e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture().ID);
+            e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTextureID());
 
             //TilemapManager::GetTilemap("Testing")->AddTile(active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
         }

@@ -63,6 +63,7 @@ GLvoid Sprite::Draw(glm::mat4 projection, glm::mat4 view)
     ResourceManager::GetShader("sprite").SetVector3f("color", 1.0f, 1.0f, 1.0f);
     ResourceManager::GetShader("sprite").SetFloat("alpha", 1.0f);
     ResourceManager::GetShader("sprite").SetInteger("material.diffuse", 0);
-    texture_.Bind();
+    glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture_id_);
     quad_->Draw();
 }

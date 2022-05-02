@@ -54,6 +54,12 @@ Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std:
     return Textures[name];
 }
 
+Texture2D* ResourceManager::CreateTexture(unsigned char* data, int width, int height, GLboolean alpha, std::string name)
+{
+    Textures[name] = createTextureFromBuffer(data, width, height, alpha);
+    return &Textures[name];
+}
+
 /* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
@@ -121,9 +127,9 @@ sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 	return RenderTextures.find(name)->second.get();
 }
 */
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture2D* ResourceManager::GetTexture(std::string name)
 {
-    return Textures[name];
+    return &Textures[name];
 }
 
 Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type)
@@ -192,6 +198,41 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     texture.Generate(image_width, image_height, image_data);
 
     stbi_image_free(image_data);
+
+    return texture;
+}
+
+Texture2D ResourceManager::createTextureFromBuffer(unsigned char* image_data, int image_width, int image_height, GLboolean alpha)
+{
+    // Create Texture object
+    Texture2D texture;
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+    else {
+        texture.Internal_Format = GL_RGB;
+        texture.Image_Format = GL_RGB;
+    }
+
+    // Load from file
+    // int image_width = 0;
+    // int image_height = 0;
+    //unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    // unsigned char* image_data = stbi_load(file, &image_width, &image_height, NULL, texture.Image_Format == GL_RGBA ? 4 : 3);
+    
+    if (NULL == image_data)
+    {
+        std::stringstream msg;
+        msg << "Image buffer is empty";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+    
+    // Now generate texture
+    texture.Generate(image_width, image_height, image_data);
+
+    // stbi_image_free(image_data);
 
     return texture;
 }

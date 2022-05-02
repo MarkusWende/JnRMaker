@@ -67,7 +67,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
 
     TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyEmptyPath.str().c_str());
     ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
-    GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
+    GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str())->ID;
     TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
     //tilemap_ = std::make_unique<Tilemap>(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
 
@@ -88,7 +88,7 @@ GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
 {
     Tilemap* tiles = TilemapManager::GetTilemap(name_);
     std::vector<std::string> tileHashes = tiles->GetHashs();
-    if (!tiles->HashExists(key))
+    //if (!tiles->HashExists(key))
     {
         tiles->AddTile(key, texID);
         //tile_id_max_ = tile_id_max_ + 1.0f;
@@ -102,9 +102,9 @@ GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
         }
         MessageManager::AddMessage(msg, message_t::INFO); */
     }
-    else
+    //else
     {
-        tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
+        //tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
     }
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
@@ -218,7 +218,7 @@ GLvoid LevelLayer::draw_border()
         {
             if (hash_map_.at(i).at(j).compare(hash_map_empty_key_) != 0)
             {
-                tile_id_.push_back(1.0f);
+                tile_id_.push_back(1.0);
             }
             else
             {
