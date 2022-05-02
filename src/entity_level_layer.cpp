@@ -194,7 +194,7 @@ GLvoid LevelLayer::draw_border()
     tile_id_.clear();
     std::string emptyHash = "empty";
 
-    GLuint counter = 0;
+    //GLuint counter = 0;
     for (size_t i = 0; i < height_; i++)
     {
         for (size_t j = 0; j < width_; j++)
@@ -209,6 +209,16 @@ GLvoid LevelLayer::draw_border()
             }
         }
     }
+
+    // std::stringstream msg;
+    // msg << "height_: " << height_ << std::endl;
+    // msg << "width_: " << width_ << std::endl;
+    // for (auto id : tile_id_)
+    // {
+    //     msg << id << " ";
+    // }
+    // MessageManager::AddMessage(msg, message_t::INFO);
+    
 
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
     glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());

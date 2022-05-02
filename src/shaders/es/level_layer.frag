@@ -1,6 +1,6 @@
 #version 300 es
 precision highp float;
-precision lowp sampler2DArray;
+precision highp sampler2DArray;
 
 in vec2 TexCoords;
 in float tileID;
@@ -13,11 +13,13 @@ void main()
 {
     vec4 result = texture(layerTiles, vec3(TexCoords.xy, tileID));
     //vec4 result = vec4(1.0, 1.0, 0.0, 1.0);
-    if (tileID == -1.0)
+    if (tileID > 0.0)
     {
-        discard;
-        //FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+        FragColor = result;
     }
     else
-        FragColor = result;
+    {
+        discard;
+    }
+        
 }
