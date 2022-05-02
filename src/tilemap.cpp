@@ -256,9 +256,9 @@ GLvoid Tilemap::createTextureArray()
     
     for (auto const& [key, val] : tilemap_ids_)
     {
-        GLuint texID = tilemap_textures_[val].ID;
+        GLuint texID = ResourceManager::GetTexture(val).ID;
         std::stringstream msg;
-        msg << "ID: " << texID;
+        msg << "val: " << val << "\tID: " << texID;
         MessageManager::AddMessage(msg, message_t::WARNING);
         glBindTexture(GL_TEXTURE_2D, texID);
         std::vector<unsigned char> subData(spriteDataSize);
@@ -301,7 +301,7 @@ GLvoid Tilemap::createTextureArray()
                                     spriteDataSize,
                                     subData.data());
 #endif
-        glBindTexture(GL_TEXTURE_2D, 0);
+        
         for (int row = 0; row < sprite_size_.y; ++row)
         {
             std::copy(  subData.begin() + row * 64,
@@ -310,6 +310,7 @@ GLvoid Tilemap::createTextureArray()
                     );
         }
         ix++;
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     /* int counter = 0;
