@@ -79,7 +79,7 @@ public:
 	 * @param name The name of the tilemap.
 	 * @return A pointer to the tilemap.
 	 */
-  static Tilemap GetTilemap(std::string name);
+  static Tilemap* GetTilemap(std::string name);
 
   static GLboolean IsEmpty() { return Tilemaps.empty(); }
   static GLuint GetSize() { return Tilemaps.size(); }

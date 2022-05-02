@@ -207,7 +207,7 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     ResourceManager::LoadTexture("data/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
-    TilemapManager::AddTilemap("Player", {16,16}, {1.0, 1.0}, "data/assets/sprites/default_empty_16x16.png");
+    TilemapManager::AddTilemap("Player2", {16,16}, {1.0, 1.0}, "data/assets/sprites/default_border_16x16.png");
 
     // Gui
     appGui = new Gui();
