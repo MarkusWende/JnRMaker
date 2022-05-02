@@ -218,6 +218,7 @@ GLvoid Tilemap::loadTilemapFromTexture()
 #endif
             std::stringstream key;
             key << "r" << j << "c" << i;
+            //key << "default_border_" << sprite_size_.x << "x" << sprite_size_.y;
             std::string hashKey = ResourceManager::getNameHash(name_, key.str());
             
             tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
