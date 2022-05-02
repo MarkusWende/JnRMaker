@@ -100,7 +100,7 @@ GLvoid Tilemap::AddTile(const std::string key, GLuint texID)
                             GL_RGBA,
                             GL_UNSIGNED_BYTE,
                             data);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        //glBindTexture(GL_TEXTURE_2D, 0);
 #else
         glGetTextureSubImage(   texID,
                                 0,
@@ -200,7 +200,7 @@ GLvoid Tilemap::loadTilemapFromTexture()
                                 GL_RGBA,
                                 GL_UNSIGNED_BYTE,
                                 data);
-            glBindTexture(GL_TEXTURE_2D, 0);
+            //glBindTexture(GL_TEXTURE_2D, 0);
 #else
             glGetTextureSubImage(   tex.ID,
                                     0,
@@ -265,8 +265,7 @@ GLvoid Tilemap::createTextureArray()
                             GL_RGBA,
                             GL_UNSIGNED_BYTE,
                             subData.data());
-        glBindTexture(GL_TEXTURE_2D, 0);
-
+        //glBindTexture(GL_TEXTURE_2D, 0);
 #else
         glGetTextureSubImage(   texID,
                                     0,

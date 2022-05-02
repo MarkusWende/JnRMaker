@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
-    <title>Dear ImGui Emscripten example</title>
+    <title>JnRMaker</title>
     <style>
-        body { margin: 0; background-color: black }
+        body { margin: 0; background-color: rgb(255, 255, 255) }
         .emscripten {
             position: absolute;
             top: 0px;
@@ -25,10 +25,21 @@
             image-rendering: pixelated;
             -ms-interpolation-mode: nearest-neighbor;
         }
+        h1 {
+          text-align: center;
+          vertical-align: middle;
+        }
+        #output {
+          background-color: lightblue;
+          color: black;
+          padding: 40px;
+          text-align: center;
+        }
     </style>
   </head>
   <body>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <p id="output"></p>
     <script type='text/javascript'>
       var Module = {
         preRun: [],
@@ -50,6 +61,7 @@
         })(),
         setStatus: function(text) {
             console.log("status: " + text);
+            document.getElementById('output').innerHTML = text;
         },
         monitorRunDependencies: function(left) {
             // no run dependencies to log
