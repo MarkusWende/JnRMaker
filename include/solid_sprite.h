@@ -44,9 +44,9 @@ public:
 
     GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 
-    GLvoid AssignTextureByName(Texture2D tex) { texture_ = tex; };
+    GLvoid AssignTexture(Texture2D tex) { texture_ = tex; };
 
-    Texture2D *GetTexture() { return &texture_; };
+    Texture2D GetTexture() { return texture_; };
 
 private:
     using Solid::DrawWireframe;						/**< Dont use this function. Therefor its private. */

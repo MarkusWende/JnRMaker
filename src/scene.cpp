@@ -142,13 +142,6 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     // ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
     // ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
 
-    // Create default brush
-    e_sprites_.clear();
-    e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
-    std::string keyEmptyHash = ResourceManager::getNameHash("Player", "r0c1");
-    e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(keyEmptyHash.c_str()));
-    active_sprite_name_ = keyEmptyHash.c_str();
-
     // Create level
     if (!e_level_layers_.empty())
     {
@@ -157,9 +150,16 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     e_level_layers_.insert(std::make_pair("Player", new LevelLayer("Player", width, height, spriteSize)));
     active_tilemap_name_ = "Player";
 
+    // Create default brush
+    e_sprites_.clear();
+    e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
+    std::string keyEmptyHash = ResourceManager::getNameHash("Player", "r0c1");
+    e_sprites_.find("brush")->second->AssignTexture(ResourceManager::GetTexture(keyEmptyHash.c_str()));
+    active_sprite_name_ = keyEmptyHash.c_str();
+
     map_is_null_ = false;
 
-    TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
+    //TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
 }
 
 GLvoid Scene::Update(GLuint width, GLuint height)
@@ -610,7 +610,7 @@ GLvoid Scene::PlaceSprite()
             msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO); */
 
-            e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
+            e_level_layers_["Player"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture().ID);
 
             //TilemapManager::GetTilemap("Testing")->AddTile(active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
         }

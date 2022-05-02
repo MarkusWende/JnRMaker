@@ -45,6 +45,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     tile_scale_ = { 1.0f, 1.0f };
     tile_size_ = spriteSize;
     //tile_id_max_ = 0.0f;
+
     std::stringstream keyEmptyFile;
     keyEmptyFile << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
     std::stringstream keyEmptyPath;
@@ -58,6 +59,11 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     keyBorderPath << "data/assets/sprites/" << keyBorderFile.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
     hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
+
+    std::stringstream msg;
+    msg << "hash_map_empty_key_: " << hash_map_empty_key_ << std::endl;
+    msg << "hash_map_border_key_: " << hash_map_border_key_;
+    MessageManager::AddMessage(msg, message_t::INFO);
 
     TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyEmptyPath.str().c_str());
     ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
@@ -224,11 +230,7 @@ GLvoid LevelLayer::draw_border()
     // msg << "width_: " << width_ << std::endl;
     for (size_t j = 0; j < hash_map_.size(); j++)
     {
-        for (size_t i = 0; i < hash_map_.at(j).size(); i++)
-        {
-             msg << hash_map_.at(j).at(i) << " ";
-        }
-        msg << std::endl;
+        msg << hash_map_.at(j).at(0) << " ";
     }
     MessageManager::AddMessage(msg, message_t::INFO);
     

@@ -48,8 +48,8 @@ public:
 	~Framebuffer() { }
 
 	// Getters
-	GLuint& GetID() { return id_; }								/**< @brief Get the framebuffer ID. @return A reference to an OpenGL unsignet integer. */
-	GLuint& GetTextureID() { return tex_id_; }						/**< @brief Get the texture ID. @return A reference to an OpenGL unsignet integer. */
+	GLuint GetID() { return id_; }								/**< @brief Get the framebuffer ID. @return A reference to an OpenGL unsignet integer. */
+	GLuint GetTextureID() { return tex_id_; }						/**< @brief Get the texture ID. @return A reference to an OpenGL unsignet integer. */
 
 	// General member functions
 	/**

@@ -770,7 +770,7 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 					{
 						//std::stringstream sprKey;
 						//sprKey << "r" << row << "c" << col;
-						GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i))->ID;
+						GLuint64 tile = tilemap->GetTile(tilemapHashes.at(i)).ID;
 						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
 						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 						ImGui::PushID(i);
@@ -795,12 +795,12 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 							if (!scene->IsMapNull())
 							{
 								scene->SetActiveSprite(tilemapHashes.at(i));
-								Texture2D *brushTex = tilemap->GetTile(tilemapHashes.at(i));
-								scene->GetSprite("brush")->AssignTextureByName(*brushTex);
+								Texture2D brushTex = tilemap->GetTile(tilemapHashes.at(i));
+								scene->GetSprite("brush")->AssignTexture(brushTex);
 
-								/* std::stringstream msg;
+								std::stringstream msg;
 								msg << tilemapHashes.at(i);
-								MessageManager::AddMessage(msg, message_t::INFO); */
+								MessageManager::AddMessage(msg, message_t::INFO);
 							}
 						}
 

@@ -87,7 +87,7 @@ public:
 
     GLvoid AddTile(const std::string key, GLuint texID);
 
-    Texture2D* GetTile(std::string key) { return tilemap_textures_.find(key)->second.get(); };
+    Texture2D GetTile(std::string key) { return tilemap_textures_[key]; };
 
     GLuint GetTileID(std::string key);
 
@@ -108,7 +108,7 @@ private:
 
     GLvoid createTextureArray();
  
-    std::map<std::string, std::shared_ptr<Texture2D>>   tilemap_textures_;
+    std::map<std::string, Texture2D>                    tilemap_textures_;
     std::map<GLuint, std::string>                       tilemap_ids_;
     TextureArray    tilemap_tex_array_;
     GLuint          tilemap_id_max_;

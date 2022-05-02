@@ -134,7 +134,7 @@ Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, G
 
 void ResourceManager::DeleteFramebuffer(std::string name)
 {
-    glDeleteBuffers(1, &Framebuffers[name].GetID());
+    //glDeleteBuffers(1, &Framebuffers[name].GetID());
 }
 
 Framebuffer ResourceManager::GetFramebuffer(std::string name)
