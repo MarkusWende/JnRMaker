@@ -132,21 +132,22 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     e_cameras_["SceneCamera"]->Move(((GLfloat)width)/2.0f, ((GLfloat)height)/2.0f);
 
     // Load default sprites
-    std::stringstream keyEmpty, keyBorder;
-    keyEmpty << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
-    keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
-    std::stringstream fileDefaultEmpty;
-    std::stringstream fileDefaultBorder;
-    fileDefaultEmpty << "data/assets/sprites/" << keyEmpty.str().c_str() << ".png";
-    fileDefaultBorder << "data/assets/sprites/" << keyBorder.str().c_str() << ".png";
-    ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
-    ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
+    // std::stringstream keyEmpty, keyBorder;
+    // keyEmpty << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
+    // keyBorder << "default_border_" << spriteSize.x << "x" << spriteSize.y;
+    // std::stringstream fileDefaultEmpty;
+    // std::stringstream fileDefaultBorder;
+    // fileDefaultEmpty << "data/assets/sprites/" << keyEmpty.str().c_str() << ".png";
+    // fileDefaultBorder << "data/assets/sprites/" << keyBorder.str().c_str() << ".png";
+    // ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
+    // ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
 
     // Create default brush
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
-    e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(keyEmpty.str()));
-    active_sprite_name_ = keyEmpty.str().c_str();
+    std::string keyEmptyHash = ResourceManager::getNameHash("Player", "r0c1");
+    e_sprites_.find("brush")->second->AssignTextureByName(ResourceManager::GetTexture(keyEmptyHash.c_str()));
+    active_sprite_name_ = keyEmptyHash.c_str();
 
     // Create level
     if (!e_level_layers_.empty())
