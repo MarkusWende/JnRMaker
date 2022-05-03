@@ -87,14 +87,14 @@ LevelLayer::~LevelLayer()
 
 GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
 {
-    Tilemap* tiles = TilemapManager::GetTilemap(name_);
-    std::vector<std::string> tileHashes = tiles->GetHashs();
+    Tilemap tiles = TilemapManager::GetTilemap(name_);
+    std::vector<std::string> tileHashes = tiles.GetHashs();
     //if (!tiles->HashExists(key))
     {
-        tiles->AddTile(key, texID);
+        tiles.AddTile(key, texID);
         //tile_id_max_ = tile_id_max_ + 1.0f;
         //tile_hash_id_map_.insert(std::make_pair(key.c_str(), tile_id_max_));
-        tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
+        tile_id_.at(mapID) = (GLfloat)tiles.GetTileID(key);
 
         /* std::stringstream msg;
         for (auto const& [hashKey, hashVal] : tile_hash_id_map_)
@@ -121,7 +121,7 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
     //model = glm::translate(model, center_);
     ResourceManager::GetShader("llayer").SetMatrix4("model", model);
     //tilemap_->GetTexArray().Bind();
-    TilemapManager::GetTilemap(name_)->GetTexArray().Bind();
+    TilemapManager::GetTilemap(name_).GetTexArray().Bind();
     //ResourceManager::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_);
