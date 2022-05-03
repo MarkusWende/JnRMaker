@@ -66,6 +66,10 @@ Scene::Scene(GLuint width, GLuint height)
     ResourceManager::LoadShader("src/shaders/level_layer.vert", "src/shaders/level_layer.frag",  nullptr, "llayer");
     //ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
 #endif
+    // Testing
+    TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
+
+
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
 
@@ -158,8 +162,6 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
     active_sprite_name_ = keyEmptyHash.c_str();
 
     map_is_null_ = false;
-
-    //TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
 }
 
 GLvoid Scene::Update(GLuint width, GLuint height)

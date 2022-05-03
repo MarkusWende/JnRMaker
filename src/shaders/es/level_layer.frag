@@ -11,15 +11,12 @@ out vec4 FragColor;
 
 void main()
 {
-    vec4 result = texture(layerTiles, vec3(TexCoords.xy, tileID));
-    //vec4 result = vec4(1.0, 1.0, 0.0, 1.0);
     if (tileID > 0.0)
     {
-        FragColor = result;
+        FragColor = texture(layerTiles, vec3(TexCoords.xy, (tileID-1.0)));;
     }
     else
     {
         discard;
     }
-        
 }

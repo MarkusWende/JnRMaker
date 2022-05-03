@@ -257,6 +257,20 @@ GLvoid Gui::Render(Scene *scene)
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
 				ImGui::BeginChildFrame(2, ImVec2(window_scene_.w, window_scene_.h - 50));
 				{
+					for (auto const& [key, val] : TilemapManager::Tilemaps)
+					{
+						if(key != "")
+						{
+							TextureArray tex = TilemapManager::GetTilemap(key)->GetTexArray();
+							ImGui::Text("key: %s\tid: %u", key.c_str(), tex.ID);
+							ImGui::Image((ImTextureID)tex.ID,
+								ImVec2(tex.Width*2,tex.Height*2),
+								ImVec2(0,0),
+								ImVec2(1,1),
+								ImColor(255, 255, 255, 255),
+								ImColor(0, 255, 0, 255));
+						}
+					}
 					ImGui::Separator();
 
 					for (const auto& [key, value] : ResourceManager::GetTextureMap())
