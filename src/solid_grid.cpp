@@ -57,7 +57,9 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	// positive axis
 	ResourceManager::GetShader("line").SetFloat("u_dashSize", 10.0f);
 	ResourceManager::GetShader("line").SetFloat("u_gapSize", 0.0f);
+#ifndef __EMSCRIPTEN__
 	glEnable(GL_LINE_SMOOTH);
+#endif
 	glLineWidth(line_width_);
 	for (size_t i = 0; i <= height_; i++)
 	{
@@ -75,7 +77,10 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 		axis_v_[key.str()]->Draw();
 	}
 	glLineWidth(1.0f);
+	
+#ifndef __EMSCRIPTEN__
 	glDisable(GL_LINE_SMOOTH);
+#endif
 }
 
 GLvoid Grid::build()

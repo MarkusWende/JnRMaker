@@ -51,6 +51,20 @@ const GLuint SCREEN_HEIGHT = 1000;
 // For clarity, our main loop code is declared at the end.
 static void main_loop(void*);
 
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+    std::stringstream msg;
+    msg << "GL CALLBACK: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
+    MessageManager::AddMessage(msg, message_t::ERROR_T);
+}
+
 int main(int, char**)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -179,9 +193,13 @@ int main(int, char**)
 #endif // __linux__
     }
 
-    glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEBUG_OUTPUT);
+#ifndef __EMSCRIPTEN__
+    glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
+    glDebugMessageCallback( MessageCallback, 0 );
+#endif
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -205,9 +223,6 @@ int main(int, char**)
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForOpenGL(g_Window, g_GLContext);
     ImGui_ImplOpenGL3_Init(glsl_version);
-
-    ResourceManager::LoadTexture("data/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
-    TilemapManager::AddTilemap("Player2", {16,16}, {1.0, 1.0}, "data/assets/sprites/default_border_16x16.png");
 
     // Gui
     appGui = new Gui();

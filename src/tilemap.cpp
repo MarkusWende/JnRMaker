@@ -88,44 +88,78 @@ GLvoid Tilemap::AddTile(const std::string key, GLuint texID)
         if (num_rows_ == 0)
             num_rows_ = 1;
         GLuint tilemapSize = (GLuint)tilemap_textures_.size();
-        unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
+        //unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
 
         /* std::stringstream key;
         key << "r" << 0 << "c" << tilemapSize;
         std::string hashKey = ResourceManager::getNameHash(name_, key.str()); */
 
+
+
+
+
+        glBindTexture(GL_TEXTURE_2D, texID);
+        int data_size = sprite_size_.x * sprite_size_.y * 4;
+        unsigned char* pixels = (unsigned char*)malloc(data_size);
+
+        //GLuint textureObj = tex.ID; // the texture object - glGenTextures  
+
+        GLuint fbo;
+        glGenFramebuffers(1, &fbo); 
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texID, 0);
+
+        glReadPixels(0, 0, sprite_size_.x, sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, &fbo);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+
 #ifdef __EMSCRIPTEN__
-        //glBindTexture(GL_TEXTURE_2D, texID);
-        glTexSubImage2D(	GL_TEXTURE_2D,
-                            0,
-                            0,
-                            0,
-                            sprite_size_.x,
-                            sprite_size_.y,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            data);
-        //glBindTexture(GL_TEXTURE_2D, 0);
+        // glBindTexture(GL_TEXTURE_2D, texID);
+        // auto *ptr = m_Pixels + (y * mWidth) * 4;
+        // glTexSubImage2D( GL_TEXTURE_2D, 0, 0, y, mWidth, h, GL_RGBA, GL_UNSIGNED_BYTE, ptr );   
+        // glBindTexture(GL_TEXTURE_2D, texID);
+        // glTexSubImage2D(	GL_TEXTURE_2D,
+        //                     0,
+        //                     0,
+        //                     0,
+        //                     sprite_size_.x,
+        //                     sprite_size_.y,
+        //                     GL_RGBA,
+        //                     GL_UNSIGNED_BYTE,
+        //                     data);
+        // glBindTexture(GL_TEXTURE_2D, 0);
+        // GLenum err = glGetError();
+        // if (err != GL_NO_ERROR)
+        // {
+        //     std::stringstream msg;
+        //     msg << "Failed to copy sumbimage in Tilemap::AddTile(), Error: " << err;
+        //     MessageManager::AddMessage(msg, message_t::ERROR_T);
+        // }
 #else
-        glGetTextureSubImage(   texID,
-                                0,
-                                0,
-                                0,
-                                0,
-                                sprite_size_.x,
-                                sprite_size_.y,
-                                1,
-                                GL_RGBA,
-                                GL_UNSIGNED_BYTE,
-                                sprite_size_.x * sprite_size_.y * 4,
-                                data);
+        // glGetTextureSubImage(   texID,
+        //                         0,
+        //                         0,
+        //                         0,
+        //                         0,
+        //                         sprite_size_.x,
+        //                         sprite_size_.y,
+        //                         1,
+        //                         GL_RGBA,
+        //                         GL_UNSIGNED_BYTE,
+        //                         sprite_size_.x * sprite_size_.y * 4,
+        //                         data);
 #endif
         if (tilemap_textures_.find(key) == tilemap_textures_.end())
         {
             tilemap_ids_.insert(std::make_pair(tilemap_id_max_, key));
             tilemap_id_max_++;
             tilemap_textures_.insert(std::make_pair(key, new Texture2D()));
-            tilemap_textures_.find(key)->second->Generate(sprite_size_.x, sprite_size_.y, data);
+            tilemap_textures_.find(key)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
             num_cols_ = tilemapSize + 1;
             createTextureArray();
         }
@@ -189,40 +223,69 @@ GLvoid Tilemap::loadTilemapFromTexture()
     {
         for (GLuint j = 0; j < num_rows_; j++)
         {
-            unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
+            
+            tex.Bind();
+            int data_size = sprite_size_.x * sprite_size_.y * 4;
+            unsigned char* pixels = (unsigned char*)malloc(data_size);
+
+            GLuint textureObj = tex.ID; // the texture object - glGenTextures  
+
+            GLuint fbo;
+            glGenFramebuffers(1, &fbo); 
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureObj, 0);
+
+            glReadPixels(i * sprite_size_.x, j * sprite_size_.y, sprite_size_.x, sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glDeleteFramebuffers(1, &fbo);
+            // std::stringstream newName;
+            // newName << name_ << "_r" << j << "c" << i;
+            // ResourceManager::CreateTexture(pixels, sprite_size_.x, sprite_size_.y, GL_TRUE, newName.str());
+            glBindTexture(GL_TEXTURE_2D, 0);
+
 #ifdef __EMSCRIPTEN__
-            //tex.Bind();
-            glTexSubImage2D(	GL_TEXTURE_2D,
-                                0,
-                                i * sprite_size_.x,
-                                j * sprite_size_.y,
-                                sprite_size_.x,
-                                sprite_size_.y,
-                                GL_RGBA,
-                                GL_UNSIGNED_BYTE,
-                                data);
-            //glBindTexture(GL_TEXTURE_2D, 0);
+            // tex.Bind();
+            // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            // glTexSubImage2D(	GL_TEXTURE_2D,
+            //                     0,
+            //                     i * sprite_size_.x,
+            //                     j * sprite_size_.y,
+            //                     sprite_size_.x,
+            //                     sprite_size_.y,
+            //                     tex.Image_Format,
+            //                     GL_UNSIGNED_BYTE,
+            //                     data);
+            // glBindTexture(GL_TEXTURE_2D, 0);
+            // GLenum err = glGetError();
+            // if (err != GL_NO_ERROR)
+            // {
+            //     std::stringstream msg;
+            //     msg << "Failed to copy sumbimage in Tilemap::loadTilemapFromTexture(), Error: " << err;
+            //     MessageManager::AddMessage(msg, message_t::ERROR_T);
+            // }
 #else
-            glGetTextureSubImage(   tex.ID,
-                                    0,
-                                    i * sprite_size_.x,
-                                    j * sprite_size_.y,
-                                    0,
-                                    sprite_size_.x,
-                                    sprite_size_.y,
-                                    1,
-                                    GL_RGBA,
-                                    GL_UNSIGNED_BYTE,
-                                    sprite_size_.x * sprite_size_.y * 4,
-                                    data);
+            // glGetTextureSubImage(   tex.ID,
+            //                         0,
+            //                         i * sprite_size_.x,
+            //                         j * sprite_size_.y,
+            //                         0,
+            //                         sprite_size_.x,
+            //                         sprite_size_.y,
+            //                         1,
+            //                         GL_RGBA,
+            //                         GL_UNSIGNED_BYTE,
+            //                         sprite_size_.x * sprite_size_.y * 4,
+            //                         data);
 #endif
+
             std::stringstream key;
             key << "r" << j << "c" << i;
             std::string hashKey = ResourceManager::getNameHash(name_, key.str());
             
             tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
             tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
-            tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, data);
+            tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
 
             tilemap_id_max_++;
         }
@@ -253,7 +316,45 @@ GLvoid Tilemap::createTextureArray()
     for (auto const& [key, val] : tilemap_ids_)
     {
         GLuint texID = tilemap_textures_.find(val)->second.get()->ID;
-        std::vector<unsigned char> subData(spriteDataSize);
+        //std::vector<unsigned char> subData(spriteDataSize);
+
+
+
+
+
+
+
+
+
+
+        glBindTexture(GL_TEXTURE_2D, texID);
+        //int data_size = sprite_size_.x * sprite_size_.y * 4;
+        std::vector<unsigned char> pixels(spriteDataSize);
+
+        //GLuint textureObj = tex.ID; // the texture object - glGenTextures  
+
+        GLuint fbo;
+        glGenFramebuffers(1, &fbo); 
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texID, 0);
+
+        glReadPixels(0, 0, sprite_size_.x, sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, &fbo);
+       
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+
+
+
+
+
+
+
+
 
         /* std::stringstream filename;
         filename << "test-" << key << ".bmp";
@@ -268,41 +369,52 @@ GLvoid Tilemap::createTextureArray()
 
 #ifdef __EMSCRIPTEN__
         //unsigned char* subData = (unsigned char*)malloc(spriteDataSize);
-        //glBindTexture(GL_TEXTURE_2D, texID);
-        //std::vector<unsigned char> subData(spriteDataSize);
-        glTexSubImage2D(	GL_TEXTURE_2D,
-                            0,
-                            0,
-                            0,
-                            sprite_size_.x,
-                            sprite_size_.y,
-                            GL_RGBA,
-                            GL_UNSIGNED_BYTE,
-                            subData.data());
-        //glBindTexture(GL_TEXTURE_2D, 0);
+        // glBindTexture(GL_TEXTURE_2D, texID);
+        // //std::vector<unsigned char> subData(spriteDataSize);
+        // glTexSubImage2D(	GL_TEXTURE_2D,
+        //                     0,
+        //                     0,
+        //                     0,
+        //                     sprite_size_.x,
+        //                     sprite_size_.y,
+        //                     GL_RGBA,
+        //                     GL_UNSIGNED_BYTE,
+        //                     subData.data());
+        // glBindTexture(GL_TEXTURE_2D, 0);
+        // GLenum err = glGetError();
+        // if (err != GL_NO_ERROR)
+        // {
+        //     std::stringstream msg;
+        //     msg << "Failed to copy sumbimage in Tilemap::createTextureArray(), Error: " << err;
+        //     MessageManager::AddMessage(msg, message_t::ERROR_T);
+        // }
 
 #else
         //std::vector<unsigned char> subData(spriteDataSize);
-        glGetTextureSubImage(   texID,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    sprite_size_.x,
-                                    sprite_size_.y,
-                                    1,
-                                    GL_RGBA,
-                                    GL_UNSIGNED_BYTE,
-                                    spriteDataSize,
-                                    subData.data());
+        // glGetTextureSubImage(   texID,
+        //                             0,
+        //                             0,
+        //                             0,
+        //                             0,
+        //                             sprite_size_.x,
+        //                             sprite_size_.y,
+        //                             1,
+        //                             GL_RGBA,
+        //                             GL_UNSIGNED_BYTE,
+        //                             spriteDataSize,
+        //                             subData.data());
 #endif
         for (int row = 0; row < sprite_size_.y; ++row)
-            std::copy(  subData.begin() + row * 64,
-                        subData.begin() + row * 64 + 64,
+            std::copy(  pixels.begin() + row * 64,
+                        pixels.begin() + row * 64 + 64,
                         data.begin() + ix * 64 + row * 64 * tilemap_ids_.size()
                     );
         ix++;
     }
+
+    std::stringstream newName;
+    newName << name_ << "_" << sprite_size_.x * tilemap_textures_.size() << "x" << sprite_size_.y;
+    ResourceManager::CreateTexture(data.data(), sprite_size_.x, sprite_size_.y, GL_TRUE, newName.str());
 
     /* int counter = 0;
     for (size_t i = 0; i < data.size();)
@@ -326,4 +438,24 @@ GLvoid Tilemap::createTextureArray()
 
     //SOIL_save_image("test.bmp", SOIL_SAVE_TYPE_BMP, sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, 4, data.data());
     tilemap_tex_array_.Generate(sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, data.data(), sprite_size_);
+
+    tilemap_tex_array_.Bind();
+    int data_size = tilemap_tex_array_.Width * tilemap_tex_array_.Height * 4;
+    unsigned char* pixels = (unsigned char*)malloc(data_size);
+
+    GLuint textureObj = tilemap_tex_array_.ID; // the texture object - glGenTextures  
+
+    GLuint fbo;
+    glGenFramebuffers(1, &fbo); 
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_ARRAY, textureObj, 0);
+
+    glReadPixels(0, 0, tilemap_tex_array_.Width, tilemap_tex_array_.Height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteFramebuffers(1, &fbo);
+    newName.str("");
+    newName << name_ << "_" << tilemap_tex_array_.Width << "x" << tilemap_tex_array_.Height;
+    ResourceManager::CreateTexture(pixels, tilemap_tex_array_.Width, tilemap_tex_array_.Height, GL_TRUE, newName.str());
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 }

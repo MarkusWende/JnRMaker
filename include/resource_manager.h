@@ -85,6 +85,8 @@ public:
     */
   static Texture2D LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
 
+  static Texture2D CreateTexture(unsigned char* data, GLuint width, GLuint height, GLboolean alpha, std::string name);
+
 
   //static TextureAtlas CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);
@@ -169,6 +171,8 @@ private:
      * @return Texture2D Return the texture object.
      */
   static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
+
+  static Texture2D createTextureFromData(unsigned char* data, GLuint width, GLuint height, GLboolean alpha);
 
   //static TextureAtlas createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);

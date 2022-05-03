@@ -94,7 +94,7 @@ GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
         tiles.AddTile(key, texID);
         //tile_id_max_ = tile_id_max_ + 1.0f;
         //tile_hash_id_map_.insert(std::make_pair(key.c_str(), tile_id_max_));
-        tile_id_.at(mapID) = (GLfloat)tiles.GetTileID(key);
+        tile_id_.at(mapID) = (GLfloat)tiles.GetTile(key)->ID;
 
         /* std::stringstream msg;
         for (auto const& [hashKey, hashVal] : tile_hash_id_map_)

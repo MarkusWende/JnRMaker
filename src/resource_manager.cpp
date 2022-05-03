@@ -54,6 +54,13 @@ Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std:
     return Textures[name];
 }
 
+
+Texture2D ResourceManager::CreateTexture(unsigned char* data, GLuint width, GLuint height, GLboolean alpha, std::string name)
+{
+    Textures[name] = createTextureFromData(data, width, height, alpha);
+    return Textures[name];
+}
+
 /* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
@@ -193,6 +200,24 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     texture.Generate(image_width, image_height, image_data);
 
     stbi_image_free(image_data);
+
+    return texture;
+}
+
+Texture2D ResourceManager::createTextureFromData(unsigned char* data, GLuint width, GLuint height, GLboolean alpha)
+{
+    Texture2D texture;
+    if (alpha)
+    {
+        texture.Internal_Format = GL_RGBA;
+        texture.Image_Format = GL_RGBA;
+    }
+    else {
+        texture.Internal_Format = GL_RGB;
+        texture.Image_Format = GL_RGB;
+    }
+
+    texture.Generate(width, height, data);
 
     return texture;
 }
