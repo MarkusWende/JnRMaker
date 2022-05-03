@@ -46,29 +46,30 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     tile_size_ = spriteSize;
     //tile_id_max_ = 0.0f;
 
-    std::stringstream keyEmptyFile;
-    keyEmptyFile << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
-    std::stringstream keyEmptyPath;
-    keyEmptyPath << "data/assets/sprites/" << keyEmptyFile.str().c_str() << ".png";
-    hash_map_empty_key_ = ResourceManager::getNameHash(name, "r0c0");
-    hash_map_.resize(height, std::vector<std::string>(width, hash_map_empty_key_.c_str()));
+    // std::stringstream keyEmptyFile;
+    // keyEmptyFile << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
+    // std::stringstream keyEmptyPath;
+    // keyEmptyPath << "data/assets/sprites/" << keyEmptyFile.str().c_str() << ".png";
+    // hash_map_empty_key_ = ResourceManager::getNameHash(name, "r0c0");
 
     std::stringstream keyBorderFile;
     keyBorderFile << "default_border_" << spriteSize.x << "x" << spriteSize.y;
     std::stringstream keyBorderPath;
     keyBorderPath << "data/assets/sprites/" << keyBorderFile.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
-    hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
+    hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c0");
 
-    std::stringstream msg;
-    msg << "hash_map_empty_key_: " << hash_map_empty_key_ << std::endl;
-    msg << "hash_map_border_key_: " << hash_map_border_key_;
-    MessageManager::AddMessage(msg, message_t::INFO);
+    hash_map_.resize(height, std::vector<std::string>(width, ""));
 
-    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyEmptyPath.str().c_str());
+    // std::stringstream msg;
+    // // msg << "hash_map_empty_key_: " << hash_map_empty_key_ << std::endl;
+    // msg << "hash_map_border_key_: " << hash_map_border_key_;
+    // MessageManager::AddMessage(msg, message_t::INFO);
+
+    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
     ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
-    GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str())->ID;
-    TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
+    // GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
+    // TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
     //tilemap_ = std::make_unique<Tilemap>(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
 
     // ResourceManager::LoadTexture("data/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
@@ -216,7 +217,7 @@ GLvoid LevelLayer::draw_border()
     {
         for (size_t j = 0; j < width_; j++)
         {
-            if (hash_map_.at(i).at(j).compare(hash_map_empty_key_) != 0)
+            if (hash_map_.at(i).at(j).compare("") != 0)
             {
                 tile_id_.push_back(1.0);
             }
@@ -230,9 +231,9 @@ GLvoid LevelLayer::draw_border()
     std::stringstream msg;
     // msg << "height_: " << height_ << std::endl;
     // msg << "width_: " << width_ << std::endl;
-    for (size_t j = 0; j < hash_map_.size(); j++)
+    for (size_t j = 0; j < tile_id_.size(); j++)
     {
-        msg << hash_map_.at(j).at(0) << " ";
+        msg << tile_id_.at(j) << " ";
     }
     MessageManager::AddMessage(msg, message_t::INFO);
     

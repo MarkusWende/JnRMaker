@@ -54,24 +54,16 @@ Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std:
     return Textures[name];
 }
 
-Texture2D* ResourceManager::CreateTexture(unsigned char* data, int width, int height, GLboolean alpha, std::string name)
-{
-    Textures[name] = createTextureFromBuffer(data, width, height, alpha);
-    return &Textures[name];
-}
-
 /* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
     return TextureAtlases[name];
 }
-
 TextureAtlas ResourceManager::CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
 {
     TextureAtlases[name] = createTextureAtlasFromFile(alpha, spriteSize, spriteScale, file);
     return TextureAtlases[name];
 }
-
 TextureAtlas ResourceManager::GetTextureAtlas(std::string name)
 {
     return TextureAtlases[name];
@@ -103,7 +95,6 @@ GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::st
       MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 }
-
 GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name)
 {
     ResizeRenderTexture(width, height, name);
@@ -116,20 +107,24 @@ GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuin
     spr.setTexture(tex);
     RenderTextures[name]->draw(spr);
 }
-
 sf::Texture* ResourceManager::GetTexture(std::string name)
 {
 	return &Textures[name];
 }
-
 sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 {
 	return RenderTextures.find(name)->second.get();
 }
 */
-Texture2D* ResourceManager::GetTexture(std::string name)
+Texture2D ResourceManager::GetTexture(std::string name)
 {
-    return &Textures[name];
+    return Textures[name];
+}
+
+const std::map<std::string, Texture2D> & ResourceManager::GetTextureMap()
+{
+    const std::map<std::string, Texture2D> &ptr = Textures;
+    return ptr;
 }
 
 Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type)
@@ -202,45 +197,9 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     return texture;
 }
 
-Texture2D ResourceManager::createTextureFromBuffer(unsigned char* image_data, int image_width, int image_height, GLboolean alpha)
-{
-    // Create Texture object
-    Texture2D texture;
-    if (alpha)
-    {
-        texture.Internal_Format = GL_RGBA;
-        texture.Image_Format = GL_RGBA;
-    }
-    else {
-        texture.Internal_Format = GL_RGB;
-        texture.Image_Format = GL_RGB;
-    }
-
-    // Load from file
-    // int image_width = 0;
-    // int image_height = 0;
-    //unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
-    // unsigned char* image_data = stbi_load(file, &image_width, &image_height, NULL, texture.Image_Format == GL_RGBA ? 4 : 3);
-    
-    if (NULL == image_data)
-    {
-        std::stringstream msg;
-        msg << "Image buffer is empty";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
-    }
-    
-    // Now generate texture
-    texture.Generate(image_width, image_height, image_data);
-
-    // stbi_image_free(image_data);
-
-    return texture;
-}
-
 /* TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlas texture;
-
     if (alpha)
     {
         texture.Internal_Format = GL_RGBA;
@@ -250,19 +209,15 @@ Texture2D ResourceManager::createTextureFromBuffer(unsigned char* image_data, in
         texture.Internal_Format = GL_RGB;
         texture.Image_Format = GL_RGB;
     }
-
     // Now generate texture
     texture.Generate(spriteSize);
     // And finally free image data
     //SOIL_free_image_data(image);
-
     return texture;
 }
-
 TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
 {
     TextureAtlas texture;
-
     if (alpha)
     {
         texture.Internal_Format = GL_RGBA;
@@ -272,7 +227,6 @@ TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::v
         texture.Internal_Format = GL_RGB;
         texture.Image_Format = GL_RGB;
     }
-
     // Load image
     int width, height;
     unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
@@ -283,12 +237,10 @@ TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::v
         msg << SOIL_last_result() << ": " << file;
         MessageManager::AddMessage(msg, message_t::ERROR_T);
     }
-
     // Now generate texture
     texture.Generate(width, height, image, spriteSize);
     // And finally free image data
     //SOIL_free_image_data(image);
-
     return texture;
 } */
 
