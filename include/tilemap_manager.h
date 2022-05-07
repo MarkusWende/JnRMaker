@@ -82,7 +82,7 @@ public:
   static Tilemap* GetTilemap(std::string name);
 
   static GLboolean IsEmpty() { return Tilemaps.empty(); }
-  static GLuint GetSize() { return Tilemaps.size(); }
+  static GLuint GetSize() { return (GLuint)Tilemaps.size(); }
 
 private:
   // Private constructor, that is we do not want any actual tilemap manager objects. Its members and functions should be publicly available (static).

@@ -154,7 +154,7 @@ GLvoid Gui::Render(Scene *scene)
 	// Scene Render Window
 	{
 		ImGui::SetNextWindowSize(ImVec2(window_scene_.w + style->WindowBorderSize, window_scene_.h + style->WindowBorderSize));
-		ImGui::SetNextWindowPos(ImVec2(0, main_menubar_height_));
+		ImGui::SetNextWindowPos(ImVec2(0, (float)main_menubar_height_));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
 		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
 		ImGui::Begin("Rendering", NULL,	ImGuiWindowFlags_NoTitleBar |
@@ -255,7 +255,7 @@ GLvoid Gui::Render(Scene *scene)
 				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
 				ImGui::Text("Tiles used and which will be saved.");
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
-				ImGui::BeginChildFrame(2, ImVec2(window_scene_.w, window_scene_.h - 50));
+				ImGui::BeginChildFrame(2, ImVec2((float)window_scene_.w, (float)window_scene_.h - 50.0f));
 				{
 					// for (auto const& [key, val] : TilemapManager::Tilemaps)
 					// {
@@ -278,7 +278,7 @@ GLvoid Gui::Render(Scene *scene)
 						GLuint64 texID = (GLuint64)value.ID;
 						ImGui::Text("key: %s\tid: %lu", key.c_str(), texID);
 						ImGui::Image((ImTextureID)texID,
-							ImVec2(value.Width*2,value.Height*2),
+							ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
 							ImVec2(0,0),
 							ImVec2(1,1),
 							ImColor(255, 255, 255, 255),
@@ -301,8 +301,8 @@ GLvoid Gui::Render(Scene *scene)
 			ImGui::EndTabBar();
 		}
 
-		GLuint windowWidth = ImGui::GetWindowWidth() - 1;
-		GLuint windowHeight = ImGui::GetWindowHeight() - 1;
+		GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
+		GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
 
 		if ((windowWidth != window_scene_.w) || (windowHeight != window_scene_.h))
 		{
@@ -320,7 +320,7 @@ GLvoid Gui::Render(Scene *scene)
 	// Side Bar Right Window
 	{
 		ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
-		ImGui::SetNextWindowPos(ImVec2(window_scene_.w, main_menubar_height_));
+		ImGui::SetNextWindowPos(ImVec2((float)window_scene_.w, (float)main_menubar_height_));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
 		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
 											ImGuiWindowFlags_NoMove |
@@ -359,7 +359,7 @@ GLvoid Gui::Render(Scene *scene)
 				for (size_t n = 0; n < spriteSizeStrVector.size(); n++)
 				{
 					std::string item = spriteSizeStrVector.at(n);
-					ImGui::PushID(n);
+					ImGui::PushID((int)n);
 					if (ImGui::Selectable(spriteSizeStrVector.at(n).c_str(), item.compare(spriteSizeStr)))
 					{
 						spriteSizeStr = item;
@@ -399,7 +399,11 @@ GLvoid Gui::Render(Scene *scene)
 			static int selected = 0;
 			for (int n = 0; n < 3; n++) {
 				char buf[32];
+#ifdef _WIN32
+				sprintf_s(buf, "Layer %d", n);
+#else
 				sprintf(buf, "Layer %d", n);
+#endif
 				if (ImGui::Selectable(buf, selected == n))
 					selected = n;
 			}
@@ -617,7 +621,11 @@ GLvoid Gui::Render(Scene *scene)
             for (int i = 0; i < ImGuiMouseCursor_COUNT; i++)
             {
                 char label[32];
+#ifdef _WIN32
+				sprintf_s(label, "Mouse cursor %d: %s", i, mouse_cursors_names[i]);
+#else
                 sprintf(label, "Mouse cursor %d: %s", i, mouse_cursors_names[i]);
+#endif
                 ImGui::Bullet(); ImGui::Selectable(label, false);
                 if (ImGui::IsItemHovered())
                     ImGui::SetMouseCursor(i);
@@ -626,8 +634,8 @@ GLvoid Gui::Render(Scene *scene)
         }
     }
 
-		GLuint windowWidth = ImGui::GetWindowWidth() - 1;
-		GLuint windowHeight = ImGui::GetWindowHeight() - 1;
+		GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
+		GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
 
 		if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
 		{
@@ -652,9 +660,9 @@ void Gui::Draw(Scene *scene)
 
 void Gui::DrawExplorerWindow(Scene *scene)
 {
-	ImGui::SetNextWindowSize(ImVec2(window_messages_.w, window_messages_.h));
-	ImGui::SetNextWindowPos(ImVec2(0, window_scene_.h + main_menubar_height_));
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 5));
+	ImGui::SetNextWindowSize(ImVec2((float)window_messages_.w, (float)window_messages_.h));
+	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)window_scene_.h + (float)main_menubar_height_));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 5.0f));
 
 	// ImGuiIO& io = ImGui::GetIO();
     // ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, ((io.DisplaySize.y - 200) > 0) ? (200 - main_menubar_height_) : 0));
@@ -683,7 +691,7 @@ void Gui::DrawExplorerWindow(Scene *scene)
 	ImGui::End();
 	ImGui::PopStyleVar();
 
-	GLuint windowHeight = ImGui::GetWindowHeight();
+	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight();
 
 	if (windowHeight != window_messages_.h)
 	{
@@ -810,11 +818,11 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 						//std::stringstream sprKey;
 						//sprKey << "r" << row << "c" << col;
 						GLuint64 tile = (GLuint64)tilemap->GetTile(tilemapHashes.at(i)).ID;
-						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
-						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
+						auto buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+						auto buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 						ImGui::PushID(i);
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.4f));
 						// Change mouse cursor to hand
 						if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
 						{
@@ -824,11 +832,11 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 							ImGui::ImageButton(
 								(ImTextureID)tile,
 								ImVec2(buttonWidth, buttonHeight),
-								ImVec2(0, 0),
-								ImVec2(1, 1),
+								ImVec2(0.0f, 0.0f),
+								ImVec2(1.0f, 1.0f),
 								1,
-								ImVec4(0, 0, 0, 0),
-								ImVec4(0.8, 0.8, 0.8, 1))
+								ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
+								ImVec4(0.8f, 0.8f, 0.8f, 1.0f))
 							)
 						{
 							if (!scene->IsMapNull())

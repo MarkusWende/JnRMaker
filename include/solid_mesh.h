@@ -69,7 +69,7 @@ public:
 	GLvoid Draw()
 	{
 		glBindVertexArray(vao_);
-		glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, (GLsizei)indices_.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
@@ -77,7 +77,7 @@ public:
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBindVertexArray(vao_);
-		glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, (GLsizei)indices_.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
@@ -291,7 +291,7 @@ public:
 		edges_.clear();
 
 		// Get number of faces
-		GLuint numFaces = indices_.size() / 3;
+		GLuint numFaces = (GLuint)indices_.size() / 3;
 
 		// Clear vertice normals
 		for (size_t i = 0; i < (size_t)numFaces; i++)
@@ -310,7 +310,7 @@ public:
 			FaceNew newFace;
 
 			// Face id
-			newFace.ID = i;
+			newFace.ID = (GLuint)i;
 
 			// Face vertices
 			GLuint v0ID = vertices_.at(indices_.at(i * 3)).ID;
@@ -644,7 +644,7 @@ public:
 	glm::vec3	GetVertexPosition(GLuint id)			{ return vertices_.at(id).Position; }
 	glm::vec3	GetVertexNormal(GLuint id)				{ return vertices_.at(id).Normal; }
 	EdgeNew		GetEdge(GLuint id)						{ return edges_.at(id); }
-	GLuint		GetNumberOfEdges()						{ return edges_.size(); }
+	GLuint		GetNumberOfEdges()						{ return (GLuint)edges_.size(); }
 	GLfloat		GetMeshReductionProgress()				{ return progress_mesh_reduction_; };
 	std::vector<VertexNew>	GetVertices()				{ return vertices_; }
 	std::vector<GLuint>		GetIndices()				{ return indices_; }

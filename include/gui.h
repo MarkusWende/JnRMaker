@@ -47,6 +47,8 @@
 
 
 #ifdef _WIN32
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <cstring>
 #include <filesystem>
 #include <windows.h>
 namespace fs = std::filesystem;
@@ -76,8 +78,8 @@ struct GuiWindow {
 
     GLuint w;                     /**< Width in pixel of the gui window. */
     GLuint h;                     /**< Height in pixel of the gui window. */
-    GLdouble wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
-    GLdouble hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
+    GLfloat wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
+    GLfloat hPercent;             /**< Height in percent [0.0f .. 1.0f] of the gui window. */
 };
 #ifdef __EMSCRIPTEN__
 
