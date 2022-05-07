@@ -87,8 +87,8 @@ LevelLayer::~LevelLayer()
 
 GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {
-    Tilemap* tiles = TilemapManager::GetTilemap(name_);
-    std::vector<std::string> tileHashes = tiles->GetHashs();
+    auto tiles = TilemapManager::GetTilemap(name_);
+    auto tileHashes = tiles->GetHashs();
     //if (!tiles->HashExists(key))
     {
         tiles->AddTile(key, texID);
@@ -108,7 +108,7 @@ GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
         //tile_id_.at(mapID) = (GLfloat)tiles->GetTileID(key);
     }
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(GLfloat), tile_id_.data());
     
 }
 
@@ -126,6 +126,10 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
     //ResourceManager::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_);
+
+    // std::stringstream msg;
+    // msg << "width: " << width_ << "\theight: " << height_;
+    // MessageManager::AddMessage(msg, message_t::INFO);
 }
 
 
@@ -137,7 +141,7 @@ GLvoid LevelLayer::init()
     {
         for (size_t x = 0; x < width_; x++)
         {
-            glm::vec2 translation;
+            offset translation;
             translation.x = (float)x + 0.5f;
             translation.y = (float)y + 0.5f;
             //translation.z = 0.0f;
@@ -149,11 +153,12 @@ GLvoid LevelLayer::init()
 
     glGenBuffers(1, &tile_trans_vbo_);
     glBindBuffer(GL_ARRAY_BUFFER, tile_trans_vbo_);
-    glBufferData(GL_ARRAY_BUFFER, translations_.size() * sizeof(translations_.data()), translations_.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, translations_.size() * sizeof(offset), translations_.data(), GL_STATIC_DRAW);
+    
 
     glGenBuffers(1, &tile_id_vbo_);
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
-    glBufferData(GL_ARRAY_BUFFER, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, tile_id_.size() * sizeof(GLfloat), tile_id_.data(), GL_STATIC_DRAW);
     //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
@@ -228,17 +233,8 @@ GLvoid LevelLayer::draw_border()
             }
         }
     }
-
-    std::stringstream msg;
-    // msg << "height_: " << height_ << std::endl;
-    // msg << "width_: " << width_ << std::endl;
-    for (size_t j = 0; j < tile_id_.size(); j++)
-    {
-        msg << tile_id_.at(j) << " ";
-    }
-    MessageManager::AddMessage(msg, message_t::INFO);
     
 
     glBindBuffer(GL_ARRAY_BUFFER, tile_id_vbo_);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(tile_id_.data()), tile_id_.data());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, tile_id_.size() * sizeof(GLfloat), tile_id_.data());
 }

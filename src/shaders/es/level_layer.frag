@@ -1,6 +1,6 @@
 #version 300 es
-precision highp float;
-precision highp sampler2DArray;
+precision lowp float;
+precision lowp sampler2DArray;
 
 in vec2 TexCoords;
 in float tileID;

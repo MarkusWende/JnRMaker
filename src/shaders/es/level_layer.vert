@@ -17,7 +17,7 @@ out float tileID;
 
 void main()
 {
-    vec2 offset = vec2(aTileTrans.x, aTileTrans.y);
+    vec2 offset = aTileTrans;
     tileID = aTileID;
     gl_Position = projection * view * model * vec4(aPos + offset, 0.0, 1.0);
     TexCoords = aTexCoords;

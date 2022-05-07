@@ -32,6 +32,13 @@
 #include "scene_entity.h"
 #include "tilemap_manager.h"
 
+struct offset
+{
+    GLfloat x;
+    GLfloat y;
+};
+
+
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */
@@ -64,7 +71,7 @@ private:
     glm::vec2                               tile_size_;
     glm::vec2                               tile_scale_;
 
-    std::vector<glm::vec2>                  translations_;
+    std::vector<offset>                  translations_;
     std::vector<GLfloat>                    tile_id_;
     GLuint                                  quad_vao_;
     GLuint                                  quad_vbo_;
