@@ -40,8 +40,8 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     name_ = name;
     width_ = width;
     height_ = height;
-    width_pixels_ = width * spriteSize.x;
-    height_pixels_ = height * spriteSize.y;
+    width_pixels_ = width * (GLuint)spriteSize.x;
+    height_pixels_ = height * (GLuint)spriteSize.y;
     tile_scale_ = { 1.0f, 1.0f };
     tile_size_ = spriteSize;
     //tile_id_max_ = 0.0f;
@@ -85,7 +85,7 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &tile_id_vbo_);
 };
 
-GLvoid LevelLayer::AddSprite(GLfloat mapID, const std::string key, GLuint texID)
+GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {
     Tilemap* tiles = TilemapManager::GetTilemap(name_);
     std::vector<std::string> tileHashes = tiles->GetHashs();

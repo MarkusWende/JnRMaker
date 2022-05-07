@@ -43,7 +43,7 @@ public:
 
     GLuint GetHeight() {return height_;};
     GLuint GetWidth() {return width_;};
-	GLvoid AddSprite(GLfloat mapID, const std::string key, GLuint texID);
+	GLvoid AddSprite(GLuint mapID, const std::string key, GLuint texID);
 
     GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 

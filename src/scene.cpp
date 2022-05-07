@@ -279,7 +279,7 @@ GLvoid Scene::Render()
             e_sprites_["brush"]->Move(brushPos);
             e_sprites_["brush"]->Draw(projection, view);
 
-            current_tile_id_ = tileField.y * (map_width_) + tileField.x;
+            current_tile_id_ = (GLuint)tileField.y * (map_width_) + (GLuint)tileField.x;
             mouse_over_map_ = true;
         }
         else
