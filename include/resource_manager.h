@@ -54,7 +54,7 @@ class ResourceManager
 {
 public:
   static std::map<std::string, Texture2D>		Textures;							/**< Texture vector. Stores every texture used in the application. */
-  //static std::map<std::string, TextureAtlas> TextureAtlases;							/**< Texture vector. Stores every texture used in the application. */
+  static std::map<std::string, TextureArray> TextureArrays;							/**< Texture vector. Stores every texture used in the application. */
   //static std::map<std::string, std::unique_ptr<sf::RenderTexture>> RenderTextures;    /**< Contains all SFML render textures. */
   static std::map<std::string, Framebuffer>	Framebuffers;						        /**< Framebuffer vector. Stores every framebuffer used in the application. */
   static std::map<std::string, Shader>		Shaders;							/**< Shader vector. Stores every shader used in the application. */
@@ -87,6 +87,8 @@ public:
 
   static Texture2D CreateTexture(unsigned char* data, GLuint width, GLuint height, GLboolean alpha, std::string name);
 
+  static TextureArray CreateTextureArray(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name);
+
 
   //static TextureAtlas CreateTextureAtlasEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);
@@ -115,6 +117,8 @@ public:
      * @return Texture2D Return the texture object.
      */
    static Texture2D GetTexture(std::string name);
+
+   static TextureArray GetTextureArray(std::string name);
 
    static const std::map<std::string, Texture2D> & GetTextureMap();
 
@@ -173,6 +177,10 @@ private:
   static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
 
   static Texture2D createTextureFromData(unsigned char* data, GLuint width, GLuint height, GLboolean alpha);
+
+  static TextureArray loadTextureArrayFromFile(const GLchar* file, GLboolean alpha);
+
+  static TextureArray createTextureArrayFromData(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name);
 
   //static TextureAtlas createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale);
   //static TextureAtlas createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file);

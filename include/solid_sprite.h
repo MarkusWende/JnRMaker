@@ -44,9 +44,9 @@ public:
 
     GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 
-    GLvoid AssignTextureByName(Texture2D tex) { texture_ = tex; };
+    GLvoid AssignTextureID(GLuint texID) { texture_id_ = texID; };
 
-    Texture2D *GetTexture() { return &texture_; };
+    GLuint GetTextureID() { return texture_id_; };
 
 private:
     using Solid::DrawWireframe;						/**< Dont use this function. Therefor its private. */
@@ -55,7 +55,7 @@ private:
     GLuint width_;
 
     std::unique_ptr<Quad>	quad_;
-    Texture2D            texture_;
+    GLuint            texture_id_;
 };
 
 #endif

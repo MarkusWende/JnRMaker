@@ -71,7 +71,8 @@ public:
 
     glm::vec2 GetSpriteSize() { return { sprite_size_.x, sprite_size_ .y}; };
     glm::vec2 GetSpriteScale() { return {sprite_scale_.x, sprite_scale_.y}; };
-    TextureArray GetTexArray() { return tilemap_tex_array_; };
+    //TextureArray GetTexArray() { return tilemap_tex_array_; };
+    TextureArray GetTexArray() { return ResourceManager::GetTextureArray(name_); };
 
     /**
 	 * @brief Get the number of rows of the tilemap.
@@ -87,7 +88,8 @@ public:
 
     GLvoid AddTile(const std::string key, GLuint texID);
 
-    Texture2D* GetTile(std::string key) { return tilemap_textures_.find(key)->second.get(); };
+    //Texture2D* GetTile(std::string key) { return tilemap_textures_.find(key)->second.get(); };
+    Texture2D GetTile(std::string key) { return ResourceManager::GetTexture(key); };
 
     GLuint GetTileID(std::string key);
 
@@ -104,13 +106,13 @@ private:
 	 * @param scale The Scale of a sprite in the x and y axis.
    * @return GLvoid.
 	 */
-    GLvoid loadTilemapFromTexture();
+    //GLvoid loadTilemapFromTexture();
 
-    GLvoid createTextureArray();
+    //GLvoid createTextureArray();
  
-    std::map<std::string, std::shared_ptr<Texture2D>>   tilemap_textures_;
+    //std::map<std::string, std::shared_ptr<Texture2D>>   tilemap_textures_;
     std::map<GLuint, std::string>                       tilemap_ids_;
-    TextureArray    tilemap_tex_array_;
+    //TextureArray    tilemap_tex_array_;
     GLuint          tilemap_id_max_;
 
     glm::vec2       sprite_size_;                       /**< Width of all the sprites in the map. */

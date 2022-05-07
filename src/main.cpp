@@ -295,7 +295,7 @@ static void main_loop(void* arg)
 
     appScene->Render();
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
     //ImPlot::ShowDemoWindow();
 
     // Rendering

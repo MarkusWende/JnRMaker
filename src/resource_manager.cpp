@@ -32,6 +32,7 @@
 #include "stb_image.h"
 
 std::map<std::string, Texture2D>    ResourceManager::Textures;
+std::map<std::string, TextureArray> ResourceManager::TextureArrays;
 //std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
 //std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
 std::map<std::string, Framebuffer>  ResourceManager::Framebuffers;
@@ -59,6 +60,13 @@ Texture2D ResourceManager::CreateTexture(unsigned char* data, GLuint width, GLui
 {
     Textures[name] = createTextureFromData(data, width, height, alpha);
     return Textures[name];
+}
+
+TextureArray ResourceManager::CreateTextureArray(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+{
+    Textures[name] = createTextureFromData(data, width, height, alpha);
+    TextureArrays[name] = createTextureArrayFromData(data, width, height, spriteSizeX, spriteSizeY, alpha, name);
+    return TextureArrays[name];
 }
 
 /* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
@@ -126,6 +134,11 @@ sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 Texture2D ResourceManager::GetTexture(std::string name)
 {
     return Textures[name];
+}
+
+TextureArray ResourceManager::GetTextureArray(std::string name)
+{
+    return TextureArrays[name];
 }
 
 const std::map<std::string, Texture2D> & ResourceManager::GetTextureMap()
@@ -220,6 +233,51 @@ Texture2D ResourceManager::createTextureFromData(unsigned char* data, GLuint wid
     texture.Generate(width, height, data);
 
     return texture;
+}
+
+TextureArray ResourceManager::createTextureArrayFromData(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+{
+    TextureArray texArray;
+    int channels = 0;
+    if (alpha)
+    {
+        texArray.Internal_Format = GL_RGBA;
+        texArray.Image_Format = GL_RGBA;
+        channels = 4;
+    }
+    else {
+        texArray.Internal_Format = GL_RGB;
+        texArray.Image_Format = GL_RGB;
+        channels = 3;
+    }
+
+    texArray.Generate(width, height, data, {spriteSizeX, spriteSizeY});
+
+    std::vector<unsigned char> tile(spriteSizeX * spriteSizeY * channels);
+    int tilesX = width / spriteSizeX;
+	int tilesY = height / spriteSizeY;
+	int tileSizeX = spriteSizeX * channels;
+	int rowLen    = tilesX * tileSizeX;
+
+	for (int iy = 0; iy < tilesY; ++ iy)
+	{
+		for (int ix = 0; ix < tilesX; ++ ix)
+		{
+			unsigned char *ptr = data + iy*rowLen*spriteSizeY + ix*tileSizeX;
+			for (int row = 0; row < spriteSizeY; ++ row)
+				std::copy(ptr + row*rowLen, ptr + row*rowLen + tileSizeX,
+						tile.begin() + row*tileSizeX);
+
+
+			int i = iy * tilesX + ix;
+            std::stringstream tileName;
+            tileName << "r" << iy << "c" << ix;
+            std::string hashKey = getNameHash(name, tileName.str());
+			CreateTexture(tile.data(), spriteSizeX, spriteSizeY, alpha, hashKey);
+		}
+	}
+
+    return texArray;
 }
 
 /* TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)

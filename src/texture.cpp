@@ -164,7 +164,7 @@ void ColorMap::Delete()
 
 // Class TextureAtlas
 TextureArray::TextureArray()
-	: Width(0), Height(0), Internal_Format(GL_RGBA), Image_Format(GL_RGBA), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Wrap_R(GL_REPEAT), Filter_Min(GL_NEAREST), Filter_Mag(GL_NEAREST), Mip_Level(4)
+	: Width(0), Height(0), Internal_Format(GL_RGBA), Image_Format(GL_RGBA), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Wrap_R(GL_REPEAT), Filter_Min(GL_NEAREST), Filter_Mag(GL_NEAREST), Mip_Level(1)
 {
 	glGenTextures(1, &this->ID);
 }

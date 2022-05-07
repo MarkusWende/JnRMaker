@@ -782,16 +782,16 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 			}
 
 			static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-			Tilemap tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
-			std::vector<std::string> tilemapHashes = tilemap.GetHashs();
+			Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
+			std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
-			ImGui::Text("TexArrayID: %u", tilemap.GetTexArray().ID);
+			ImGui::Text("TexArrayID: %u", tilemap->GetTexArray().ID);
 
 			ImGui::BeginChild("TileSelector",
 				ImVec2(0,
-					((tilemap.NumRows() > 0) ? tilemap.NumRows() : 1.0f)
-					* tilemap.GetSpriteSize().y
-					* tilemap.GetSpriteScale().y 
+					((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
+					* tilemap->GetSpriteSize().y
+					* tilemap->GetSpriteScale().y 
 					* tileButtonScale.y + 5.0f + style->ScrollbarSize),
 				true,
 				ImGuiWindowFlags_HorizontalScrollbar
@@ -799,19 +799,19 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 			GLuint i = 0;
-			ImGuiListClipper clipper(tilemap.NumRows());
+			ImGuiListClipper clipper(tilemap->NumRows());
 
 			while (clipper.Step())
 			{
 				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
 				{
-					for (GLuint col = 0; col < tilemap.NumCols(); col++)
+					for (GLuint col = 0; col < tilemap->NumCols(); col++)
 					{
 						//std::stringstream sprKey;
 						//sprKey << "r" << row << "c" << col;
-						GLuint tile = tilemap.GetTile(tilemapHashes.at(i))->ID;
-						GLuint buttonWidth = tilemap.GetSpriteSize().x * tilemap.GetSpriteScale().x * tileButtonScale.x;
-						GLuint buttonHeight = tilemap.GetSpriteSize().y * tilemap.GetSpriteScale().y * tileButtonScale.y;
+						GLuint tile = tilemap->GetTile(tilemapHashes.at(i)).ID;
+						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 						ImGui::PushID(i);
 						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1, 1, 1, 0.4));
@@ -834,8 +834,8 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 							if (!scene->IsMapNull())
 							{
 								scene->SetActiveSprite(tilemapHashes.at(i));
-								Texture2D *brushTex = tilemap.GetTile(tilemapHashes.at(i));
-								scene->GetSprite("brush")->AssignTextureByName(*brushTex);
+								GLuint brushTexID = tilemap->GetTile(tilemapHashes.at(i)).ID;
+								scene->GetSprite("brush")->AssignTextureID(brushTexID);
 
 								/* std::stringstream msg;
 								msg << tilemapHashes.at(i);
@@ -845,7 +845,7 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 
 						ImGui::PopStyleColor(2);
 						ImGui::PopID();
-						if (col < (tilemap.NumCols() - 1))
+						if (col < (tilemap->NumCols() - 1))
 							ImGui::SameLine();
 						i++;
 					}
