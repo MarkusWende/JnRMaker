@@ -34,6 +34,7 @@
 
 Sprite::Sprite(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
 {
+    (void)smooth;
     name_ = meshName;
     center_ = glm::vec3(0.5f, 0.5f, 0.0f);
     width_ = width;

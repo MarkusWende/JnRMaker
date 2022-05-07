@@ -41,7 +41,7 @@ Solid::Solid()
 	yaw_ = 0.0f;
 	pitch_ = 0.0f;
 	roll_ = 0.0f;
-};
+}
 
 Solid::Solid(GLuint id, std::string name, layer_t layer)                            //!< constructor
 {
@@ -61,7 +61,7 @@ Solid::Solid(GLuint id, std::string name, layer_t layer)                        
 	yaw_ = 0.0f;
 	pitch_ = 0.0f;
 	roll_ = 0.0f;
-};
+}
 
 GLvoid Solid::Draw()
 {
@@ -133,15 +133,15 @@ GLvoid Solid::triangulateMesh(std::string meshName)
 	model_.TriangulateMesh(meshName);
 }
 
-GLvoid Solid::reduceMesh(std::string meshName)
-{
-//	model_.ReduceMesh(meshName);
-}
+// GLvoid Solid::reduceMesh(std::string meshName)
+// {
+// //	model_.ReduceMesh(meshName);
+// }
 
-GLvoid Solid::copyReducedMesh(std::string meshName)
-{
-//	model_.CopyReducedMesh(meshName);
-}
+// GLvoid Solid::copyReducedMesh(std::string meshName)
+// {
+// //	model_.CopyReducedMesh(meshName);
+// }
 
 GLvoid Solid::updateVAO(std::string meshName)
 {
@@ -212,7 +212,7 @@ GLboolean Solid::vecVecIntersection(glm::vec3 vP0, glm::vec3 vP1, glm::vec3 uP0,
 
 	if (((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)) == 0.0f)
 	{
-		true;
+		return true;
 	}
 
 	GLfloat Px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
@@ -251,7 +251,7 @@ GLboolean Solid::vecVecIntersection(glm::vec3 vP0, glm::vec3 vP1, glm::vec3 uP0,
 	return false;
 }
 
-GLvoid Solid::updateNormals(std::string meshName)
-{
-//	model_.UpdateNormals(meshName);
-}
+// GLvoid Solid::updateNormals(std::string meshName)
+// {
+// //	model_.UpdateNormals(meshName);
+// }

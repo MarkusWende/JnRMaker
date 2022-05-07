@@ -85,7 +85,7 @@ private:
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(LevelLayer, 1);
+CEREAL_CLASS_VERSION(LevelLayer, 1)
 #endif
 
 #endif

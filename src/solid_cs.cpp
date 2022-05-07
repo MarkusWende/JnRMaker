@@ -32,7 +32,7 @@
   // PUBLIC:
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CoordinateSystem::CoordinateSystem(std::string meshName, glm::vec3 offset) : Solid()
+CoordinateSystem::CoordinateSystem(glm::vec3 offset) : Solid()
 {
 	center_ = offset;
 	layer_ = layer_t::FORE;

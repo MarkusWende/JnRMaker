@@ -60,8 +60,11 @@ MessageCallback( GLenum source,
                  const GLchar* message,
                  const void* userParam )
 {
+    (void)userParam;
+    (void)length;
+    (void)id;
     std::stringstream msg;
-    msg << "GL CALLBACK: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
+    msg << source << "\tGL CALLBACK: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
     MessageManager::AddMessage(msg, message_t::ERROR_T);
 }
 
@@ -234,7 +237,7 @@ int main(int, char**)
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
     emscripten_set_main_loop_arg(main_loop, NULL, 60, true);
 #else
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
     while (appGui->IsOpen())

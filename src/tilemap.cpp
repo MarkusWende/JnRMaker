@@ -93,7 +93,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
 
         stbi_image_free(image);
     }
-};
+}
 
 /**
  * @brief Constructor with no parameters for a tilemap.
@@ -108,13 +108,13 @@ Tilemap::Tilemap ()
     tilemap_id_max_ = 0;
     //ResourceManager::CreateTextureAtlasEmpty(name_, GL_TRUE, sprite_size_, sprite_scale_);
     //ResourceManager::CreateFramebuffer("default", 0, 0);
-};
+}
 
 
 Tilemap::~Tilemap()
 {
     
-};
+}
 
 GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
 {

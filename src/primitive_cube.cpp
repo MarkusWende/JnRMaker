@@ -46,7 +46,7 @@ Cube::Cube(std::string meshName, GLboolean smooth) : Primitive(meshName)
 GLvoid Cube::SetEdge(glm::vec2 pos, GLuint id)
 {
 	EdgeNew edge = getEdge(name_, id);
-	for (int i = 0; i < edge.VertIds.size(); i++)
+	for (size_t i = 0; i < edge.VertIds.size(); i++)
 	{
 		glm::vec3 tmpVert = getVertexPosition(name_, edge.VertIds.at(i));
 		tmpVert.x = pos.x;
@@ -112,7 +112,7 @@ GLvoid Cube::SetHeight(GLfloat topHeight, GLfloat bottomHeight)
 		setVertexPositionY(name_, 29, bottomHeight);
 	}
 
-	for (int i = 0; i < getNumberOfEdges(name_); i++)
+	for (GLuint i = 0; i < getNumberOfEdges(name_); i++)
 	{
 		setEdgeLength(name_, i, glm::abs(topHeight - bottomHeight));
 	}

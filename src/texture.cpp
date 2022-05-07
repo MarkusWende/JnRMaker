@@ -190,7 +190,7 @@ void TextureArray::Generate(GLuint width, GLuint height, unsigned char* data, gl
 	int tilesY = this->Height / spriteSize.y;
 	int imageCount = tilesX * tilesY;
 
-	for (int mip = 0; mip < this->Mip_Level; ++mip)
+	for (GLuint mip = 0; mip < this->Mip_Level; ++mip)
 	{
 		// Set Texture wrap and filter modes
 		glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, this->Filter_Min);

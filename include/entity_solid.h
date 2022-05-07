@@ -197,7 +197,7 @@ protected:
 	 */
 	GLboolean vecVecIntersection(glm::vec3 vP0, glm::vec3 vP1, glm::vec3 uP0, glm::vec3 uP1);
 
-	GLvoid updateNormals(std::string meshName);
+	// GLvoid updateNormals(std::string meshName);
 
 	/**
 	 * @brief Clear the mesh (vertices, indices, faces and edges) of the solid. The method is forwarded to the model_ attribute.
@@ -215,13 +215,13 @@ protected:
 	 * @brief Try to reduce the number of faces and edges of the mesh. The method is forwarded to the model_ attribute.
 	 * @return Void.
 	 */
-	GLvoid reduceMesh(std::string meshName);
+	// GLvoid reduceMesh(std::string meshName);
 
 	/**
 	 * @brief Copy the reduced mesh to work on a copy of the mesh. The method is forwarded to the model_ attribute.
 	 * @return Void.
 	 */
-	GLvoid copyReducedMesh(std::string meshName);
+	// GLvoid copyReducedMesh(std::string meshName);
 
 	/**
 	 * @brief Update the vertex array object. Use this every time you change the vertices. The method is forwarded to the model_ attribute.
@@ -234,7 +234,7 @@ protected:
 	glm::vec3	getVertexNormal(std::string meshName, GLuint id) { return model_.GetVertexNormal(meshName, id); };		/**< @brief Get the vertex normal by id. @param meshName The name of the mesh. @param id The id of the vertex as a GLuint. @return glm::vec3 The nromal of the vertex as a 3d vector. */
 	EdgeNew		getEdge(std::string meshName, GLuint id) { return model_.GetEdge(meshName, id); };				/**< @brief Get the edge of the mesh by id. @param meshName The name of the mesh. @param id The id of the edge as a GLuint. @return GLuint The id as an unsigned integer. */
 	GLuint		getNumberOfEdges(std::string meshName) { return model_.GetNumberOfEdges(meshName); };			/**< @brief Get the number of edges in the mesh. @param meshName The name of the mesh. @return GLuint The number of edges as an unsigned integer. */
-	GLfloat		getMeshReductionProgress(std::string meshName) { return model_.GetMeshReductionProgress(meshName); }	/**< @brief Get the progress of the mesh reduction as a float. @param meshName The name of the mesh. @return GLfloat The mesh reduction progress as a float between 0.0f and 1.0f. */
+	GLfloat		getMeshReductionProgress() { return model_.GetMeshReductionProgress(); }	/**< @brief Get the progress of the mesh reduction as a float. @param meshName The name of the mesh. @return GLfloat The mesh reduction progress as a float between 0.0f and 1.0f. */
 	GLboolean	isMeshReductionQueueLocked() { return model_.IsMeshReductionQueueLocked(); };		/**< @brief Return the mesh reduction queue status. @return GLboolean Return true if the mesh reduction queue is locked. */
 	GLboolean	isMeshReductionCostQueueEmpty() { return model_.IsMeshReductionCostQueueEmpty(); };		/**< @brief Return true if the mesh reduction queue empty. @return GLboolean Return true if the mesh reduction queue is empty. */
 
@@ -280,7 +280,7 @@ private:
 #ifdef __EMSCRIPTEN__
 
 #else
-	CEREAL_CLASS_VERSION(Solid, 1);
+	CEREAL_CLASS_VERSION(Solid, 1)
 #endif
 
 

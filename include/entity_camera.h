@@ -396,7 +396,7 @@ private:
 	void updateCameraCenter()
 	{
 		// Get the normalized camera direction vector
-		glm::vec3 RayDir = glm::normalize(front_);
+		//glm::vec3 RayDir = glm::normalize(front_);
 
 		// Origin and normal of the XZ plane
 		glm::vec3 PlaneOrigin(0, 0, 0);
@@ -407,10 +407,10 @@ private:
 			PlaneNormal = glm::vec3(0, -1, 0);
 
 		// Get the camera position and save it as the ray origin
-		glm::vec3 RayOrigin = position_;
+		//glm::vec3 RayOrigin = position_;
 
 		// Distance variable to store the distance between camera position and intersection point
-		float dist = 0.0f;
+		//float dist = 0.0f;
 
 		// Get the intersection point between camera direction ray and the map mesh. GLM has a function which
 		// takes a ray origin, direction.

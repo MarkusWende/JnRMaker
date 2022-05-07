@@ -174,7 +174,7 @@ public:
 	std::vector<GLuint>	GetIndices(std::string meshName)			{ return meshes_[meshName]->GetIndices(); }
 	EdgeNew		GetEdge(std::string meshName, GLuint id)			{ return meshes_[meshName]->GetEdge(id); }
 	GLuint		GetNumberOfEdges(std::string meshName)				{ return meshes_[meshName]->GetNumberOfEdges(); }
-	GLfloat		GetMeshReductionProgress(std::string meshName)		{ return mesh_copy_ptr_->GetMeshReductionProgress(); }
+	GLfloat		GetMeshReductionProgress()							{ return mesh_copy_ptr_->GetMeshReductionProgress(); }
 	MeshNew		GetMesh(std::string meshName) { return *meshes_[meshName]; }
 	
 	GLvoid SetVertexPosition(std::string meshName, GLuint id, glm::vec3 pos)	{ return meshes_[meshName]->SetVertexPosition(id, pos); }

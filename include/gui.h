@@ -82,7 +82,7 @@ struct GuiWindow {
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(GuiWindow, 1);
+CEREAL_CLASS_VERSION(GuiWindow, 1)
 #endif
 
 enum class gui_state_t {
@@ -214,7 +214,7 @@ private:
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(Gui, 1);
+CEREAL_CLASS_VERSION(Gui, 1)
 #endif
 
 #endif	// GUI_H

@@ -153,10 +153,10 @@ Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, G
     return Framebuffers[name];
 }
 
-void ResourceManager::DeleteFramebuffer(std::string name)
-{
-    //glDeleteBuffers(1, &Framebuffers[name].GetID());
-}
+// void ResourceManager::DeleteFramebuffer(std::string name)
+// {
+//     //glDeleteBuffers(1, &Framebuffers[name].GetID());
+// }
 
 Framebuffer ResourceManager::GetFramebuffer(std::string name)
 {
@@ -254,22 +254,21 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char* data, GL
     texArray.Generate(width, height, data, {spriteSizeX, spriteSizeY});
 
     std::vector<unsigned char> tile(spriteSizeX * spriteSizeY * channels);
-    int tilesX = width / spriteSizeX;
-	int tilesY = height / spriteSizeY;
-	int tileSizeX = spriteSizeX * channels;
-	int rowLen    = tilesX * tileSizeX;
+    auto tilesX = width / spriteSizeX;
+	auto tilesY = height / spriteSizeY;
+	auto tileSizeX = spriteSizeX * channels;
+	auto rowLen    = tilesX * tileSizeX;
 
-	for (int iy = 0; iy < tilesY; ++ iy)
+	for (GLuint iy = 0; iy < tilesY; ++ iy)
 	{
-		for (int ix = 0; ix < tilesX; ++ ix)
+		for (GLuint ix = 0; ix < tilesX; ++ ix)
 		{
-			unsigned char *ptr = data + iy*rowLen*spriteSizeY + ix*tileSizeX;
-			for (int row = 0; row < spriteSizeY; ++ row)
+			auto ptr = data + iy*rowLen*spriteSizeY + ix*tileSizeX;
+			for (GLuint row = 0; row < spriteSizeY; ++ row)
 				std::copy(ptr + row*rowLen, ptr + row*rowLen + tileSizeX,
 						tile.begin() + row*tileSizeX);
 
 
-			int i = iy * tilesX + ix;
             std::stringstream tileName;
             tileName << "r" << iy << "c" << ix;
             std::string hashKey = getNameHash(name, tileName.str());
@@ -369,7 +368,7 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLch
             geometryCode = gShaderStream.str();
         }
     }
-    catch (std::exception e)
+    catch (...)
     {
         FILE* stream;
 #ifdef _WIN32

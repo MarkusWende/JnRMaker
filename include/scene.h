@@ -202,7 +202,7 @@ private:
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(Scene, 1);
+CEREAL_CLASS_VERSION(Scene, 1)
 #endif
 
 #endif

@@ -33,7 +33,7 @@
 LevelLayer::LevelLayer()
 {
 
-};
+}
 
 LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize)
 {
@@ -75,7 +75,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     // ResourceManager::LoadTexture("data/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
     
     init();
-};
+}
 
 LevelLayer::~LevelLayer()
 {
@@ -83,7 +83,7 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &quad_vbo_);
     glDeleteBuffers(1, &tile_trans_vbo_);
     glDeleteBuffers(1, &tile_id_vbo_);
-};
+}
 
 GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {

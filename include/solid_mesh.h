@@ -87,7 +87,7 @@ public:
 	{
 		if (indices_.size() >= 3)
 		{
-			for (int i = 0; i < indices_.size();i=i+3)
+			for (size_t i = 0; i < indices_.size();i=i+3)
 			{
 				glm::vec3 vert0 = vertices_.at(indices_.at(i)).Position;
 				glm::vec3 vert1 = vertices_.at(indices_.at(i + 1)).Position;
@@ -294,7 +294,7 @@ public:
 		GLuint numFaces = indices_.size() / 3;
 
 		// Clear vertice normals
-		for (unsigned int i = 0; i < numFaces; i++)
+		for (size_t i = 0; i < (size_t)numFaces; i++)
 		{
 			GLuint v0ID = vertices_.at(indices_.at(i * 3)).ID;
 			GLuint v1ID = vertices_.at(indices_.at(i * 3 + 1)).ID;
@@ -304,7 +304,7 @@ public:
 			vertices_.at(v2ID).Normal = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
-		for (unsigned int i = 0; i < numFaces; i++)
+		for (size_t i = 0; i < (size_t)numFaces; i++)
 		{
 			// Generating face
 			FaceNew newFace;
@@ -400,7 +400,7 @@ public:
 		}
 
 		// Normalize vertice normals
-		for (unsigned int i = 0; i < numFaces; i++)
+		for (size_t i = 0; i < (size_t)numFaces; i++)
 		{
 			GLuint v0ID = vertices_.at(indices_.at(i * 3)).ID;
 			GLuint v1ID = vertices_.at(indices_.at(i * 3 + 1)).ID;
@@ -411,23 +411,23 @@ public:
 		}
 
 		// Generate neighbor face ids
-		for (unsigned int i = 0; i < faces_.size(); i++)
+		for (size_t i = 0; i < faces_.size(); i++)
 		{
 			GLuint v0ID = faces_.at(i).VertIds.at(0);
 			GLuint v1ID = faces_.at(i).VertIds.at(1);
 			GLuint v2ID = faces_.at(i).VertIds.at(2);
 
-			for (int j = 0; j < edges_[getHash(v0ID, v1ID)].SharingFacesIds.size(); j++)
+			for (size_t j = 0; j < edges_[getHash(v0ID, v1ID)].SharingFacesIds.size(); j++)
 			{
 				if (edges_[getHash(v0ID, v1ID)].SharingFacesIds.at(j) != faces_.at(i).ID)
 					faces_.at(i).NeighborFaceIds.push_back(faces_.at(edges_[getHash(v0ID, v1ID)].SharingFacesIds.at(j)).ID);
 			}
-			for (int j = 0; j < edges_[getHash(v1ID, v2ID)].SharingFacesIds.size(); j++)
+			for (size_t j = 0; j < edges_[getHash(v1ID, v2ID)].SharingFacesIds.size(); j++)
 			{
 				if (edges_[getHash(v1ID, v2ID)].SharingFacesIds.at(j) != faces_.at(i).ID)
 					faces_.at(i).NeighborFaceIds.push_back(faces_.at(edges_[getHash(v1ID, v2ID)].SharingFacesIds.at(j)).ID);
 			}
-			for (int j = 0; j < edges_[getHash(v2ID, v0ID)].SharingFacesIds.size(); j++)
+			for (size_t j = 0; j < edges_[getHash(v2ID, v0ID)].SharingFacesIds.size(); j++)
 			{
 				if (edges_[getHash(v2ID, v0ID)].SharingFacesIds.at(j) != faces_.at(i).ID)
 					faces_.at(i).NeighborFaceIds.push_back(faces_.at(edges_[getHash(v2ID, v0ID)].SharingFacesIds.at(j)).ID);
@@ -438,11 +438,11 @@ public:
 
 		queue_costs_.clear();
 
-		for (int i = 0; i < faces_.size(); i++)
+		for (size_t i = 0; i < faces_.size(); i++)
 		{
 			GLfloat cost = 0.0f;
 
-			for (int j = 0; j < faces_.at(i).NeighborFaceIds.size(); j++)
+			for (size_t j = 0; j < faces_.at(i).NeighborFaceIds.size(); j++)
 			{
 				if (faces_.at(i).NeighborFaceIds.size() == 3)
 				{
@@ -789,7 +789,7 @@ private:
 
 		if (((x1 - x2) * (z3 - z4) - (z1 - z2) * (x3 - x4)) == 0.0f)
 		{
-			true;
+			return true;
 		}
 
 		GLfloat Px = ((x1 * z2 - z1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * z4 - z3 * x4)) / ((x1 - x2) * (z3 - z4) - (z1 - z2) * (x3 - x4));

@@ -135,13 +135,13 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 #ifdef _WIN32
 			FILE* stream;
 			freopen_s(&stream, "log.txt", "w", stdout);
-			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type, infoLog);
+			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type.c_str(), infoLog);
 			fclose(stream);
 #endif // _WIN32
 #ifdef __linux__
 			FILE* stream;
 			stream = fopen("./log.txt", "w");
-			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type, infoLog);
+			fprintf(stream, "\tERROR::SHADER: Compile-time error: Type: %s\n\t\t%s\n", type.c_str(), infoLog);
 			fclose(stream);
 #endif // __linux__
 		}
@@ -160,13 +160,13 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 #ifdef _WIN32
 			FILE* stream;
 			freopen_s(&stream, "log.txt", "w", stdout);
-			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type, infoLog);
+			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type.c_str(), infoLog);
 			fclose(stream);
 #endif // _WIN32
 #ifdef __linux__
 			FILE* stream;
 			stream = fopen("./log.txt", "w");
-			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type, infoLog);
+			fprintf(stream, "\tERROR::Shader: Link-time error: Type: %s\n\t\t%s\n", type.c_str(), infoLog);
 			fclose(stream);
 #endif // __linux__
 		}

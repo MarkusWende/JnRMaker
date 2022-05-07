@@ -76,7 +76,7 @@ Scene::Scene(GLuint width, GLuint height)
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
     e_solids_.insert(std::make_pair("TestQuad", new Quad("TestQuad")));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
-    e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem("MainCS", glm::vec3(0))));
+    e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem(glm::vec3(0))));
 
     e_cameras_.insert(std::make_pair("SceneCamera", new Camera()));
     //e_cameras_["SceneCamera"]->SetState(CameraState::ORTHOGRAPHIC);

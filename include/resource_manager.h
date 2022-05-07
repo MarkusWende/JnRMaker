@@ -138,12 +138,12 @@ public:
      */
   static Framebuffer CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type);
 
-  /**
-   * @brief Delete framebuffer by name.
-   * @param name Resource name of the framebuffer.
-   * @return Void.
-   */
-  static void DeleteFramebuffer(std::string name);
+//   /**
+//    * @brief Delete framebuffer by name.
+//    * @param name Resource name of the framebuffer.
+//    * @return Void.
+//    */
+//   static void DeleteFramebuffer(std::string name);
 
   /**
      * @brief Resize a given framebuffer.

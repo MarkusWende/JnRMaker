@@ -38,7 +38,7 @@
 class CoordinateSystem : public Solid
 {
 public:
-    CoordinateSystem(std::string meshName = "CS", glm::vec3 offset = glm::vec3(0));				                                /**< Todo: */
+    CoordinateSystem(glm::vec3 offset = glm::vec3(0));				                                /**< Todo: */
 	~CoordinateSystem() { };														/**< Destructor. */
 
 	/**

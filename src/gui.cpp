@@ -275,8 +275,8 @@ GLvoid Gui::Render(Scene *scene)
 
 					for (const auto& [key, value] : ResourceManager::GetTextureMap())
 					{
-						GLuint texID = value.ID;
-						ImGui::Text("key: %s\tid: %u", key.c_str(), texID);
+						GLuint64 texID = (GLuint64)value.ID;
+						ImGui::Text("key: %s\tid: %lu", key.c_str(), texID);
 						ImGui::Image((ImTextureID)texID,
 							ImVec2(value.Width*2,value.Height*2),
 							ImVec2(0,0),
@@ -426,14 +426,14 @@ GLvoid Gui::Render(Scene *scene)
 				scene->GetCamera("SceneCamera")->Reset();
 			}
 
-			CameraState cState = scene->GetCamera("SceneCamera")->GetState();
+			// auto cState = scene->GetCamera("SceneCamera")->GetState();
 			if (ImGui::Button("Persp")) {
 				scene->GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
-				cState = CameraState::PERSPECTIVE;
+				// cState = CameraState::PERSPECTIVE;
 			}
 			if (ImGui::Button("Ortho")) {
 				scene->GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
-				cState = CameraState::ORTHOGRAPHIC;
+				// cState = CameraState::ORTHOGRAPHIC;
 			}
 		}
 
@@ -809,7 +809,7 @@ void Gui::DrawTileExplorerTab(Scene *scene)
 					{
 						//std::stringstream sprKey;
 						//sprKey << "r" << row << "c" << col;
-						GLuint tile = tilemap->GetTile(tilemapHashes.at(i)).ID;
+						GLuint64 tile = (GLuint64)tilemap->GetTile(tilemapHashes.at(i)).ID;
 						GLuint buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
 						GLuint buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
 						ImGui::PushID(i);
@@ -1113,7 +1113,7 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 
 				//List of files in the current directory
 
-				listDirectoryContent(path, displayLogicalDrives, isLogicalDrive, extensionOnly, extension, &currentItem, &isSelected);
+				listDirectoryContent(path, displayLogicalDrives, isLogicalDrive, extensionOnly, extension, &currentItem, isSelected);
 
 				
 				if (displayLogicalDrives) {
@@ -1122,7 +1122,7 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				ImGui::TextWrapped(currentItem.c_str());
 			}
 		}
-		catch (fs::filesystem_error e)
+		catch (...)
 		{
 			path = fs::current_path();
 			strcpy(newPath, "~\\");
@@ -1210,15 +1210,28 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				path = newPath;
 			}
 		}
-		catch (fs::filesystem_error e)
+		catch (...)
 		{
 			// TODO: Catch error
 		}
 	}
 }
 
-GLvoid Gui::listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected)
+
+GLvoid
+Gui::listDirectoryContent(
+	fs::path path,
+	bool displayLogicalDrives,
+	bool isLogicalDrive,
+	bool extensionOnly,
+	fs::path extension,
+	std::string* currentItem,
+	bool isSelected)
 {
+#ifndef _WIN32
+	(void)isLogicalDrive;
+#endif
+
 	ImGui::BeginChild("##ListOfFiles", ImVec2(0, 460.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 	if (displayLogicalDrives == false)
@@ -1277,7 +1290,7 @@ GLvoid Gui::listDirectoryContent(fs::path path, bool displayLogicalDrives, bool 
 	}
 	else
 	{
-		#ifdef _WIN32
+#ifdef _WIN32
 		WCHAR szDrive[] = L"A:\\";
 		DWORD uDriveMask = GetLogicalDrives();
 		if (uDriveMask == 0) {
