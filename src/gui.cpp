@@ -27,6 +27,7 @@
 
 
 #include "gui.h"
+#include "IconsFontAwesome6.h"
 
 Gui::Gui()
 {
@@ -963,22 +964,17 @@ GLvoid Gui::customGuiStyle()
 	// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
 	// - Read 'misc/fonts/README.txt' for more instructions and details.
 	// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash
-	//io.Fonts->AddFontFromFileTTF("assets/fonts/ProggyTiny.ttf", 10.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Roboto-Medium.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Cousine-Regular.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/DroidSans.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialuni.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arial.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbd.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/arialbi.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ariali.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ariblk.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/Karla-Regular.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/ProggyClean.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/vrinda.ttf", 12.0f);
-	//io.Fonts->AddFontFromFileTTF("../assets/fonts/vrindab.ttf", 12.0f);
-	//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-	//IM_ASSERT(font != NULL);
+	font_default_ = io.Fonts->AddFontFromFileTTF("data/fonts/Roboto-Medium.ttf", 13.0f);
+    ImFontConfig config;
+    //config.MergeMode = true;
+    //config.GlyphMinAdvanceX = 13.0f; // Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+    //io.Fonts->AddFontFromFileTTF("data/fonts/fa-brands-400.ttf", 14.0f, &config, icon_ranges);
+    //io.Fonts->AddFontFromFileTTF("data/fonts/fa-regular-400.ttf", 14.0f, &config, icon_ranges);
+    //io.Fonts->AddFontFromFileTTF("data/fonts/fa-regular-400.ttf", 13.0f, &config, icon_ranges);
+    //io.Fonts->AddFontFromFileTTF("data/fonts/fa-solid-900.ttf", 13.0f, &config, icon_ranges);
+    icons_13_ = io.Fonts->AddFontFromFileTTF("data/fonts/fa-solid-900.ttf", 13.0f, &config, icon_ranges);
+    icons_40_ = io.Fonts->AddFontFromFileTTF("data/fonts/fa-solid-900.ttf", 40.0f, &config, icon_ranges);
 
 	// Gui shape
 	ImGuiStyle* style = &ImGui::GetStyle();

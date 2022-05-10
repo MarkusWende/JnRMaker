@@ -191,6 +191,9 @@ private:
 #endif
     GLboolean                   file_browser_add_tiles_;
     GLboolean                   update_sence_;
+    ImFont                      *font_default_;
+	ImFont                      *icons_13_;
+	ImFont                      *icons_40_;
 
     /**
 	    * @brief Initialize all gui related default attributes.
