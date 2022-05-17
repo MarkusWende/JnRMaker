@@ -59,9 +59,6 @@ namespace fs = std::experimental::filesystem;
 #include <unistd.h>
 #endif
 
-
-
-
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
@@ -107,15 +104,8 @@ public:
      * @param window Render window.
 	 * @return GLvoid.
 	 */
-    GLvoid WindowUpdate(GLuint width, GLuint height);
-    GLvoid WindowUpdate();
-
-    /**
-	 * @brief Render all gui related entities, that are displayed in the application.
-	 * @return GLvoid.
-	 */
-    //GLvoid Render(Scene &scene);
-    GLvoid Render(Scene* scene);
+    GLvoid WindowUpdate(Scene *scene, GLuint width, GLuint height);
+    GLvoid WindowUpdate(Scene *scene);
 
     /**
 	 * @brief Draw gui windows.
@@ -124,22 +114,39 @@ public:
 	void Draw(Scene *scene);
 
     /**
+	 * @brief Draw gui windows.
+	 * @return Bool Void.
+	 */
+	void DrawMenuMain(Scene *scene);
+
+    /**
+	 * @brief Draw gui windows.
+	 * @return Bool Void.
+	 */
+	void DrawWindowView(Scene *scene);
+    /**
+	 * @brief Draw gui windows.
+	 * @return Bool Void.
+	 */
+	void DrawWindowSettings(Scene *scene);
+
+    /**
 	 * @brief Draw the explorer window.
 	 * @return Bool Void.
 	 */
-	void DrawExplorerWindow(Scene *scene);
+	void DrawWindowExplorer(Scene *scene);
 
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.
 	 */
-	void DrawMessageTab();
+	void DrawTabMessages();
 
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.
 	 */
-	void DrawTileExplorerTab(Scene *scene);
+	void DrawTabTileExplorer(Scene *scene);
 
     /**
 	 * @brief Show a backend information window.
@@ -149,6 +156,8 @@ public:
 
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
+    bool ESFileBrowserState() { return file_browser_emscripten_open_; };
+    void SetESFileBrowserState(bool status) { file_browser_emscripten_open_ = status; };
 
 private:
     /* friend class cereal::access;
@@ -185,21 +194,25 @@ private:
     //std::vector<std::string>    tilemap_list_;
     gui_state_t                 state_;
 #ifdef __EMSCRIPTEN__
-
+    bool file_browser_emscripten_open_;
 #else
     fs::path					root_file_path_;
 #endif
     GLboolean                   file_browser_add_tiles_;
-    GLboolean                   update_sence_;
     ImFont                      *font_default_;
 	ImFont                      *icons_13_;
 	ImFont                      *icons_40_;
+
+    bool                        show_demo_imgui_;
+    bool                        show_backend_checker_show_;
 
     /**
 	    * @brief Initialize all gui related default attributes.
 	    * @return GLvoid.
 	    */
     GLvoid init();
+
+    GLvoid drawBackendCheckerWindow();
 
     /**
 	    * @brief Set the custom gui style attributes.

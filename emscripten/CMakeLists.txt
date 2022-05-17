@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.6)
 project(JnRMaker)
 
 # We are using C++ 17 and will make use of C++ exceptions.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -Wall -Wextra -Wpedantic -pthread")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Debug")
@@ -122,7 +122,7 @@ target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 #add_definitions("-s EXPORTED_FUNCTIONS='[\"_sync_tunnel\"]'")
 
 # These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
-set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-O2 -s USE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s MAXIMUM_MEMORY=2000MB -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-g -sASSERTIONS=1 -Os -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=2 -sUSE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind -sASYNCIFY --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
 
 # When the build is complete we will run the 'cmake-post-build.sh' script.
 add_custom_command(

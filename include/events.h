@@ -45,7 +45,7 @@ void processEvents(Scene* scene, Gui* gui)
         
     ImGuiIO& io = ImGui::GetIO();
 
-    if (scene->IsMouseOverScene())
+    //if (scene->IsMouseOverScene())
     {
         float x = io.MouseDelta.x;
         float y = io.MouseDelta.y;

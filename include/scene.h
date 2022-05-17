@@ -91,7 +91,7 @@ public:
 
 	// Setters
 
-	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
+	//GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
 	//GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
 	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
@@ -100,7 +100,7 @@ public:
 
 	GLvoid PlaceSprite();
 
-	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
+	//GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };
 
 	GLuint	GetWidth() { return width_; };

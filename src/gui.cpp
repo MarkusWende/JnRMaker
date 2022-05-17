@@ -45,18 +45,18 @@ Gui::~Gui()
 
 }
 
-GLvoid Gui::WindowUpdate(GLuint width, GLuint height)
+GLvoid Gui::WindowUpdate(Scene *scene, GLuint width, GLuint height)
 {
 	if (glm::abs(width_ - width) > 5 || glm::abs(height_ - height) > 5)
 	{
 		width_ = width;
 		height_ = height;
 
-		WindowUpdate();
+		WindowUpdate(scene);
 	}
 }
 
-GLvoid Gui::WindowUpdate()
+GLvoid Gui::WindowUpdate(Scene *scene)
 {
 	window_scene_.w = (GLuint)(width_ * (glm::round(window_scene_.wPercent * 100.0f) / 100.0f));
 	window_scene_.h = (GLuint)(height_ * (glm::round(window_scene_.hPercent * 100.0f) / 100.0f));
@@ -67,403 +67,352 @@ GLvoid Gui::WindowUpdate()
 	window_sidebar_right_.w = (GLuint)(width_ * (1.0f - (glm::round(window_scene_.wPercent * 100.0f) / 100.0f)));
 	window_sidebar_right_.h = (GLuint)(height_ * (glm::round(window_scene_.hPercent * 100.0f) / 100.0f));
 
-	update_sence_ = true;
+	scene->Update(window_scene_.w-5, window_scene_.h-25);
+	scene->GetCamera("SceneCamera")->SetSceneWidth(window_scene_.wPercent);
+	scene->GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
 }
 
-GLvoid Gui::Render(Scene *scene)
+void Gui::Draw(Scene *scene)
 {
-	if (update_sence_)
-	{
-		scene->Update(window_scene_.w-5, window_scene_.h-25);
-		scene->GetCamera("SceneCamera")->SetSceneWidth(window_scene_.wPercent);
-		scene->GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
-		update_sence_ = false;
-	}
-
-	// Main menu
-	{
-		if (ImGui::BeginMainMenuBar())
-		{
-			if (ImGui::BeginMenu("File"))
-			{
-				if (ImGui::MenuItem("Save"))
-				{
-					ProjectManager::SetStatus(project_status_t::SAVE);
-				}
-				if (ImGui::MenuItem("Load"))
-				{
-					ProjectManager::SetStatus(project_status_t::LOAD);
-				}
-				if (ImGui::MenuItem("Quit"))
-				{
-					state_ = gui_state_t::GUI_CLOSE;
-				}
-
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Tiles"))
-			{
-				if (ImGui::MenuItem("Open"))
-				{
-					// Open new tile
-					file_browser_add_tiles_ = true;
-				}
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Help"))
-			{
-				if (ImGui::MenuItem("Test Info"))
-				{
-					// Test messages
-					std::stringstream msg;
-					msg << "Thats a test info text." << std::endl;
-					MessageManager::AddMessage(msg, message_t::INFO);
-				}
-
-				if (ImGui::MenuItem("Test Warning"))
-				{
-					// Test messages
-					std::stringstream msg;
-					msg << "Thats a test warning text." << std::endl;
-					MessageManager::AddMessage(msg, message_t::WARNING);
-				}
-
-				if (ImGui::MenuItem("Test Error"))
-				{
-					// Test messages
-					std::stringstream msg;
-					msg << "Thats a test error text." << std::endl;
-					MessageManager::AddMessage(msg, message_t::ERROR_T);
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
-	}
-
 	if (file_browser_add_tiles_)
 	{
 #ifdef __EMSCRIPTEN__
-    fileBrowserAddTile();
+    	fileBrowserAddTile();
 #else
-    fileBrowserAddTile(scene, root_file_path_, true, ".png");
+    	fileBrowserAddTile(scene, root_file_path_, true, ".png");
 #endif
-		
 	}
 
-	ImGuiStyle* style = &ImGui::GetStyle();
-	// Scene Render Window
+	DrawMenuMain(scene);
+	DrawWindowView(scene);
+	DrawWindowExplorer(scene);
+	DrawWindowSettings(scene);
+
+	if (show_demo_imgui_)
+    {
+        ImGui::ShowDemoWindow();
+    }
+
+    if (show_backend_checker_show_)
+    {
+        drawBackendCheckerWindow();
+    }
+}
+
+GLvoid Gui::DrawMenuMain(Scene *scene)
+{
+	if (ImGui::BeginMainMenuBar())
 	{
-		ImGui::SetNextWindowSize(ImVec2(window_scene_.w + style->WindowBorderSize, window_scene_.h + style->WindowBorderSize));
-		ImGui::SetNextWindowPos(ImVec2(0, (float)main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
-		//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
-		ImGui::Begin("Rendering", NULL,	ImGuiWindowFlags_NoTitleBar |
-										ImGuiWindowFlags_NoMove |
-										ImGuiWindowFlags_NoScrollbar |
-										ImGuiWindowFlags_NoScrollWithMouse |
-										ImGuiWindowFlags_NoCollapse);
-
-		if (ImGui::BeginTabBar("SceneTabs", ImGuiTabBarFlags_None))
+		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::BeginTabItem("Viewport"))
+			if (ImGui::MenuItem("Save"))
 			{
-				//if (!scene->IsMapNull())
-				{
-					GLfloat yOff = 45;
-					GLfloat xOff = 3;
+				ProjectManager::SetStatus(project_status_t::SAVE);
+			}
+			if (ImGui::MenuItem("Load"))
+			{
+				ProjectManager::SetStatus(project_status_t::LOAD);
+			}
+			if (ImGui::MenuItem("Quit"))
+			{
+				state_ = gui_state_t::GUI_CLOSE;
+			}
 
-					/*
-					sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
-					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
-						sf::FloatRect(0, (float)scene->GetHeight(), (float)scene->GetWidth(), -(float)scene->GetHeight()),
-						sf::Color(255, 255, 255, 255),
-						sf::Color(0, 255, 0, 255));
-						*/
-					GLuint64 fbID = ResourceManager::GetFramebuffer("scene").GetTextureID();
-					ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
-					//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
-					ImVec2 mousePos = ImGui::GetMousePos();
-					if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Tiles"))
+		{
+			if (ImGui::MenuItem("Open"))
+			{
+				// Open new tile
+				file_browser_add_tiles_ = true;
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Demos"))
+		{
+			ImGui::Checkbox("ImGui", &show_demo_imgui_);
+			ImGui::Checkbox("BackendChecker", &show_backend_checker_show_);
+
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("Test Info"))
+			{
+				// Test messages
+				std::stringstream msg;
+				msg << "Thats a test info text." << std::endl;
+				MessageManager::AddMessage(msg, message_t::INFO);
+			}
+
+			if (ImGui::MenuItem("Test Warning"))
+			{
+				// Test messages
+				std::stringstream msg;
+				msg << "Thats a test warning text." << std::endl;
+				MessageManager::AddMessage(msg, message_t::WARNING);
+			}
+
+			if (ImGui::MenuItem("Test Error"))
+			{
+				// Test messages
+				std::stringstream msg;
+				msg << "Thats a test error text." << std::endl;
+				MessageManager::AddMessage(msg, message_t::ERROR_T);
+			}
+			ImGui::EndMenu();
+		}
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::SetCursorPosX(io.DisplaySize.x - 50.0f);
+		ImGui::Text("%.1f FPS", io.Framerate);
+
+		ImGui::EndMainMenuBar();
+	}
+}
+
+GLvoid Gui::DrawWindowView(Scene *scene)
+{
+	ImGuiStyle* style = &ImGui::GetStyle();
+	ImGui::SetNextWindowSize(ImVec2(window_scene_.w + style->WindowBorderSize, window_scene_.h + style->WindowBorderSize));
+	ImGui::SetNextWindowPos(ImVec2(0, (float)main_menubar_height_));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
+	//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
+	ImGui::Begin("View", NULL,	ImGuiWindowFlags_NoTitleBar |
+									ImGuiWindowFlags_NoMove |
+									ImGuiWindowFlags_NoScrollbar |
+									ImGuiWindowFlags_NoScrollWithMouse |
+									ImGuiWindowFlags_NoCollapse);
+
+	if (ImGui::BeginTabBar("ViewTabs", ImGuiTabBarFlags_None))
+	{
+		if (ImGui::BeginTabItem("Scene"))
+		{
+			//if (!scene->IsMapNull())
+			{
+				GLfloat yOff = 45;
+				GLfloat xOff = 3;
+
+				/*
+				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
+				ImGui::Image(tex->getTexture(),
+					sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
+					sf::FloatRect(0, (float)scene->GetHeight(), (float)scene->GetWidth(), -(float)scene->GetHeight()),
+					sf::Color(255, 255, 255, 255),
+					sf::Color(0, 255, 0, 255));
+					*/
+				GLuint64 fbID = ResourceManager::GetFramebuffer("scene").GetTextureID();
+				ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
+				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
+				ImVec2 mousePos = ImGui::GetMousePos();
+				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
+				{
+					if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 					{
-						if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
-						{
-							scene->SetMouseOverScene(true);
-						}
-						else
-						{
-							scene->SetMouseOverScene(false);
-						}
+						//scene->SetMouseOverScene(true);
 					}
 					else
 					{
-						scene->SetMouseOverScene(false);
+						//scene->SetMouseOverScene(false);
 					}
 				}
-
-				ImGui::EndTabItem();
+				else
+				{
+					//scene->SetMouseOverScene(false);
+				}
 			}
 
-			if (ImGui::BeginTabItem("Depth"))
-			{
-				scene->SetMouseOverScene(false);
-
-				//GLuint texId = ResourceManager::GetTextureID("viewport");
-
-				//ImGui::GetWindowDrawList()->AddImage(texId, ImVec2(0, 50), ImVec2(scene->GetWidth(), scene->GetHeight() + 50));
-				//ImGui::Image(textureID, size, uv0, uv1, sf::Color(255, 255, 255, 255), sf::Color(0, 255, 0, 255));
-
-				/*
-				static ImVec2 offset(0, 0);
-				//ImGui::DragFloat2("size", (float*)&size, 0.5f, 1.0f, 200.0f, "%.0f");
-				ImVec2 pos = ImGui::GetCursorScreenPos();
-				ImVec4 clip_rect(pos.x, pos.y, pos.x + window_scene_.w, pos.y + window_scene_.h);
-				ImGui::InvisibleButton("##dummy", ImVec2(window_scene_.w, window_scene_.h));
-				if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0))
-				{
-					offset.x += ImGui::GetIO().MouseDelta.x;
-					offset.y += ImGui::GetIO().MouseDelta.y;
-				}
-
-
-
-				ImGui::SetCursorPos(ImVec2(2.f, 24.f));
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
-				ImGui::BeginChildFrame(1, ImVec2(window_scene_.w, window_scene_.w));
-				{
-
-					ImGui::Image(tex->getTexture(),
-						sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
-						sf::FloatRect(offset.x, (float)scene->GetHeight(), (float)scene->GetWidth() + offset.x, -(float)scene->GetHeight()),
-						sf::Color(255, 255, 255, 255),
-						sf::Color(0, 255, 0, 255));
-
-
-					//ImGui::GetWindowDrawList()->AddImage(textureID, ImVec2(0, 25), ImVec2(scene->GetWidth(), scene->GetHeight()));
-				}
-				ImGui::EndChildFrame();
-				ImGui::PopStyleColor();
-				*/
-				ImGui::EndTabItem();
-			}
-
-			if (ImGui::BeginTabItem("Memory"))
-			{
-				//Tilemap* tilemap = TilemapManager::GetTilemap("default");
-				//TextureAtlas tex = ResourceManager::GetTextureAtlas("default");
-
-				ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
-				ImGui::Text("Tiles used and which will be saved.");
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
-				ImGui::BeginChildFrame(2, ImVec2((float)window_scene_.w, (float)window_scene_.h - 50.0f));
-				{
-					// for (auto const& [key, val] : TilemapManager::Tilemaps)
-					// {
-					// 	if(key != "")
-					// 	{
-					// 		TextureArray tex = TilemapManager::GetTilemap(key).GetTexArray();
-					// 		ImGui::Text("key: %s\tid: %u", key.c_str(), tex.ID);
-					// 		ImGui::Image((ImTextureID)tex.ID,
-					// 			ImVec2(tex.Width*2,tex.Height*2),
-					// 			ImVec2(0,0),
-					// 			ImVec2(1,1),
-					// 			ImColor(255, 255, 255, 255),
-					// 			ImColor(0, 255, 0, 255));
-					// 	}
-					// }
-					ImGui::Separator();
-
-					for (const auto& [key, value] : ResourceManager::GetTextureMap())
-					{
-						GLuint64 texID = (GLuint64)value.ID;
-						ImGui::Text("key: %s\tid: %lu", key.c_str(), texID);
-						ImGui::Image((ImTextureID)texID,
-							ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
-							ImVec2(0,0),
-							ImVec2(1,1),
-							ImColor(255, 255, 255, 255),
-							ImColor(0, 255, 0, 255));
-					}
-					
-					// ImGui::Image((ImTextureID)texID,
-					// 	ImVec2(128, 128),
-					// 	ImVec2(0,0),
-					// 	ImVec2(1,1),
-					// 	ImColor(255, 255, 255, 255),
-					// 	ImColor(0, 255, 0, 255));
-						
-				}
-				ImGui::EndChildFrame();
-				ImGui::PopStyleColor();
-
-				ImGui::EndTabItem();
-			}
-			ImGui::EndTabBar();
+			ImGui::EndTabItem();
 		}
 
-		GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
-		GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
-
-		if ((windowWidth != window_scene_.w) || (windowHeight != window_scene_.h))
+		if (ImGui::BeginTabItem("Memory"))
 		{
-			window_scene_.wPercent = (GLfloat)windowWidth / (GLfloat)width_;
-			window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
+			ImGui::SetCursorPos(ImVec2(window_scene_.w / 2.0f, 33.0f));
+			ImGui::Text("Tiles used and which will be saved.");
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.2f , 0.2f , 0.2f, 1.0f));
+			ImGui::BeginChildFrame(2, ImVec2((float)window_scene_.w, (float)window_scene_.h - 50.0f));
+			{
+				ImGui::Separator();
 
-			WindowUpdate();
+				for (const auto& [key, value] : ResourceManager::GetTextureMap())
+				{
+					GLuint64 texID = (GLuint64)value.ID;
+					ImGui::Text("key: %s\tid: %lu", key.c_str(), texID);
+					ImGui::Image((ImTextureID)texID,
+						ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
+						ImVec2(0,0),
+						ImVec2(1,1),
+						ImColor(255, 255, 255, 255),
+						ImColor(0, 255, 0, 255));
+				}
+			}
+			ImGui::EndChildFrame();
+			ImGui::PopStyleColor();
+
+			ImGui::EndTabItem();
 		}
-
-		ImGui::End();
-		//ImGui::PopStyleVar();
-		ImGui::PopStyleVar();
+		ImGui::EndTabBar();
 	}
 
-	// Side Bar Right Window
+	GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
+	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
+
+	if ((windowWidth != window_scene_.w) || (windowHeight != window_scene_.h))
 	{
-		ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
-		ImGui::SetNextWindowPos(ImVec2((float)window_scene_.w, (float)main_menubar_height_));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
-		ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
-											ImGuiWindowFlags_NoMove |
-											ImGuiWindowFlags_NoCollapse);
+		window_scene_.wPercent = (GLfloat)windowWidth / (GLfloat)width_;
+		window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
 
-		if (!scene->IsMapNull())
+		WindowUpdate(scene);
+	}
+
+	ImGui::End();
+	//ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
+}
+
+GLvoid Gui::DrawWindowSettings(Scene *scene)
+{
+	ImGuiStyle* style = &ImGui::GetStyle();
+	ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
+	ImGui::SetNextWindowPos(ImVec2((float)window_scene_.w, (float)main_menubar_height_));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
+	ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
+										ImGuiWindowFlags_NoMove |
+										ImGuiWindowFlags_NoCollapse);
+
+	if (!scene->IsMapNull())
+	{
+		ImGui::SetCursorPos(ImVec2(15.f, 5.f));
+		glm::vec2 mapSize = glm::vec2((float)scene->GetMapWidth(), (float)scene->GetMapHeight());
+		mapSize = mapSize * scene->GetSpriteSize() * scene->GetSpriteScale();
+		//height = (int)((350.0f / (float)width) * (float)height);
+		ImGui::BeginChild("Minimap", ImVec2(400, 30));
+		ImGui::Text("Minimap");
+		ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
+
+		//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
+		ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+		/*
+		ImGui::Image(tex->getTexture(),
+			sf::Vector2f(350, height),
+			sf::FloatRect(0, (float)scene->GetMapHeight(), (float)scene->GetMapWidth(), -(float)scene->GetMapHeight()),
+			sf::Color(255, 255, 255, 255),
+			sf::Color(0, 255, 0, 255));
+			*/
+		ImGui::EndChild();
+	}
+
+	if (ImGui::CollapsingHeader("Map"))
+	{
+		static int mapSize[2] = { 20, 20};
+		static std::string spriteSizeStr = "16x16";
+		std::vector<std::string> spriteSizeStrVector = { "16x16", "24x24", "32x32", "64x64" };
+		if (ImGui::BeginCombo("##SpriteSize", spriteSizeStr.c_str()))
 		{
-			ImGui::SetCursorPos(ImVec2(15.f, 5.f));
-			glm::vec2 mapSize = glm::vec2((float)scene->GetMapWidth(), (float)scene->GetMapHeight());
-			mapSize = mapSize * scene->GetSpriteSize() * scene->GetSpriteScale();
-			//height = (int)((350.0f / (float)width) * (float)height);
-			ImGui::BeginChild("Minimap", ImVec2(400, 30));
-			ImGui::Text("Minimap");
-			ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
-
-			//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
-			ImGui::SetCursorPos(ImVec2(0.f, 18.f));
-			/*
-			ImGui::Image(tex->getTexture(),
-				sf::Vector2f(350, height),
-				sf::FloatRect(0, (float)scene->GetMapHeight(), (float)scene->GetMapWidth(), -(float)scene->GetMapHeight()),
-				sf::Color(255, 255, 255, 255),
-				sf::Color(0, 255, 0, 255));
-				*/
-			ImGui::EndChild();
-		}
-
-
-		if (ImGui::CollapsingHeader("Map"))
-		{
-			static int mapSize[2] = { 20, 20};
-			static std::string spriteSizeStr = "16x16";
-			std::vector<std::string> spriteSizeStrVector = { "16x16", "24x24", "32x32", "64x64" };
-			if (ImGui::BeginCombo("##SpriteSize", spriteSizeStr.c_str()))
+			for (size_t n = 0; n < spriteSizeStrVector.size(); n++)
 			{
-				for (size_t n = 0; n < spriteSizeStrVector.size(); n++)
+				std::string item = spriteSizeStrVector.at(n);
+				ImGui::PushID((int)n);
+				if (ImGui::Selectable(spriteSizeStrVector.at(n).c_str(), item.compare(spriteSizeStr)))
 				{
-					std::string item = spriteSizeStrVector.at(n);
-					ImGui::PushID((int)n);
-					if (ImGui::Selectable(spriteSizeStrVector.at(n).c_str(), item.compare(spriteSizeStr)))
-					{
-						spriteSizeStr = item;
-					}
-
-					ImGui::PopID();
+					spriteSizeStr = item;
 				}
-				ImGui::EndCombo();
+
+				ImGui::PopID();
 			}
+			ImGui::EndCombo();
+		}
 
-			ImGui::Separator();
-			ImGui::Text("Map size");
-			ImGui::SliderInt2("width x height", mapSize, 1, 255);
-			ImGui::Separator();
+		ImGui::Separator();
+		ImGui::Text("Map size");
+		ImGui::SliderInt2("width x height", mapSize, 1, 255);
+		ImGui::Separator();
 
-			if (ImGui::Button("Create")) {
-				std::string delimiter = "x";
-				size_t pos = 0;
-				std::vector<std::string> tokens;
-				std::string s = spriteSizeStr;
-				while ((pos = s.find(delimiter)) != std::string::npos) {
-					tokens.push_back(s.substr(0, pos));
-					s.erase(0, pos + delimiter.length());
-				}
-				tokens.push_back(s);
+		if (ImGui::Button("Create")) {
+			std::string delimiter = "x";
+			size_t pos = 0;
+			std::vector<std::string> tokens;
+			std::string s = spriteSizeStr;
+			while ((pos = s.find(delimiter)) != std::string::npos) {
+				tokens.push_back(s.substr(0, pos));
+				s.erase(0, pos + delimiter.length());
+			}
+			tokens.push_back(s);
 
-				if (tokens.size() == 2) {
-					int width = std::stoi(tokens.at(0));
-					int height = std::stoi(tokens.at(1));
+			if (tokens.size() == 2) {
+				int width = std::stoi(tokens.at(0));
+				int height = std::stoi(tokens.at(1));
 
-					if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height)) {
-						scene->CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
-					}
+				if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height)) {
+					scene->CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
 				}
 			}
+		}
 
-			static int selected = 0;
-			for (int n = 0; n < 3; n++) {
-				char buf[32];
+		static int selected = 0;
+		for (int n = 0; n < 3; n++) {
+			char buf[32];
 #ifdef _WIN32
-				sprintf_s(buf, "Layer %d", n);
+			sprintf_s(buf, "Layer %d", n);
 #else
-				sprintf(buf, "Layer %d", n);
+			sprintf(buf, "Layer %d", n);
 #endif
-				if (ImGui::Selectable(buf, selected == n))
-					selected = n;
-			}
-
-			if (selected == 0) {
-				scene->SetActiveLayer(layer_t::BACK);
-			}
-			else if (selected == 1) {
-				scene->SetActiveLayer(layer_t::PLAYER);
-			}
-			else if (selected == 2) {
-				scene->SetActiveLayer(layer_t::FORE);
-			}
+			if (ImGui::Selectable(buf, selected == n))
+				selected = n;
 		}
 
-		if (ImGui::CollapsingHeader("Camera")) {
-			ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene->GetCamera("SceneCamera")->GetPosition().x, scene->GetCamera("SceneCamera")->GetPosition().y, scene->GetCamera("SceneCamera")->GetPosition().z);
-			ImGui::Text("Yaw: %.2f", scene->GetCamera("SceneCamera")->GetYaw());
-			ImGui::Text("Pitch: %.2f", scene->GetCamera("SceneCamera")->GetPitch());
-			ImGui::Text("Roll: %.2f", scene->GetCamera("SceneCamera")->GetRoll());
-			ImGui::Text("Zoom: %.2f", scene->GetCamera("SceneCamera")->GetZoom());
+		if (selected == 0) {
+			scene->SetActiveLayer(layer_t::BACK);
+		}
+		else if (selected == 1) {
+			scene->SetActiveLayer(layer_t::PLAYER);
+		}
+		else if (selected == 2) {
+			scene->SetActiveLayer(layer_t::FORE);
+		}
+	}
 
-			if (ImGui::Button("Reset")) {
-				scene->GetCamera("SceneCamera")->Reset();
-			}
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene->GetCamera("SceneCamera")->GetPosition().x, scene->GetCamera("SceneCamera")->GetPosition().y, scene->GetCamera("SceneCamera")->GetPosition().z);
+		ImGui::Text("Yaw: %.2f", scene->GetCamera("SceneCamera")->GetYaw());
+		ImGui::Text("Pitch: %.2f", scene->GetCamera("SceneCamera")->GetPitch());
+		ImGui::Text("Roll: %.2f", scene->GetCamera("SceneCamera")->GetRoll());
+		ImGui::Text("Zoom: %.2f", scene->GetCamera("SceneCamera")->GetZoom());
 
-			// auto cState = scene->GetCamera("SceneCamera")->GetState();
-			if (ImGui::Button("Persp")) {
-				scene->GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
-				// cState = CameraState::PERSPECTIVE;
-			}
-			if (ImGui::Button("Ortho")) {
-				scene->GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
-				// cState = CameraState::ORTHOGRAPHIC;
-			}
+		if (ImGui::Button("Reset")) {
+			scene->GetCamera("SceneCamera")->Reset();
 		}
 
-		if (!TilemapManager::IsEmpty())
-		{
-		
+		// auto cState = scene->GetCamera("SceneCamera")->GetState();
+		if (ImGui::Button("Persp")) {
+			scene->GetCamera("SceneCamera")->SetState(CameraState::PERSPECTIVE);
+			// cState = CameraState::PERSPECTIVE;
 		}
+		if (ImGui::Button("Ortho")) {
+			scene->GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
+			// cState = CameraState::ORTHOGRAPHIC;
+		}
+	}
 
-		if (ImGui::CollapsingHeader("Sprites"))
-		{
-			// Texture2D tex = ResourceManager::GetTexture("testing123");
-			// if (
-			// 	ImGui::ImageButton(
-			// 		(ImTextureID)tex.ID,
-			// 		ImVec2(64, 16),
-			// 		ImVec2(0, 0),
-			// 		ImVec2(1, 1),
-			// 		1,
-			// 		ImVec4(0, 0, 0, 0),
-			// 		ImVec4(0.8, 0.8, 0.8, 1))
-			// 	)
-			// {
-				
-			// }
-		}
+	if (ImGui::CollapsingHeader("Sprites"))
+	{
+		// Texture2D tex = ResourceManager::GetTexture("testing123");
+		// if (
+		// 	ImGui::ImageButton(
+		// 		(ImTextureID)tex.ID,
+		// 		ImVec2(64, 16),
+		// 		ImVec2(0, 0),
+		// 		ImVec2(1, 1),
+		// 		1,
+		// 		ImVec4(0, 0, 0, 0),
+		// 		ImVec4(0.8, 0.8, 0.8, 1))
+		// 	)
+		// {
+			
+		// }
+	}
 
 	if (ImGui::CollapsingHeader("Inputs, Navigation & Focus"))
     {
@@ -635,31 +584,22 @@ GLvoid Gui::Render(Scene *scene)
         }
     }
 
-		GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
-		GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
+	GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
+	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
 
-		if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
-		{
-			window_scene_.wPercent = (GLfloat)(width_ - windowWidth) / (GLfloat)width_;
-			window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
+	if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
+	{
+		window_scene_.wPercent = (GLfloat)(width_ - windowWidth) / (GLfloat)width_;
+		window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
 
-			WindowUpdate();
-		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
+		WindowUpdate(scene);
 	}
 
-	// Messages Window
-	//if (false)
+	ImGui::End();
+	ImGui::PopStyleVar();
 }
 
-void Gui::Draw(Scene *scene)
-{
-	DrawExplorerWindow(scene);
-}
-
-void Gui::DrawExplorerWindow(Scene *scene)
+void Gui::DrawWindowExplorer(Scene *scene)
 {
 	ImGui::SetNextWindowSize(ImVec2((float)window_messages_.w, (float)window_messages_.h));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)window_scene_.h + (float)main_menubar_height_));
@@ -683,14 +623,11 @@ void Gui::DrawExplorerWindow(Scene *scene)
 
 	if (ImGui::BeginTabBar("ExplorerTabs", ImGuiTabBarFlags_None))
 	{
-		DrawMessageTab();
-		DrawTileExplorerTab(scene);
+		DrawTabMessages();
+		DrawTabTileExplorer(scene);
 		
 		ImGui::EndTabBar();
 	}
-
-	ImGui::End();
-	ImGui::PopStyleVar();
 
 	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight();
 
@@ -698,11 +635,14 @@ void Gui::DrawExplorerWindow(Scene *scene)
 	{
 		window_scene_.hPercent = (GLfloat)(height_ - windowHeight) / (GLfloat)height_;
 
-		WindowUpdate();
+		WindowUpdate(scene);
 	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
 }
 
-void Gui::DrawMessageTab()
+void Gui::DrawTabMessages()
 {
     if (ImGui::BeginTabItem("Messages"))
 	{
@@ -766,7 +706,7 @@ void Gui::DrawMessageTab()
 	}
 }
 
-void Gui::DrawTileExplorerTab(Scene *scene)
+void Gui::DrawTabTileExplorer(Scene *scene)
 {
 	if (!TilemapManager::IsEmpty())
 	{
@@ -922,7 +862,7 @@ void Gui::ShowBackendCheckerWindow()
 GLvoid Gui::init()
 {
 	window_scene_.wPercent = 0.7f;
-	window_scene_.hPercent = 0.7f;
+	window_scene_.hPercent = 0.8f;
 
 	window_messages_.wPercent = 1.0f;
 	window_messages_.hPercent = 1.0f - window_scene_.hPercent;
@@ -937,7 +877,10 @@ GLvoid Gui::init()
 	state_ = gui_state_t::GUI_ACTIVE;
 
 	file_browser_add_tiles_ = false;
-	update_sence_ = true;
+	file_browser_emscripten_open_ = false;
+
+	show_demo_imgui_ = false;
+    show_backend_checker_show_ = false;
 #ifdef _WIN32
 	TCHAR path[256];
 	GetCurrentDirectory(256, path);
@@ -948,6 +891,53 @@ GLvoid Gui::init()
 
 #endif
 
+}
+
+void Gui::drawBackendCheckerWindow()
+{
+    ImGui::Begin("Dear ImGui Backend Checker");
+
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::Text("Dear ImGui %s Backend Checker", ImGui::GetVersion());
+    ImGui::Text("io.BackendPlatformName: %s", io.BackendPlatformName ? io.BackendPlatformName : "NULL");
+    ImGui::Text("io.BackendRendererName: %s", io.BackendRendererName ? io.BackendRendererName : "NULL");
+    ImGui::Separator();
+    
+    if (ImGui::TreeNode("0001: Renderer: Large Mesh Support"))
+    {
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        {
+            static int vtx_count = 60000;
+            ImGui::SliderInt("VtxCount##1", &vtx_count, 0, 100000);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            for (int n = 0; n < vtx_count / 4; n++)
+            {
+                float off_x = (float)(n % 100) * 3.0f;
+                float off_y = (float)(n % 100) * 1.0f;
+                ImU32 col = IM_COL32(((n * 17) & 255), ((n * 59) & 255), ((n * 83) & 255), 255);
+                draw_list->AddRectFilled(ImVec2(p.x + off_x, p.y + off_y), ImVec2(p.x + off_x + 50, p.y + off_y + 50), col);
+            }
+            ImGui::Dummy(ImVec2(300 + 50, 100 + 50));
+            ImGui::Text("VtxBuffer.Size = %d", draw_list->VtxBuffer.Size);
+        }
+        {
+            static int vtx_count = 60000;
+            ImGui::SliderInt("VtxCount##2", &vtx_count, 0, 100000);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            for (int n = 0; n < vtx_count / (10*4); n++)
+            {
+                float off_x = (float)(n % 100) * 3.0f;
+                float off_y = (float)(n % 100) * 1.0f;
+                ImU32 col = IM_COL32(((n * 17) & 255), ((n * 59) & 255), ((n * 83) & 255), 255);
+                draw_list->AddText(ImVec2(p.x + off_x, p.y + off_y), col, "ABCDEFGHIJ");
+            }
+            ImGui::Dummy(ImVec2(300 + 50, 100 + 20));
+            ImGui::Text("VtxBuffer.Size = %d", draw_list->VtxBuffer.Size);
+        }
+        ImGui::TreePop();
+    }
+
+    ImGui::End();
 }
 
 GLvoid Gui::customGuiStyle()
@@ -1065,6 +1055,7 @@ GLvoid Gui::customGuiStyle()
 #ifdef __EMSCRIPTEN__
 GLvoid Gui::fileBrowserAddTile()
 {
+	file_browser_emscripten_open_ = true;
 }
 
 GLvoid Gui::listDirectoryContent()
