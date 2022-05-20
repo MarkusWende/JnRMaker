@@ -60,8 +60,35 @@ MessageCallback( GLenum source,
     (void)id;
     std::stringstream msg;
     msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
-    MessageManager::AddMessage(msg, ( type == GL_DEBUG_TYPE_ERROR ? message_t::ERROR_T : message_t::INFO ));
+    if (type == GL_DEBUG_TYPE_ERROR)
+    {
+        MessageManager::AddMessage(msg, message_t::INFO);
+    }
 }
+
+GLenum glCheckError_(const char *file, int line)
+{
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+        switch (errorCode)
+        {
+            case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+            case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+            case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+            case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+            case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+            case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+        }
+        std::stringstream msg;
+        msg << error << " | " << file << " (" << line << ")";
+        MessageManager::AddMessage(msg, message_t::INFO );
+    }
+    return errorCode;
+}
+#define glCheckError() glCheckError_(__FILE__, __LINE__)
 
 int main(int, char**)
 {
