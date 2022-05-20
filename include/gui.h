@@ -156,8 +156,10 @@ public:
 
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
+#ifdef __EMSCRIPTEN__
     bool ESFileBrowserState() { return file_browser_emscripten_open_; };
     void SetESFileBrowserState(bool status) { file_browser_emscripten_open_ = status; };
+#endif
 
 private:
     /* friend class cereal::access;

@@ -335,13 +335,14 @@ static void main_loop(void* arg)
     // appGui->Render(appScene);
     appGui->Draw(appScene);
     //appGui->ShowBackendCheckerWindow();
+#ifdef __EMSCRIPTEN__
     if (!isESFileBrowserOpen && appGui->ESFileBrowserState())
     {
         isESFileBrowserOpen = true;
         appGui->SetESFileBrowserState(false);
         getLocalFile();
-
     }
+#endif
 
     appScene->Render();
 

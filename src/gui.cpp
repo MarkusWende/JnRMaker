@@ -877,7 +877,9 @@ GLvoid Gui::init()
 	state_ = gui_state_t::GUI_ACTIVE;
 
 	file_browser_add_tiles_ = false;
+#ifdef __EMSCRIPTEN__
 	file_browser_emscripten_open_ = false;
+#endif
 
 	show_demo_imgui_ = false;
     show_backend_checker_show_ = false;
