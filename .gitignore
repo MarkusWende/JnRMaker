@@ -39,3 +39,6 @@ JnRMaker
 desktop-linux/build.sh
 emscripten/build.sh
 emscripten/cmake-post-build.sh
+
+cert.pem
+key.pem

@@ -43,10 +43,40 @@ SDL_GLContext   g_GLContext = NULL;
 Gui* appGui;
 Scene* appScene;
 
-// The Width of the screen
-const GLuint SCREEN_WIDTH = 1800;
-// The height of the screen
-const GLuint SCREEN_HEIGHT = 1000;
+#ifdef __EMSCRIPTEN__
+bool isESFileBrowserOpen = false;
+
+EM_ASYNC_JS(int, getLocalFile, (),
+{
+    const pickerOpts = {
+        types: [
+            {
+            description: 'Text',
+            accept: {
+                'text/*': ['.txt', '.log']
+            }
+            },
+        ],
+        excludeAcceptAllOption: true,
+        multiple: false
+    };
+    try {
+        // Always returns an array.
+        const [handle] = await window.showOpenFilePicker(pickerOpts);
+        const file = await handle.getFile();
+        //const contents = await file.text();
+        console.log(file);
+        isESFileBrowserOpen = false;
+        // return handle.getFile();
+    } catch (err) {
+        console.error(err.name, err.message);
+    }
+	// Do something with the file handle.
+	
+	return 1;
+});
+
+#endif
 
 // For clarity, our main loop code is declared at the end.
 static void main_loop(void*);
@@ -64,8 +94,8 @@ MessageCallback( GLenum source,
     (void)length;
     (void)id;
     std::stringstream msg;
-    msg << source << "\tGL CALLBACK: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
-    MessageManager::AddMessage(msg, message_t::ERROR_T);
+    msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
+    MessageManager::AddMessage(msg, ( type == GL_DEBUG_TYPE_ERROR ? message_t::ERROR_T : message_t::INFO ));
 }
 
 int main(int, char**)
@@ -110,7 +140,7 @@ int main(int, char**)
     SDL_DisplayMode current;
     SDL_GetCurrentDisplayMode(0, &current);
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    g_Window = SDL_CreateWindow("Dear ImGui Emscripten example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    g_Window = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     g_GLContext = SDL_GL_CreateContext(g_Window);
     if (!g_GLContext)
     {
@@ -120,7 +150,7 @@ int main(int, char**)
     SDL_GL_SetSwapInterval(1); // Enable vsync
 
     // Initialize OpenGL loader
-    glewExperimental = GL_TRUE;
+    // glewExperimental = GL_TRUE;
     bool err = glewInit() != GLEW_OK;
 
     //bool err = false;
@@ -198,10 +228,18 @@ int main(int, char**)
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_DEBUG_OUTPUT);
 #ifndef __EMSCRIPTEN__
+    glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
     glDebugMessageCallback( MessageCallback, 0 );
+#endif
+
+#ifdef __EMSCRIPTEN_PTHREADS__
+    {
+        std::stringstream msg;
+        msg << "__EMSCRIPTEN_PTHREADS__ is enabled.";
+        MessageManager::AddMessage(msg, message_t::INFO);
+    }
 #endif
 
     // Setup Dear ImGui context
@@ -235,7 +273,9 @@ int main(int, char**)
 
 #ifdef __EMSCRIPTEN__
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
-    emscripten_set_main_loop_arg(main_loop, NULL, 60, true);
+    //emscripten_set_main_loop(main_loop, 0, 1);
+    //emscripten_set_main_loop_timing(EM_TIMING_RAF,  4);
+	emscripten_set_main_loop_arg(main_loop, NULL, 60, 1);
 #else
     //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -290,11 +330,19 @@ static void main_loop(void* arg)
     // Update and render gui
     int width, height;
     SDL_GetWindowSize(g_Window, &width, &height);
-    appGui->WindowUpdate(width, height);
+    appGui->WindowUpdate(appScene, width, height);
     processEvents(appScene, appGui);
-    appGui->Render(appScene);
+    // appGui->Render(appScene);
     appGui->Draw(appScene);
     //appGui->ShowBackendCheckerWindow();
+#ifdef __EMSCRIPTEN__
+    if (!isESFileBrowserOpen && appGui->ESFileBrowserState())
+    {
+        isESFileBrowserOpen = true;
+        appGui->SetESFileBrowserState(false);
+        getLocalFile();
+    }
+#endif
 
     appScene->Render();
 

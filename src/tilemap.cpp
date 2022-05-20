@@ -75,13 +75,13 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
         msg << "rows: " << num_rows_ << "\tcols: " << num_cols_;
         MessageManager::AddMessage(msg, message_t::INFO); */
 
-        for (GLuint i = 0; i < num_cols_; i++)
+        for (GLuint i = 0; i < num_rows_; i++)
         {
-            for (GLuint j = 0; j < num_rows_; j++)
+            for (GLuint j = 0; j < num_cols_; j++)
             {
                 
                 std::stringstream key;
-                key << "r" << j << "c" << i;
+                key << "r" << i << "c" << j;
                 std::string hashKey = ResourceManager::getNameHash(name_, key.str());
                 tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
                 // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
