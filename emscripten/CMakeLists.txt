@@ -5,7 +5,7 @@ project(JnRMaker)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -Wall -Wextra -Wpedantic -pthread")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 set(THIRD_PARTY_DIR "../external")
 set(MAIN_SOURCE_DIR "../src")
@@ -17,13 +17,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
 file(GLOB libraryJsFiles templates/*.js)
 
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
-	SET(linkFlags "-gsource-map -s NO_EXIT_RUNTIME=1")
+	SET(linkFlags "-g3 -s NO_EXIT_RUNTIME=1 -sASSERTIONS=1")
 else() # Either MinSizeRel, RelWithDebInfo or Release, all which run with optimizations enabled.
 	SET(linkFlags "-O2 -s NO_EXIT_RUNTIME=1")
 endif()
 
 # Ensure synchronous startup for this test, whose output expects it
-#SET(linkFlags "${linkFlags} -sASSERTIONS=1")
 SET(linkFlags "${linkFlags} -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
 SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2")
 SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")

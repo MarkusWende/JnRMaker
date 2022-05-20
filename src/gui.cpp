@@ -650,21 +650,9 @@ void Gui::DrawWindowExplorer(Scene *scene)
 	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)window_scene_.h + (float)main_menubar_height_));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 5.0f));
 
-	// ImGuiIO& io = ImGui::GetIO();
-    // ImGui::SetNextWindowSize(ImVec2(io.DisplaySize.x, ((io.DisplaySize.y - 200) > 0) ? (200 - main_menubar_height_) : 0));
-    // ImGui::SetNextWindowPos(ImVec2(0, io.DisplaySize.y - 200 + main_menubar_height_));
-    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
-    //ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 0));
-    // ImGui::Begin("Explorer", NULL,	ImGuiWindowFlags_NoTitleBar |
-    //                                 //ImGuiWindowFlags_NoMove |
-    //                                 ImGuiWindowFlags_NoScrollbar |
-    //                                 ImGuiWindowFlags_NoScrollWithMouse |
-    //                                 ImGuiWindowFlags_NoCollapse |
-    //                                 //ImGuiWindowFlags_NoResize |
-    //                                 ImGuiWindowFlags_NoDocking);
-	ImGui::Begin("Explorer", NULL, 	ImGuiWindowFlags_NoTitleBar |
-											ImGuiWindowFlags_NoMove |
-											ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin("BottomBar", NULL,	ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoDocking);
 
 	if (ImGui::BeginTabBar("ExplorerTabs", ImGuiTabBarFlags_None))
 	{
@@ -691,15 +679,15 @@ void Gui::DrawTabMessages()
 {
     if (ImGui::BeginTabItem("Messages"))
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		float wrap_width = io.DisplaySize.x - 50.0f;
+		auto io = ImGui::GetIO();
+		auto wrap_width = io.DisplaySize.x - 20.0f;
 		//ImGui::Text("(%.2f FPS)", ImGui::GetIO().Framerate); ImGui::SameLine();
 		//ImGui::SetCursorPos(ImVec2(0.f, 18.f));
 		//ImGui::Separator();
 
 		// BeginChild: MessageList
-		//ImGui::SetCursorPos(ImVec2(5.f, 40.f));
-		ImGui::BeginChild("##MessageList", ImVec2(0, 160), false, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::SetCursorPos(ImVec2(5.f, 30.f));
+		ImGui::BeginChild("##MessageList", ImVec2(0, (float)window_messages_.h - 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 		std::vector<Message>* ptrMessages;
 		ptrMessages = MessageManager::GetMessages();
@@ -721,7 +709,7 @@ void Gui::DrawTabMessages()
 					ImGui::SameLine(0, 5);
 					if (ptrMessages->at(it).type == message_t::ERROR_T)
 					{
-						ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.0f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
+						ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
 					}
 					else if (ptrMessages->at(it).type == message_t::INFO)
 					{
@@ -745,8 +733,7 @@ void Gui::DrawTabMessages()
 
 		// EndChild: MessageList
 		ImGui::EndChild();
-		//ImGui::SetScrollHereY(1.0f);
-		// EndChild: MessageList
+		ImGui::SetScrollHereY(1.0f);
 		ImGui::EndTabItem();
 	}
 }
