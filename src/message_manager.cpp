@@ -28,6 +28,19 @@
 
 #include "../include/message_manager.h"
 
+#ifdef __EMSCRIPTEN__
+void messageErr(std::string const& msg)
+{
+    std::stringstream ss;
+    ss << msg;
+    MessageManager::AddMessage(ss, message_t::ERROR_T);
+}
+
+EMSCRIPTEN_BINDINGS(my_module) {
+    emscripten::function("messageErr", &messageErr);
+}
+#endif
+
 // Instantiate static messages vector
 std::vector<Message> MessageManager::messages;
 

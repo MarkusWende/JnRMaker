@@ -47,6 +47,10 @@ include_directories(${SDL2_INCLUDE_DIRS})
 # set(CJSON_DIR ${THIRD_PARTY_DIR}/cJSON)
 # include_directories(${CJSON_DIR})
 
+# json
+set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+include_directories(${JSON_DIR}/single_include)
+
 # Boost
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME ON)

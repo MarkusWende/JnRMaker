@@ -59,6 +59,15 @@ namespace fs = std::experimental::filesystem;
 #include <unistd.h>
 #endif
 
+#include "nlohmann/json.hpp"
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+  extern int getLocalFile();
+  extern int saveLocalFile();
+}
+#endif
+
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */

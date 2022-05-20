@@ -12,6 +12,25 @@ set(MAIN_SOURCE_DIR "../src")
 set(MAIN_INCLUDE_DIR "../include")
 include_directories(${MAIN_INCLUDE_DIR})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+
+file(GLOB libraryJsFiles templates/*.js)
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+	SET(linkFlags "-gsource-map -s NO_EXIT_RUNTIME=1")
+else() # Either MinSizeRel, RelWithDebInfo or Release, all which run with optimizations enabled.
+	SET(linkFlags "-O2 -s NO_EXIT_RUNTIME=1")
+endif()
+
+# Ensure synchronous startup for this test, whose output expects it
+#SET(linkFlags "${linkFlags} -sASSERTIONS=1")
+SET(linkFlags "${linkFlags} -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
+SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2")
+SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")
+SET(linkFlags "${linkFlags} -sFETCH")
+SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy")
+SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+
 # # OpenGL
 # set(OpenGL_GL_PRFERENCE "LEGACY")
 # find_package(OpenGL REQUIRED)
@@ -61,6 +80,10 @@ include_directories(${STB_DIR})
 # glm
 set(GLM_DIR ${THIRD_PARTY_DIR}/glm)
 include_directories(${GLM_DIR})
+
+# json
+set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+include_directories(${JSON_DIR}/single_include)
 
 # Googletest
 #add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
@@ -122,9 +145,13 @@ target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 #add_definitions("-s EXPORTED_FUNCTIONS='[\"_sync_tunnel\"]'")
 
 # These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
-set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-g -sASSERTIONS=1 -Os -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=2 -sUSE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind -sASYNCIFY --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "${linkFlags}")
+#set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-g -sASSERTIONS=1 -Os -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=2 -sUSE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind -sASYNCIFY --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
 
-# When the build is complete we will run the 'cmake-post-build.sh' script.
+message(STATUS "js libs '${libraryJsFiles}'")
+# To link .js files using the --js-library flag, use the following helper function.
+em_link_js_library(jnrmaker ${libraryJsFiles})
+
 add_custom_command(
     TARGET jnrmaker
     POST_BUILD

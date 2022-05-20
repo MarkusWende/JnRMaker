@@ -29,6 +29,41 @@
 #include "gui.h"
 #include "IconsFontAwesome6.h"
 
+#ifdef __EMSCRIPTEN__
+template<typename T, size_t sizeOfArray>
+constexpr size_t getElementCount(T (&)[sizeOfArray]) {
+    return sizeOfArray;
+}
+
+void open_file(std::string const& name, emscripten::val data, int dataSize)
+{
+    std::stringstream msg;
+    //for (auto & s : myString)
+    msg << "Loaded: " << name << " with size: " << ((float)dataSize/1024.0f) << "KB\n";
+    msg << data.as<std::string>();
+    MessageManager::AddMessage(msg, message_t::INFO);
+}
+
+emscripten::val getBytes()
+{
+    auto text = R"(
+    {
+        "happy": true,
+        "pi": 3.141
+    }
+    )"_json;
+    const auto& tmp = text.dump(2);
+    std::basic_string<unsigned char> str(tmp.data(), std::next(tmp.data(), tmp.size()));
+    return emscripten::val(emscripten::typed_memory_view(str.size(), str.data()));
+}
+
+EMSCRIPTEN_BINDINGS(my_module)
+{
+    emscripten::function("getBytes", &getBytes);
+    emscripten::function("open_file", &open_file);
+}
+#endif
+
 Gui::Gui()
 {
 	init();
@@ -125,8 +160,18 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
 			if (ImGui::MenuItem("Open"))
 			{
 				// Open new tile
+#ifdef __EMSCRIPTEN__
+                getLocalFile();
+#else
 				file_browser_add_tiles_ = true;
+#endif
 			}
+            if(ImGui::MenuItem("Save"))
+            {
+#ifdef __EMSCRIPTEN__
+                saveLocalFile();
+#endif
+            }
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Demos"))
@@ -210,16 +255,16 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 				{
 					if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 					{
-						//scene->SetMouseOverScene(true);
+						scene->SetMouseOverScene(true);
 					}
 					else
 					{
-						//scene->SetMouseOverScene(false);
+						scene->SetMouseOverScene(false);
 					}
 				}
 				else
 				{
-					//scene->SetMouseOverScene(false);
+					scene->SetMouseOverScene(false);
 				}
 			}
 

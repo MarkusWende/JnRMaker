@@ -63,6 +63,10 @@ include_directories(${STB_DIR})
 # Googletest
 add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
 
+# json
+set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+include_directories(${JSON_DIR}/single_include)
+
 # Copy data files
 file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
 file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")

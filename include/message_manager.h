@@ -28,6 +28,15 @@
 
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/fetch.h>
+#include <emscripten/websocket.h>
+#include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/val.h>
+#endif
+
 #include <map>
 #include <vector>
 #include <sstream>

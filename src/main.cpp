@@ -43,41 +43,6 @@ SDL_GLContext   g_GLContext = NULL;
 Gui* appGui;
 Scene* appScene;
 
-#ifdef __EMSCRIPTEN__
-bool isESFileBrowserOpen = false;
-
-EM_ASYNC_JS(int, getLocalFile, (),
-{
-    const pickerOpts = {
-        types: [
-            {
-            description: 'Text',
-            accept: {
-                'text/*': ['.txt', '.log']
-            }
-            },
-        ],
-        excludeAcceptAllOption: true,
-        multiple: false
-    };
-    try {
-        // Always returns an array.
-        const [handle] = await window.showOpenFilePicker(pickerOpts);
-        const file = await handle.getFile();
-        //const contents = await file.text();
-        console.log(file);
-        isESFileBrowserOpen = false;
-        // return handle.getFile();
-    } catch (err) {
-        console.error(err.name, err.message);
-    }
-	// Do something with the file handle.
-	
-	return 1;
-});
-
-#endif
-
 // For clarity, our main loop code is declared at the end.
 static void main_loop(void*);
 
@@ -273,9 +238,7 @@ int main(int, char**)
 
 #ifdef __EMSCRIPTEN__
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
-    //emscripten_set_main_loop(main_loop, 0, 1);
-    //emscripten_set_main_loop_timing(EM_TIMING_RAF,  4);
-	emscripten_set_main_loop_arg(main_loop, NULL, 60, 1);
+    emscripten_set_main_loop_arg(main_loop, NULL, 60, true);
 #else
     //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -335,14 +298,6 @@ static void main_loop(void* arg)
     // appGui->Render(appScene);
     appGui->Draw(appScene);
     //appGui->ShowBackendCheckerWindow();
-#ifdef __EMSCRIPTEN__
-    if (!isESFileBrowserOpen && appGui->ESFileBrowserState())
-    {
-        isESFileBrowserOpen = true;
-        appGui->SetESFileBrowserState(false);
-        getLocalFile();
-    }
-#endif
 
     appScene->Render();
 
