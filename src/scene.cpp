@@ -156,7 +156,7 @@ GLvoid Scene::CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::
 
     // Create default brush
     e_sprites_.clear();
-    e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, spriteSize.x, spriteSize.y)));
+    e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, (GLuint)spriteSize.x, (GLuint)spriteSize.y)));
     std::string keyEmptyHash = ResourceManager::getNameHash("Player", "r0c1");
     e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(keyEmptyHash.c_str()).ID);
     active_sprite_name_ = keyEmptyHash.c_str();

@@ -182,13 +182,13 @@ void TextureArray::Generate(GLuint width, GLuint height, unsigned char* data, gl
 
 	glBindTexture(GL_TEXTURE_2D_ARRAY, this->ID);
 
-	int tileW = spriteSize.x;           // number of pixels in a row of 1 tile
-	int tileH = spriteSize.y;           // number of pixels in a column of 1 tile
-	int channels = 4;          // 4 for RGBA
+	auto tileW = (GLuint)spriteSize.x;           // number of pixels in a row of 1 tile
+	auto tileH = (GLuint)spriteSize.y;           // number of pixels in a column of 1 tile
+	GLuint channels = 4;          // 4 for RGBA
 
-	int tilesX = this->Width / spriteSize.x;
-	int tilesY = this->Height / spriteSize.y;
-	int imageCount = tilesX * tilesY;
+	auto tilesX = this->Width / tileW;
+	auto tilesY = this->Height / tileH;
+	auto imageCount = tilesX * tilesY;
 
 	for (GLuint mip = 0; mip < this->Mip_Level; ++mip)
 	{
@@ -207,20 +207,20 @@ void TextureArray::Generate(GLuint width, GLuint height, unsigned char* data, gl
 
 
 	std::vector<unsigned char> tile(tileW * tileH * channels);
-	int tileSizeX = tileW * channels;
-	int rowLen    = tilesX * tileSizeX;
+	auto tileSizeX = tileW * channels;
+	auto rowLen    = tilesX * tileSizeX;
 
-	for (int iy = 0; iy < tilesY; ++ iy)
+	for (GLuint iy = 0; iy < tilesY; ++ iy)
 	{
-		for (int ix = 0; ix < tilesX; ++ ix)
+		for (GLuint ix = 0; ix < tilesX; ++ ix)
 		{
 			unsigned char *ptr = data + iy*rowLen*tileH + ix*tileSizeX;
-			for (int row = 0; row < tileH; ++ row)
+			for (GLuint row = 0; row < tileH; ++ row)
 				std::copy(ptr + row*rowLen, ptr + row*rowLen + tileSizeX,
 						tile.begin() + row*tileSizeX);
 
 
-			int i = iy * tilesX + ix;
+			auto i = iy * tilesX + ix;
 			glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0,
 				0, 0, i,
 				tileW, tileH, 1,

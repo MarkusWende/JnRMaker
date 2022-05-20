@@ -66,10 +66,10 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
             MessageManager::AddMessage(msg, message_t::ERROR_T);
         }
 
-        ResourceManager::CreateTextureArray(image, width, height, sprite_size_.x, sprite_size_.y, alpha, name_);
+        ResourceManager::CreateTextureArray(image, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
 
-        num_rows_ = height / sprite_size_.y;
-        num_cols_ = width / sprite_size_.x;
+        num_rows_ = (GLuint)height / (GLuint)sprite_size_.y;
+        num_cols_ = (GLuint)width / (GLuint)sprite_size_.x;
 
         /* std::stringstream msg;
         msg << "rows: " << num_rows_ << "\tcols: " << num_cols_;
@@ -148,7 +148,7 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
         glBindFramebuffer(GL_FRAMEBUFFER, fboNewTile);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, spriteTexID, 0);
 
-        glReadPixels(0, 0, sprite_size_.x, sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, dataNewTile.data());
+        glReadPixels(0, 0, (GLsizei)sprite_size_.x, (GLsizei)sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, dataNewTile.data());
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDeleteFramebuffers(1, &fboNewTile);
@@ -172,13 +172,13 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
             glBindFramebuffer(GL_FRAMEBUFFER, fboCurrentTile);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, currentTileID, 0);
 
-            glReadPixels(0, 0, sprite_size_.x, sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, dataCurrentTile.data());
+            glReadPixels(0, 0, (GLsizei)sprite_size_.x, (GLsizei)sprite_size_.y, GL_RGBA, GL_UNSIGNED_BYTE, dataCurrentTile.data());
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glDeleteFramebuffers(1, &fboCurrentTile);
             glBindTexture(GL_TEXTURE_2D, 0);
 
-            for (int row = 0; row < sprite_size_.y; ++row)
+            for (size_t row = 0; row < sprite_size_.y; ++row)
             {
                 std::copy(  dataCurrentTile.begin() + row * 64,
                             dataCurrentTile.begin() + row * 64 + 64,
@@ -198,7 +198,7 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
                     );
         }
 
-        ResourceManager::CreateTextureArray(dataNewTexArray.data(), sprite_size_.x * num_cols_, sprite_size_.y, sprite_size_.x, sprite_size_.y, GL_TRUE, name_);
+        ResourceManager::CreateTextureArray(dataNewTexArray.data(), (GLuint)sprite_size_.x * num_cols_, (GLuint)sprite_size_.y, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
         
         //unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
 

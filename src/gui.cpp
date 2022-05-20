@@ -136,6 +136,7 @@ void Gui::Draw(Scene *scene)
 
 GLvoid Gui::DrawMenuMain(Scene *scene)
 {
+	(void)scene->IsMapNull();
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
@@ -1106,8 +1107,13 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 	bool isLogicalDrive = false;
 	static std::string currentItem = ""; //current selection in the current directory
 	static char newPath[250] = ""; //path which can be inserted via an ImGui::InputText
-	if (!strcmp(newPath, "")) {
+	if (!strcmp(newPath, ""))
+	{
+#if defined(_WIN32)
+		strcpy_s(newPath, path.string().c_str());
+#else
 		std::strcpy(newPath, path.string().c_str());
+#endif
 	}
 
 
@@ -1145,8 +1151,13 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				listDirectoryContent(path, displayLogicalDrives, isLogicalDrive, extensionOnly, extension, &currentItem, isSelected);
 
 				
-				if (displayLogicalDrives) {
+				if (displayLogicalDrives)
+				{
+#if defined(_WIN32)
+					strcpy_s(newPath, "~\\");
+#else
 					strcpy(newPath, "~\\");
+#endif
 				}
 				ImGui::TextWrapped(currentItem.c_str());
 			}
@@ -1154,7 +1165,11 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 		catch (...)
 		{
 			path = fs::current_path();
+#if defined(_WIN32)
+			strcpy_s(newPath, "~\\");
+#else
 			strcpy(newPath, "~\\");
+#endif
 			displayLogicalDrives = true;
 
 			ImGui::OpenPopup("##FilesystemError");
@@ -1167,7 +1182,11 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 			if (ImGui::Button("Ok", ImVec2(120, 0)))
 			{
 				currentItem = "";
+#if defined(_WIN32)
+				strcpy_s(newPath, "");
+#else
 				strcpy(newPath, "");
+#endif
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -1195,7 +1214,11 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				ImGui::CloseCurrentPopup();
 			}
 			currentItem = "";
+#if defined(_WIN32)
+			strcpy_s(newPath, "");
+#else
 			strcpy(newPath, "");
+#endif
 		}
 
 		//PopUp if no file was selected
@@ -1206,7 +1229,11 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 			if (ImGui::Button("Ok", ImVec2(120, 0)))
 			{
 				currentItem = "";
+#if defined(_WIN32)
+				strcpy_s(newPath, "~\\");
+#else
 				strcpy(newPath, "");
+#endif
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -1228,7 +1255,11 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 	{
 		path = currentItem;
 		currentItem = "";
+#if defined(_WIN32)
+		strcpy_s(newPath, "");
+#else
 		strcpy(newPath, "");
+#endif
 	}
 	else {
 		//if valid path was inserted into InputText navigate to that directory
@@ -1276,7 +1307,7 @@ Gui::listDirectoryContent(
 			if (fs::path(entry).extension() == ".sys") {}	//exclude .sys-Files which can be problematic if acessed
 			else {
 				if (fs::is_directory(entry))
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8, 0.6, 0.3, 0.8));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.3f, 0.8f));
 
 				if (extensionOnly)
 				{
@@ -1333,7 +1364,7 @@ Gui::listDirectoryContent(
 			{
 				if (uDriveMask & 1)
 				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8, 0.6, 0.3, 0.8));
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.3f, 0.8f));
 					std::string name = (const char*)szDrive;
 					name += ":\\";
 					if (ImGui::Selectable(name.c_str(), !isSelected, ImGuiSelectableFlags_DontClosePopups)) {
