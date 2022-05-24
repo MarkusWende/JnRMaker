@@ -25,20 +25,19 @@
  * https://github.com/MarkusWende
  */
 
-
 #include "../include/resource_manager.h"
 #include "../include/message_manager.h"
 
 #include "stb_image.h"
 
-std::map<std::string, Texture2D>    ResourceManager::Textures;
+std::map<std::string, Texture2D> ResourceManager::Textures;
 std::map<std::string, TextureArray> ResourceManager::TextureArrays;
-//std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
-//std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
-std::map<std::string, Framebuffer>  ResourceManager::Framebuffers;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+// std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
+// std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
+std::map<std::string, Framebuffer> ResourceManager::Framebuffers;
+std::map<std::string, Shader> ResourceManager::Shaders;
 
-Shader ResourceManager::LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name)
+Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
@@ -49,20 +48,25 @@ Shader ResourceManager::GetShader(std::string name)
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar* file, GLboolean alpha, std::string name)
+Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-
-Texture2D ResourceManager::CreateTexture(unsigned char* data, GLuint width, GLuint height, GLboolean alpha, std::string name)
+Texture2D ResourceManager::CreateTexture(unsigned char *data, GLuint width, GLuint height, GLboolean alpha, std::string name)
 {
     Textures[name] = createTextureFromData(data, width, height, alpha);
     return Textures[name];
 }
 
-TextureArray ResourceManager::CreateTextureArray(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+Texture2D ResourceManager::CreateTexture(const unsigned char *data, int size, std::string name)
+{
+    Textures[name] = createTextureFromData(data, size);
+    return Textures[name];
+}
+
+TextureArray ResourceManager::CreateTextureArray(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
 {
     Textures[name] = createTextureFromData(data, width, height, alpha);
     TextureArrays[name] = createTextureArrayFromData(data, width, height, spriteSizeX, spriteSizeY, alpha, name);
@@ -84,18 +88,18 @@ TextureAtlas ResourceManager::GetTextureAtlas(std::string name)
     return TextureAtlases[name];
 } */
 
-//GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
+// GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
 //{
-    /*
-    RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
-    sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
-    if(!rTexture->create(width, height))
-    {
-        std::stringstream msg;
-        msg << "Creating render texture.";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
-    }
-    */
+/*
+RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
+sf::RenderTexture* rTexture = RenderTextures.find(name)->second.get();
+if(!rTexture->create(width, height))
+{
+    std::stringstream msg;
+    msg << "Creating render texture.";
+    MessageManager::AddMessage(msg, message_t::ERROR_T);
+}
+*/
 //}
 /*
 GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::string name)
@@ -124,11 +128,11 @@ GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuin
 }
 sf::Texture* ResourceManager::GetTexture(std::string name)
 {
-	return &Textures[name];
+    return &Textures[name];
 }
 sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
 {
-	return RenderTextures.find(name)->second.get();
+    return RenderTextures.find(name)->second.get();
 }
 */
 Texture2D ResourceManager::GetTexture(std::string name)
@@ -141,7 +145,7 @@ TextureArray ResourceManager::GetTextureArray(std::string name)
     return TextureArrays[name];
 }
 
-const std::map<std::string, Texture2D> & ResourceManager::GetTextureMap()
+const std::map<std::string, Texture2D> &ResourceManager::GetTextureMap()
 {
     const std::map<std::string, Texture2D> &ptr = Textures;
     return ptr;
@@ -179,10 +183,9 @@ std::string ResourceManager::getNameHash(std::string tilesetName, std::string ti
     return hash.str();
 }
 
-
 // PRIVATE:
 ////////////////////////////////////////////////////////////////////////////
-Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alpha)
+Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
 {
     // Create Texture object
     Texture2D texture;
@@ -191,7 +194,8 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
         texture.Internal_Format = GL_RGBA;
         texture.Image_Format = GL_RGBA;
     }
-    else {
+    else
+    {
         texture.Internal_Format = GL_RGB;
         texture.Image_Format = GL_RGB;
     }
@@ -199,25 +203,27 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar* file, GLboolean alp
     // Load from file
     int image_width = 0;
     int image_height = 0;
-    //unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
-    unsigned char* image_data = stbi_load(file, &image_width, &image_height, NULL, texture.Image_Format == GL_RGBA ? 4 : 3);
-    
+    // unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    unsigned char *image_data = stbi_load(file, &image_width, &image_height, NULL, texture.Image_Format == GL_RGBA ? 4 : 3);
+
     if (NULL == image_data)
     {
         std::stringstream msg;
         msg << stbi_failure_reason() << ": " << file;
         MessageManager::AddMessage(msg, message_t::ERROR_T);
     }
-    
-    // Now generate texture
-    texture.Generate(image_width, image_height, image_data);
+    else
+    {
+        // Now generate texture
+        texture.Generate(image_width, image_height, image_data);
+    }
 
     stbi_image_free(image_data);
 
     return texture;
 }
 
-Texture2D ResourceManager::createTextureFromData(unsigned char* data, GLuint width, GLuint height, GLboolean alpha)
+Texture2D ResourceManager::createTextureFromData(unsigned char *data, GLuint width, GLuint height, GLboolean alpha)
 {
     Texture2D texture;
     if (alpha)
@@ -225,7 +231,8 @@ Texture2D ResourceManager::createTextureFromData(unsigned char* data, GLuint wid
         texture.Internal_Format = GL_RGBA;
         texture.Image_Format = GL_RGBA;
     }
-    else {
+    else
+    {
         texture.Internal_Format = GL_RGB;
         texture.Image_Format = GL_RGB;
     }
@@ -235,7 +242,56 @@ Texture2D ResourceManager::createTextureFromData(unsigned char* data, GLuint wid
     return texture;
 }
 
-TextureArray ResourceManager::createTextureArrayFromData(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+Texture2D ResourceManager::createTextureFromData(const unsigned char *data, int size)
+{
+    Texture2D texture;
+    texture.Internal_Format = GL_RGBA;
+    texture.Image_Format = GL_RGBA;
+
+    int width;
+    int height;
+    int channels = 4;
+
+    if (!stbi_info_from_memory(data, size, &width, &height, &channels))
+    {
+        std::stringstream msg;
+        msg << stbi_failure_reason();
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        return texture;
+    }
+
+    unsigned char *img = stbi_load_from_memory(data, size, &width, &height, &channels, 4);
+    // unsigned char* image_data = stbi_load_from_memory(data, size, &width, &height, &channelsInData, channels);
+
+    /* exit if the image is larger than ~80MB */
+    if (width && height > (80000000 / 4) / height)
+    {
+        std::stringstream msg;
+        msg << "Image is bigger than 80MB.";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        return texture;
+    }
+
+    if (NULL == img)
+    {
+        std::stringstream msg;
+        msg << stbi_failure_reason();
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+    else
+    {
+        std::stringstream msg;
+        msg << "Width: " << width << "\tHeight: " << height;
+        MessageManager::AddMessage(msg, message_t::DEBUG);
+        texture.Generate((GLuint)width, (GLuint)height, img);
+    }
+
+    stbi_image_free(img);
+
+    return texture;
+}
+
+TextureArray ResourceManager::createTextureArrayFromData(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
 {
     TextureArray texArray;
     int channels = 0;
@@ -245,7 +301,8 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char* data, GL
         texArray.Image_Format = GL_RGBA;
         channels = 4;
     }
-    else {
+    else
+    {
         texArray.Internal_Format = GL_RGB;
         texArray.Image_Format = GL_RGB;
         channels = 3;
@@ -255,26 +312,25 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char* data, GL
 
     std::vector<unsigned char> tile(spriteSizeX * spriteSizeY * channels);
     auto tilesX = width / spriteSizeX;
-	auto tilesY = height / spriteSizeY;
-	auto tileSizeX = spriteSizeX * channels;
-	auto rowLen    = tilesX * tileSizeX;
+    auto tilesY = height / spriteSizeY;
+    auto tileSizeX = spriteSizeX * channels;
+    auto rowLen = tilesX * tileSizeX;
 
-	for (GLuint iy = 0; iy < tilesY; ++ iy)
-	{
-		for (GLuint ix = 0; ix < tilesX; ++ ix)
-		{
-			auto ptr = data + iy*rowLen*spriteSizeY + ix*tileSizeX;
-			for (GLuint row = 0; row < spriteSizeY; ++ row)
-				std::copy(ptr + row*rowLen, ptr + row*rowLen + tileSizeX,
-						tile.begin() + row*tileSizeX);
-
+    for (GLuint iy = 0; iy < tilesY; ++iy)
+    {
+        for (GLuint ix = 0; ix < tilesX; ++ix)
+        {
+            auto ptr = data + iy * rowLen * spriteSizeY + ix * tileSizeX;
+            for (GLuint row = 0; row < spriteSizeY; ++row)
+                std::copy(ptr + row * rowLen, ptr + row * rowLen + tileSizeX,
+                          tile.begin() + row * tileSizeX);
 
             std::stringstream tileName;
             tileName << "r" << iy << "c" << ix;
             std::string hashKey = getNameHash(name, tileName.str());
-			CreateTexture(tile.data(), spriteSizeX, spriteSizeY, alpha, hashKey);
-		}
-	}
+            CreateTexture(tile.data(), spriteSizeX, spriteSizeY, alpha, hashKey);
+        }
+    }
 
     return texArray;
 }
@@ -312,7 +368,7 @@ TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::v
     // Load image
     int width, height;
     unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
-    
+
     if (NULL == image)
     {
         std::stringstream msg;
@@ -337,7 +393,7 @@ Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height, GL
     return fb;
 }
 
-Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile)
+Shader ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile)
 {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
@@ -370,7 +426,7 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLch
     }
     catch (...)
     {
-        FILE* stream;
+        FILE *stream;
 #ifdef _WIN32
         freopen_s(&stream, "log.txt", "w", stdout);
         fprintf(stream, "\tFailed to read shader files\n");
@@ -382,9 +438,9 @@ Shader ResourceManager::loadShaderFromFile(const GLchar* vShaderFile, const GLch
         fclose(stream);
 #endif // __linux__
     }
-    const GLchar* vShaderCode = vertexCode.c_str();
-    const GLchar* fShaderCode = fragmentCode.c_str();
-    const GLchar* gShaderCode = geometryCode.c_str();
+    const GLchar *vShaderCode = vertexCode.c_str();
+    const GLchar *fShaderCode = fragmentCode.c_str();
+    const GLchar *gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
     Shader shader;
     shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);

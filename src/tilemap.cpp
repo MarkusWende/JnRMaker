@@ -29,6 +29,95 @@
 #include "tilemap.h"
 #include "stb_image.h"
 
+Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, const unsigned char *data, int size)
+{
+    //ResourceManager::LoadTexture(file.c_str(), GL_TRUE, name);
+    name_ = name;
+    num_cols_ = 0;
+    num_rows_ = 0;
+    sprite_size_ = spriteSize;
+    sprite_scale_ = spriteScale;
+    tilemap_id_max_ = 0;
+
+    // Load image
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+    //unsigned char* image = SOIL_load_image(file.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+
+    if (!stbi_info_from_memory(data, size, &width, &height, &channels))
+    {
+        std::stringstream msg;
+        msg << stbi_failure_reason();
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        return;
+    }
+
+    unsigned char *img = stbi_load_from_memory(data, size, &width, &height, &channels, 4);
+    // unsigned char* image_data = stbi_load_from_memory(data, size, &width, &height, &channelsInData, channels);
+
+    /* exit if the image is larger than ~80MB */
+    if (width && height > (80000000 / 4) / height)
+    {
+        std::stringstream msg;
+        msg << "Image is bigger than 80MB.";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        return;
+    }
+
+    if (NULL == img)
+    {
+        std::stringstream msg;
+        msg << stbi_failure_reason();
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
+    else
+    {
+        std::stringstream msg;
+        msg << "Width: " << width << "\tHeight: " << height;
+        MessageManager::AddMessage(msg, message_t::DEBUG);
+        
+        GLboolean alpha = GL_FALSE;
+        if (channels == 4)
+        {
+            alpha = GL_TRUE;
+        }
+        else if (channels != 3 || channels != 4)
+        {
+            std::stringstream msg;
+            msg << "Tilemap: channels are not right!";
+            MessageManager::AddMessage(msg, message_t::ERROR_T);
+        }
+
+        ResourceManager::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
+
+        num_rows_ = (GLuint)height / (GLuint)sprite_size_.y;
+        num_cols_ = (GLuint)width / (GLuint)sprite_size_.x;
+
+        /* std::stringstream msg;
+        msg << "rows: " << num_rows_ << "\tcols: " << num_cols_;
+        MessageManager::AddMessage(msg, message_t::INFO); */
+
+        for (GLuint i = 0; i < num_rows_; i++)
+        {
+            for (GLuint j = 0; j < num_cols_; j++)
+            {
+                
+                std::stringstream key;
+                key << "r" << i << "c" << j;
+                std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+                tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
+                // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
+                // tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
+
+                tilemap_id_max_++;
+            }
+        }
+    }
+
+    stbi_image_free(img);
+}
+
 Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, std::string file)
 {
     //ResourceManager::LoadTexture(file.c_str(), GL_TRUE, name);
@@ -90,9 +179,9 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
                 tilemap_id_max_++;
             }
         }
-
-        stbi_image_free(image);
     }
+
+    stbi_image_free(image);
 }
 
 /**

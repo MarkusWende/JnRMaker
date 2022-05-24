@@ -58,6 +58,7 @@ public:
 	 * @param scale The Scale of a sprite in the x and y axis.
 	 */
     Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, std::string file);
+    Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, const unsigned char *data, int size);
     Tilemap();
     ~Tilemap();
 

@@ -29,19 +29,37 @@
 #include "gui.h"
 #include "IconsFontAwesome6.h"
 
+#define DEVELOPMENT
+
 #ifdef __EMSCRIPTEN__
 template<typename T, size_t sizeOfArray>
 constexpr size_t getElementCount(T (&)[sizeOfArray]) {
     return sizeOfArray;
 }
 
-void open_file(std::string const& name, emscripten::val data, int dataSize)
+void openTilemapFile(std::string const& name, std::string const& type, emscripten::val data, int dataSize)
 {
     std::stringstream msg;
     //for (auto & s : myString)
-    msg << "Loaded: " << name << " with size: " << ((float)dataSize/1024.0f) << "KB\n";
-    msg << data.as<std::string>();
-    MessageManager::AddMessage(msg, message_t::INFO);
+    auto image = data.as<std::string>();
+    const std::vector<unsigned char> rawArray = emscripten::vecFromJSArray<unsigned char>(data);
+    const unsigned char* rawData = rawArray.data();
+
+    if ((type.compare("image/jpeg") == 0) || type.compare("image/png") == 0)
+    {
+        //ResourceManager::CreateTexture(rawData, dataSize, "loadedImage");
+		TilemapManager::AddTilemap(name, { 16, 16 }, { 1.0f, 1.0f }, rawData, dataSize);
+    }
+    else
+    {
+        msg << name << " is not a supported format.";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        getLocalTilemapFile();
+        return;
+    }
+    
+    msg << "Loaded: " << name << "\tType: " << type << "\tSize: " << ((float)dataSize/1024.0f) << "KB\n";
+    MessageManager::AddMessage(msg, message_t::DEBUG);
 }
 
 emscripten::val getBytes()
@@ -60,7 +78,7 @@ emscripten::val getBytes()
 EMSCRIPTEN_BINDINGS(my_module)
 {
     emscripten::function("getBytes", &getBytes);
-    emscripten::function("open_file", &open_file);
+    emscripten::function("openTilemapFile", &openTilemapFile);
 }
 #endif
 
@@ -162,7 +180,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
 			{
 				// Open new tile
 #ifdef __EMSCRIPTEN__
-                getLocalFile();
+                getLocalTilemapFile();
 #else
 				file_browser_add_tiles_ = true;
 #endif
@@ -175,40 +193,71 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
             }
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Demos"))
-		{
-			ImGui::Checkbox("ImGui", &show_demo_imgui_);
-			ImGui::Checkbox("BackendChecker", &show_backend_checker_show_);
+		#ifdef DEVELOPMENT
+        if (ImGui::BeginMenu("Testing"))
+        {
+            if (ImGui::BeginMenu("Messages"))
+            {
+                if (ImGui::MenuItem("Test Info"))
+                {
+                    // Test messages
+                    std::stringstream msg;
+                    msg << "Thats a test info text." << std::endl;
+                    MessageManager::AddMessage(msg, message_t::INFO);
+                }
 
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Help"))
-		{
-			if (ImGui::MenuItem("Test Info"))
-			{
-				// Test messages
-				std::stringstream msg;
-				msg << "Thats a test info text." << std::endl;
-				MessageManager::AddMessage(msg, message_t::INFO);
-			}
+                if (ImGui::MenuItem("Test Warning"))
+                {
+                    // Test messages
+                    std::stringstream msg;
+                    msg << "Thats a test warning text." << std::endl;
+                    MessageManager::AddMessage(msg, message_t::WARNING);
+                }
 
-			if (ImGui::MenuItem("Test Warning"))
-			{
-				// Test messages
-				std::stringstream msg;
-				msg << "Thats a test warning text." << std::endl;
-				MessageManager::AddMessage(msg, message_t::WARNING);
-			}
+                if (ImGui::MenuItem("Test Error"))
+                {
+                    // Test messages
+                    std::stringstream msg;
+                    msg << "Thats a test error text." << std::endl;
+                    MessageManager::AddMessage(msg, message_t::ERROR_T);
+                }
 
-			if (ImGui::MenuItem("Test Error"))
-			{
-				// Test messages
-				std::stringstream msg;
-				msg << "Thats a test error text." << std::endl;
-				MessageManager::AddMessage(msg, message_t::ERROR_T);
-			}
-			ImGui::EndMenu();
-		}
+                if (ImGui::MenuItem("Test Debug"))
+                {
+                    // Test messages
+                    std::stringstream msg;
+                    msg << "Thats a test debug text." << std::endl;
+                    MessageManager::AddMessage(msg, message_t::DEBUG);
+                }
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Demos"))
+            {
+                ImGui::Checkbox("ImGui", &show_demo_imgui_);
+                ImGui::Checkbox("BackendChecker", &show_backend_checker_show_);
+    
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::MenuItem("Function"))
+            {
+                
+            }
+
+            ImGui::EndMenu();
+        }
+#endif
+
+        if (ImGui::BeginMenu("View"))
+        {
+            if (ImGui::MenuItem("Fullscreen"))
+            {
+                viewFullscreen();
+            }
+
+            ImGui::EndMenu();
+        }
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::SetCursorPosX(io.DisplaySize.x - 50.0f);
@@ -284,7 +333,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 				for (const auto& [key, value] : ResourceManager::GetTextureMap())
 				{
 					GLuint64 texID = (GLuint64)value.ID;
-					ImGui::Text("key: %s\tid: %lu", key.c_str(), texID);
+					ImGui::Text("key: %s\tid: %llu", key.c_str(), texID);
 					ImGui::Image((ImTextureID)texID,
 						ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
 						ImVec2(0,0),
@@ -699,6 +748,10 @@ void Gui::DrawTabMessages()
 			{
 				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
 				{
+#ifndef DEVELOPMENT
+                	if (ptrMessages->at(it).type == message_t::DEBUG)
+                    	continue;
+#endif 
 					ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
 					ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", ptrMessages->at(it).timeinfo.c_str());
 					ImGui::SameLine(0, 2);
@@ -895,7 +948,7 @@ void Gui::ShowBackendCheckerWindow()
 GLvoid Gui::init()
 {
 	window_scene_.wPercent = 0.7f;
-	window_scene_.hPercent = 0.8f;
+	window_scene_.hPercent = 0.6f;
 
 	window_messages_.wPercent = 1.0f;
 	window_messages_.hPercent = 1.0f - window_scene_.hPercent;

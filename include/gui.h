@@ -63,8 +63,9 @@ namespace fs = std::experimental::filesystem;
 
 #ifdef __EMSCRIPTEN__
 extern "C" {
-  extern int getLocalFile();
-  extern int saveLocalFile();
+    extern int getLocalTilemapFile();
+    extern int saveLocalFile();
+    extern int viewFullscreen();
 }
 #endif
 

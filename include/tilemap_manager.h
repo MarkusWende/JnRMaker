@@ -74,6 +74,8 @@ public:
     */
   static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file);
 
+  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize);
+
   /**
 	 * @brief Get a tilemap by name.
 	 * @param name The name of the tilemap.

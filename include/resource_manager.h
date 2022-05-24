@@ -86,6 +86,7 @@ public:
   static Texture2D LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
 
   static Texture2D CreateTexture(unsigned char* data, GLuint width, GLuint height, GLboolean alpha, std::string name);
+  static Texture2D CreateTexture(const unsigned char* data, int size, std::string name);
 
   static TextureArray CreateTextureArray(unsigned char* data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name);
 
@@ -177,6 +178,7 @@ private:
   static Texture2D loadTextureFromFile(const GLchar* file, GLboolean alpha);
 
   static Texture2D createTextureFromData(unsigned char* data, GLuint width, GLuint height, GLboolean alpha);
+  static Texture2D createTextureFromData(const unsigned char* data, int size);
 
   static TextureArray loadTextureArrayFromFile(const GLchar* file, GLboolean alpha);
 

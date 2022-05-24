@@ -36,6 +36,11 @@ GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 sc
     Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, file)));
 }
 
+GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize)
+{
+    Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, data, dataSize)));
+}
+
 Tilemap* TilemapManager::GetTilemap(std::string name)
 {
 	return &Tilemaps[name];

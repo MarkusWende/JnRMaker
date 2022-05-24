@@ -119,6 +119,15 @@
       window.onerror = function() {
         console.log("onerror: " + event);
       };
+      // Event listener for the 
+      // 'beforeunload' event
+      window.addEventListener('beforeunload', function (e) {
+        // Cancel the event and
+        // show alert that the unsaved
+        // changes would be lost
+        e.preventDefault();
+        e.returnValue = '';
+      });
     </script>
     <script async src=jnrmaker.js></script>
   </body>

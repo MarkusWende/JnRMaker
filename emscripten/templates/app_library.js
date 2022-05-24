@@ -1,29 +1,25 @@
 mergeInto(LibraryManager.library, {
-    getLocalFile: async function() {
-        // const pickerOpts = {
-        //     types: [
-        //         {
-        //         description: 'Text',
-        //         accept: {
-        //             'text/*': ['.txt', '.log']
-        //         }
-        //         },
-        //     ],
-        //     excludeAcceptAllOption: true,
-        //     multiple: false
-        // };
+    getLocalTilemapFile: async function() {
+        const pickerOpts = {
+            types: [
+                {
+                    description: 'Image',
+                    accept: {
+                        'image/*': ['.jpeg', '.jpg', '.png']
+                    }
+                },
+            ],
+            excludeAcceptAllOption: true,
+            multiple: false,
+            _preferPolyfill: false // default
+        };
         try {
             // Always returns an array.
-            const [handle] = await window.showOpenFilePicker({
-                types: [], // default
-                multiple: false, // default
-                excludeAcceptAllOption: false, // default
-                _preferPolyfill: false // default
-              });
+            const [handle] = await window.showOpenFilePicker(pickerOpts);
             const file = await handle.getFile();
             const contents = await file.arrayBuffer();
             var uint8View = new Uint8Array(contents);
-            Module.open_file(file.name, uint8View, contents.byteLength);
+            Module.openTilemapFile(file.name, file.type, uint8View, contents.byteLength);
             //result = Module.ccall("int_sqrt", null, ["string", "array", "number"], [file.name, uint8View, contents.byteLength])
 
             console.log(file);
@@ -74,5 +70,19 @@ mergeInto(LibraryManager.library, {
             // This needs to happen in the finally block, otherwise thrown errors will stop code execution before this happens
             //Module._free(buffer)
         }
+
+        return 1;
+    },
+    viewFullscreen: function() {
+        var elem = document.getElementById("canvas");
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+        }
+
+        return 1;
     },
 });
