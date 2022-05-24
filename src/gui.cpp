@@ -100,7 +100,7 @@ Gui::~Gui()
 
 GLvoid Gui::WindowUpdate(Scene *scene, GLuint width, GLuint height)
 {
-	if (glm::abs(width_ - width) > 5 || glm::abs(height_ - height) > 5)
+	if (glm::abs(width_ - width) > 2 || glm::abs(height_ - height) > 2)
 	{
 		width_ = width;
 		height_ = height;
@@ -799,8 +799,18 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 		ImGuiStyle* style = &ImGui::GetStyle();
 		if (ImGui::BeginTabItem("Tiles"))
 		{
-			if (ImGui::BeginCombo("##TilemapCombo", scene->GetActiveTilemap().c_str()))
+			static ImGuiTableFlags flags1 = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders | ImGuiTableFlags_ContextMenuInBody;
+			if (ImGui::BeginTable("table_context_menu", 2, flags1))
 			{
+				ImGui::TableSetupColumn("Tilemaps");
+				ImGui::TableSetupColumn("Tiles");
+
+				// [1.1]] Right-click on the TableHeadersRow() line to open the default table context menu.
+				ImGui::TableHeadersRow();
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+
 				for (auto const& [key, val] : TilemapManager::Tilemaps)
 				{
 					if(key != "")
@@ -813,85 +823,82 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 						ImGui::PopID();
 					}
 				}
-				ImGui::EndCombo();
-			}
 
-			static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-			Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
-			std::vector<std::string> tilemapHashes = tilemap->GetHashs();
+				ImGui::TableSetColumnIndex(1);
+				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
+				Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
+				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
-			ImGui::Text("TexArrayID: %u", tilemap->GetTexArray().ID);
+				ImGui::BeginChild("##TileSelector",
+					ImVec2(0,
+						((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
+						* tilemap->GetSpriteSize().y
+						* tilemap->GetSpriteScale().y 
+						* tileButtonScale.y + 5.0f + style->ScrollbarSize),
+					true,
+					ImGuiWindowFlags_HorizontalScrollbar
+				);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
-			ImGui::BeginChild("TileSelector",
-				ImVec2(0,
-					((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
-					* tilemap->GetSpriteSize().y
-					* tilemap->GetSpriteScale().y 
-					* tileButtonScale.y + 5.0f + style->ScrollbarSize),
-				true,
-				ImGuiWindowFlags_HorizontalScrollbar
-			);
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+				GLuint i = 0;
+				ImGuiListClipper clipper(tilemap->NumRows());
 
-			GLuint i = 0;
-			ImGuiListClipper clipper(tilemap->NumRows());
-
-			while (clipper.Step())
-			{
-				for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+				while (clipper.Step())
 				{
-					for (GLuint col = 0; col < tilemap->NumCols(); col++)
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
 					{
-						//std::stringstream sprKey;
-						//sprKey << "r" << row << "c" << col;
-						GLuint64 tile = (GLuint64)tilemap->GetTile(tilemapHashes.at(i)).ID;
-						auto buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
-						auto buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
-						ImGui::PushID(i);
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.4f));
-						// Change mouse cursor to hand
-						if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
+						for (GLuint col = 0; col < tilemap->NumCols(); col++)
 						{
-							ImGui::SetMouseCursor(7);
-						}
-						if (
-							ImGui::ImageButton(
-								(ImTextureID)tile,
-								ImVec2(buttonWidth, buttonHeight),
-								ImVec2(0.0f, 0.0f),
-								ImVec2(1.0f, 1.0f),
-								1,
-								ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
-								ImVec4(0.8f, 0.8f, 0.8f, 1.0f))
-							)
-						{
-							if (!scene->IsMapNull())
+							//std::stringstream sprKey;
+							//sprKey << "r" << row << "c" << col;
+							GLuint64 tile = (GLuint64)tilemap->GetTile(tilemapHashes.at(i)).ID;
+							auto buttonWidth = tilemap->GetSpriteSize().x * tilemap->GetSpriteScale().x * tileButtonScale.x;
+							auto buttonHeight = tilemap->GetSpriteSize().y * tilemap->GetSpriteScale().y * tileButtonScale.y;
+							ImGui::PushID(i);
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+							ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 1.0f, 1.0f, 0.4f));
+							// Change mouse cursor to hand
+							if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
 							{
-								scene->SetActiveSprite(tilemapHashes.at(i));
-								GLuint brushTexID = tilemap->GetTile(tilemapHashes.at(i)).ID;
-								scene->GetSprite("brush")->AssignTextureID(brushTexID);
-
-								/* std::stringstream msg;
-								msg << tilemapHashes.at(i);
-								MessageManager::AddMessage(msg, message_t::INFO); */
+								ImGui::SetMouseCursor(7);
 							}
-						}
+							if (
+								ImGui::ImageButton(
+									(ImTextureID)tile,
+									ImVec2(buttonWidth, buttonHeight),
+									ImVec2(0.0f, 0.0f),
+									ImVec2(1.0f, 1.0f),
+									1,
+									ImVec4(0.0f, 0.0f, 0.0f, 0.0f),
+									ImVec4(0.8f, 0.8f, 0.8f, 1.0f))
+								)
+							{
+								if (!scene->IsMapNull())
+								{
+									scene->SetActiveSprite(tilemapHashes.at(i));
+									GLuint brushTexID = tilemap->GetTile(tilemapHashes.at(i)).ID;
+									scene->GetSprite("brush")->AssignTextureID(brushTexID);
 
-						ImGui::PopStyleColor(2);
-						ImGui::PopID();
-						if (col < (tilemap->NumCols() - 1))
-							ImGui::SameLine();
-						i++;
+									/* std::stringstream msg;
+									msg << tilemapHashes.at(i);
+									MessageManager::AddMessage(msg, message_t::INFO); */
+								}
+							}
+
+							ImGui::PopStyleColor(2);
+							ImGui::PopID();
+							if (col < (tilemap->NumCols() - 1))
+								ImGui::SameLine();
+							i++;
+						}
 					}
 				}
+
+				ImGui::PopStyleVar();
+				ImGui::EndChild();
+				ImGui::EndTable();
 			}
-
-
-			ImGui::PopStyleVar();
-
-			ImGui::EndChild();
-
+			
 			ImGui::EndTabItem();
 		}
 	}

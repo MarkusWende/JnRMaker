@@ -22,6 +22,7 @@ mergeInto(LibraryManager.library, {
             Module.openTilemapFile(file.name, file.type, uint8View, contents.byteLength);
             //result = Module.ccall("int_sqrt", null, ["string", "array", "number"], [file.name, uint8View, contents.byteLength])
 
+            //Module.msgDebug(file);
             console.log(file);
             
             return 0;
@@ -29,7 +30,7 @@ mergeInto(LibraryManager.library, {
             // return handle.getFile();
         } catch (err) {
             console.error(err.name, err.message);
-            Module.messageErr(err.message);
+            Module.msgError(err.message);
         } finally {
             // To avoid memory leaks we need to always clear out the allocated heap data
             // This needs to happen in the finally block, otherwise thrown errors will stop code execution before this happens
@@ -64,7 +65,7 @@ mergeInto(LibraryManager.library, {
             // Module.message("Saving file: " + handle.name);
         } catch (err) {
             console.error(err.name, err.message);
-            Module.messageErr(err.message);
+            Module.msgError(err.message);
         } finally {
             // To avoid memory leaks we need to always clear out the allocated heap data
             // This needs to happen in the finally block, otherwise thrown errors will stop code execution before this happens

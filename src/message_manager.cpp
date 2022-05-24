@@ -29,15 +29,23 @@
 #include "../include/message_manager.h"
 
 #ifdef __EMSCRIPTEN__
-void messageErr(std::string const& msg)
+void msgErr(std::string const& msg)
 {
     std::stringstream ss;
     ss << msg;
     MessageManager::AddMessage(ss, message_t::ERROR_T);
 }
 
+void msgDebug(std::string const& msg)
+{
+    std::stringstream ss;
+    ss << msg;
+    MessageManager::AddMessage(ss, message_t::DEBUG);
+}
+
 EMSCRIPTEN_BINDINGS(my_module) {
-    emscripten::function("messageErr", &messageErr);
+    emscripten::function("msgErr", &msgErr);
+    emscripten::function("msgDebug", &msgDebug);
 }
 #endif
 

@@ -184,7 +184,7 @@ int main(int, char**)
         msg << "\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
         msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion << std::endl;
         msg << "\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
-        MessageManager::AddMessage(msg, message_t::INFO);
+        MessageManager::AddMessage(msg, message_t::DEBUG);
 
 #ifdef _WIN32
         FILE* stream;
@@ -230,7 +230,7 @@ int main(int, char**)
     {
         std::stringstream msg;
         msg << "__EMSCRIPTEN_PTHREADS__ is enabled.";
-        MessageManager::AddMessage(msg, message_t::INFO);
+        MessageManager::AddMessage(msg, message_t::DEBUG);
     }
 #endif
 

@@ -78,7 +78,7 @@ void Framebuffer::Generate(GLuint width, GLuint height, GLenum type)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
 		msg << "Framebuffer successful initialized. ID: " << id_ << "\tWidth: " << width_ << "\tHeight: " << height_;
-		MessageManager::AddMessage(msg, message_t::INFO);
+		MessageManager::AddMessage(msg, message_t::DEBUG);
 	}
 	else
 	{
