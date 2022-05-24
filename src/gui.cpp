@@ -40,15 +40,23 @@ constexpr size_t getElementCount(T (&)[sizeOfArray]) {
 void openTilemapFile(std::string const& name, std::string const& type, emscripten::val data, int dataSize)
 {
     std::stringstream msg;
-    //for (auto & s : myString)
-    auto image = data.as<std::string>();
-    const std::vector<unsigned char> rawArray = emscripten::vecFromJSArray<unsigned char>(data);
-    const unsigned char* rawData = rawArray.data();
 
     if ((type.compare("image/jpeg") == 0) || type.compare("image/png") == 0)
     {
         //ResourceManager::CreateTexture(rawData, dataSize, "loadedImage");
-		TilemapManager::AddTilemap(name, { 16, 16 }, { 1.0f, 1.0f }, rawData, dataSize);
+		TimeHelper::tic();
+		std::string dataStr = data.as<std::string>();
+		auto chrs = dataStr.c_str();
+		auto uchrs = reinterpret_cast<unsigned char*>(const_cast<char*>(chrs));
+        //unsigned char* rawData = reinterpret_cast<unsigned char*>(&dataStr);
+        // const std::vector<unsigned char> rawArray = emscripten::vecFromJSArray<unsigned char>(data);
+        // const unsigned char* rawData = rawArray.data();
+        msg << "emscripten::vecFromJSArray" << TimeHelper::toc(1);
+        MessageManager::AddMessage(msg, message_t::DEBUG);
+        TimeHelper::tic();
+		TilemapManager::AddTilemap(name, { 16.0f, 16.0f }, { 1.0f, 1.0f }, uchrs, dataSize);
+        msg << "ResourceManager::CreateTexture(): " << TimeHelper::toc(1);
+        MessageManager::AddMessage(msg, message_t::DEBUG);
     }
     else
     {

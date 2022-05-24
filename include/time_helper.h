@@ -77,43 +77,41 @@ namespace TimeHelper
     //
   }
 
-  inline int toc(int format = 0)
+  inline std::string toc(int format = 0)
   {
-    int delta = 0;
+    // int delta = 0;
     Clock::time_point timeNow = Clock::now();
+    std::stringstream msg;
+
     if (format == 0)
     {
       microseconds us = std::chrono::duration_cast<microseconds>(timeNow - timeZero);
-      std::stringstream msg;
       msg << "\tTime elapsed " << us.count() << " us\n";
       //std::cout << msg.str().c_str() << "\n";
-      delta = (int)us.count();
+      // delta = (int)us.count();
     }
     else if (format == 1)
     {
       milliseconds ms = std::chrono::duration_cast<milliseconds>(timeNow - timeZero);
-      std::stringstream msg;
       msg << "\tTime elapsed " << ms.count() << " ms\n";
       //std::cout << msg.str().c_str() << "\n";
-      delta = (int)ms.count();
+      // delta = (int)ms.count();
     }
     else if (format == 2)
     {
       seconds s = std::chrono::duration_cast<seconds>(timeNow - timeZero);
-      std::stringstream msg;
       msg << "\tTime elapsed " << s.count() << " s\n";
       //std::cout << msg.str().c_str() << "\n";
-      delta = (int)s.count();
+      // delta = (int)s.count();
     }
     else if (format == 3)
     {
       nanoseconds ns = std::chrono::duration_cast<nanoseconds>(timeNow - timeZero);
-      std::stringstream msg;
       msg << "\tTime elapsed " << ns.count() << " ns\n";
       //std::cout << msg.str().c_str() << "\n";
-      delta = (int)ns.count();
+      // delta = (int)ns.count();
     }
 
-    return delta;
+    return msg.str();
   }
 }

@@ -76,20 +76,8 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
         std::stringstream msg;
         msg << "Width: " << width << "\tHeight: " << height;
         MessageManager::AddMessage(msg, message_t::DEBUG);
-        
-        GLboolean alpha = GL_FALSE;
-        if (channels == 4)
-        {
-            alpha = GL_TRUE;
-        }
-        else if (channels != 3 || channels != 4)
-        {
-            std::stringstream msg;
-            msg << "Tilemap: channels are not right!";
-            MessageManager::AddMessage(msg, message_t::ERROR_T);
-        }
 
-        ResourceManager::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
+        ResourceManager::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
 
         num_rows_ = (GLuint)height / (GLuint)sprite_size_.y;
         num_cols_ = (GLuint)width / (GLuint)sprite_size_.x;
@@ -148,7 +136,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
         {
             alpha = GL_TRUE;
         }
-        else if (channels != 3 || channels != 4)
+        else if (channels != 3 && channels != 4)
         {
             std::stringstream msg;
             msg << "Tilemap: channels are not right!";

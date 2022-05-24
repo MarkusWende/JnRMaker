@@ -18,8 +18,7 @@ mergeInto(LibraryManager.library, {
             const [handle] = await window.showOpenFilePicker(pickerOpts);
             const file = await handle.getFile();
             const contents = await file.arrayBuffer();
-            var uint8View = new Uint8Array(contents);
-            Module.openTilemapFile(file.name, file.type, uint8View, contents.byteLength);
+            Module.openTilemapFile(file.name, file.type, contents, contents.byteLength);
             //result = Module.ccall("int_sqrt", null, ["string", "array", "number"], [file.name, uint8View, contents.byteLength])
 
             //Module.msgDebug(file);
