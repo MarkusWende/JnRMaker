@@ -41,6 +41,8 @@
 #include <vector>
 #include <sstream>
 
+#include "imgui.h"
+
 #include "time_helper.h"
 
 #define MAX_STORED_MSG 200               /**< Defines the maximal number of messages to be stored. */
@@ -63,6 +65,7 @@ struct Message {
 	std::string msg;                     /**< The actual message. */
 	std::string timeinfo;                /**< Timestamp. */
   message_t type;                      /**< Message type. */
+  bool popup;                           /**< Show a popup window */
 };
 
 /**
@@ -79,7 +82,7 @@ public:
    * @param type Type of the message {ERROR, WARNING, INFO}.
 	 * @return Return the message struct.
 	 */
-  static Message AddMessage(std::stringstream& msg, message_t type);
+  static Message AddMessage(std::stringstream& msg, message_t type, bool popup = 0);
 
   /**
 	 * @brief Get all messages in the message vector.

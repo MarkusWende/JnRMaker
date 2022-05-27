@@ -52,13 +52,14 @@ EMSCRIPTEN_BINDINGS(my_module) {
 // Instantiate static messages vector
 std::vector<Message> MessageManager::messages;
 
-Message MessageManager::AddMessage(std::stringstream& msg, message_t type)
+Message MessageManager::AddMessage(std::stringstream& msg, message_t type, bool popup)
 {
   Message tmpMsg;
 
   tmpMsg.msg = msg.str();
   tmpMsg.timeinfo = TimeHelper::GetTimeinfo();
   tmpMsg.type = type;
+  tmpMsg.popup = popup;
 
   messages.insert(messages.begin(), tmpMsg);
 

@@ -90,6 +90,7 @@ EMSCRIPTEN_BINDINGS(my_module)
 }
 #endif
 
+
 Gui::Gui()
 {
 	init();
@@ -158,6 +159,12 @@ void Gui::Draw(Scene *scene)
     {
         drawBackendCheckerWindow();
     }
+
+	if (ImGui::BeginPopup("MyHelpMenu"))
+	{
+		ImGui::Selectable("Hello!");
+		ImGui::EndPopup();
+	}
 }
 
 GLvoid Gui::DrawMenuMain(Scene *scene)
@@ -211,7 +218,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test info text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::INFO);
+                    MessageManager::AddMessage(msg, message_t::INFO, true);
                 }
 
                 if (ImGui::MenuItem("Test Warning"))
@@ -219,7 +226,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test warning text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::WARNING);
+                    MessageManager::AddMessage(msg, message_t::WARNING, true);
                 }
 
                 if (ImGui::MenuItem("Test Error"))
@@ -227,7 +234,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test error text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::ERROR_T);
+                    MessageManager::AddMessage(msg, message_t::ERROR_T, true);
                 }
 
                 if (ImGui::MenuItem("Test Debug"))
@@ -235,7 +242,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test debug text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::DEBUG);
+                    MessageManager::AddMessage(msg, message_t::DEBUG, true);
                 }
                 ImGui::EndMenu();
             }
@@ -501,20 +508,7 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 
 	if (ImGui::CollapsingHeader("Sprites"))
 	{
-		// Texture2D tex = ResourceManager::GetTexture("testing123");
-		// if (
-		// 	ImGui::ImageButton(
-		// 		(ImTextureID)tex.ID,
-		// 		ImVec2(64, 16),
-		// 		ImVec2(0, 0),
-		// 		ImVec2(1, 1),
-		// 		1,
-		// 		ImVec4(0, 0, 0, 0),
-		// 		ImVec4(0.8, 0.8, 0.8, 1))
-		// 	)
-		// {
-			
-		// }
+		
 	}
 
 	if (ImGui::CollapsingHeader("Inputs, Navigation & Focus"))
@@ -765,29 +759,88 @@ void Gui::DrawTabMessages()
 					ImGui::SameLine(0, 2);
 					ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-					std::string word;
-					std::stringstream ss(ptrMessages->at(it).msg);
+					//std::string word;
+					//std::stringstream ss(ptrMessages->at(it).msg);
+					//char msgChr[250] = "";
+					char msgSymbol[250] = "default";
+					std::stringstream popupID;
+					popupID << "##" << ptrMessages->at(it).timeinfo.c_str() << ":" << ptrMessages->at(it).msg.c_str();
+					ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
 
 					ImGui::SameLine(0, 5);
 					if (ptrMessages->at(it).type == message_t::ERROR_T)
 					{
-						ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
+						msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
+						ImGui::TextColored(msgSymbolColor, "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
+#if defined(_WIN32)
+						strcpy_s(msgSymbol, ICON_FA_XMARK);
+#else
+						std::strcpy(msgSymbol, ICON_FA_XMARK);
+#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::INFO)
 					{
-						ImGui::TextColored(ImVec4(0.9f, 0.9f, 0.9f, 1.0f), "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
+						msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
+						ImGui::TextColored(msgSymbolColor, "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
+#if defined(_WIN32)
+						strcpy_s(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
+#else
+						std::strcpy(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
+#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::WARNING)
 					{
-						ImGui::TextColored(ImVec4(0.92f, 0.56f, 0.9f, 1.0f), "[Warning]  %s", ptrMessages->at(it).msg.c_str());
+						msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
+						ImGui::TextColored(msgSymbolColor, "[Warning]  %s", ptrMessages->at(it).msg.c_str());
+#if defined(_WIN32)
+						strcpy_s(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
+#else
+						std::strcpy(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
+#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::DEBUG)
 					{
-						ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+						ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
 					}
 					else if (ptrMessages->at(it).type == message_t::DEBUG_WS)
 					{
-						ImGui::TextColored(ImVec4(0.42f, 0.85f, 1.0f, 1.0f), "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+						ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+					}
+
+					static int numPopups = 0;
+					if (ptrMessages->at(it).popup && !numPopups)
+					{
+						ImGui::OpenPopup(popupID.str().c_str());
+						numPopups++;
+						ptrMessages->at(it).popup = false;
+					}
+
+					// Always center this window when appearing
+					ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+					ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+					
+					
+					if (ImGui::BeginPopupModal(popupID.str().c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+					{
+						ImGui::PushFont(icons_40_);
+						ImGui::TextColored(msgSymbolColor, "%s", msgSymbol); ImGui::SameLine();
+						ImGui::PopFont();
+						ImVec2 popupPos = ImGui::GetCursorPos();
+						ImGui::SetCursorPos(ImVec2(popupPos.x + 10.0f, popupPos.y + 15.0f));
+						ImGui::Text("%s\n", ptrMessages->at(it).msg.c_str());
+						ImGui::Text("  ");
+						
+						ImGui::Separator();
+						float buttomPos = ImGui::GetCursorPos().x + (ImGui::GetWindowSize().x / 2.0f - 70.0f);
+						ImGui::SetCursorPosX(buttomPos);
+						if (ImGui::Button("OK", ImVec2(120.0f, 0.0f)))
+						{ 
+							numPopups--;
+							ptrMessages->at(it).popup = false;
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::SetItemDefaultFocus();
+						ImGui::EndPopup();
 					}
 				}
 			}
@@ -837,15 +890,16 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 				Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
-				ImGui::BeginChild("##TileSelector",
-					ImVec2(0,
-						((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
-						* tilemap->GetSpriteSize().y
-						* tilemap->GetSpriteScale().y 
-						* tileButtonScale.y + 5.0f + style->ScrollbarSize),
-					true,
-					ImGuiWindowFlags_HorizontalScrollbar
-				);
+				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
+				// ImGui::BeginChild("##TileSelector",
+				// 	ImVec2(0,
+				// 		((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
+				// 		* tilemap->GetSpriteSize().y
+				// 		* tilemap->GetSpriteScale().y 
+				// 		* tileButtonScale.y + 5.0f + style->ScrollbarSize),
+				// 	true,
+				// 	ImGuiWindowFlags_HorizontalScrollbar
+				// );
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 				GLuint i = 0;

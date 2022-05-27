@@ -33,12 +33,30 @@ std::map<std::string, Tilemap> TilemapManager::Tilemaps;
 
 GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file)
 {
-    Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, file)));
+    if (Tilemaps.find(name) == Tilemaps.end())
+    {
+        Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, file)));
+    }
+    else
+    {
+        std::stringstream msg;
+        msg << "Tilemap with this name: " << name << " already exist.";
+        MessageManager::AddMessage(msg, message_t::WARNING);
+    }
 }
 
 GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize)
 {
-    Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, data, dataSize)));
+    if (Tilemaps.find(name) == Tilemaps.end())
+    {
+        Tilemaps.insert(std::make_pair(name, Tilemap(name, size, scale, data, dataSize)));
+    }
+    else
+    {
+        std::stringstream msg;
+        msg << "Tilemap with this name: " << name << " already exist.";
+        MessageManager::AddMessage(msg, message_t::WARNING, true);
+    }
 }
 
 Tilemap* TilemapManager::GetTilemap(std::string name)
