@@ -152,6 +152,8 @@ public:
 	 */
 	void DrawTabMessages();
 
+    void DrawPopupMessages();
+
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.

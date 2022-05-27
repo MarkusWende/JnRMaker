@@ -149,6 +149,7 @@ void Gui::Draw(Scene *scene)
 	DrawWindowView(scene);
 	DrawWindowExplorer(scene);
 	DrawWindowSettings(scene);
+	DrawPopupMessages();
 
 	if (show_demo_imgui_)
     {
@@ -759,12 +760,6 @@ void Gui::DrawTabMessages()
 					ImGui::SameLine(0, 2);
 					ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-					//std::string word;
-					//std::stringstream ss(ptrMessages->at(it).msg);
-					//char msgChr[250] = "";
-					char msgSymbol[250] = "default";
-					std::stringstream popupID;
-					popupID << "##" << ptrMessages->at(it).timeinfo.c_str() << ":" << ptrMessages->at(it).msg.c_str();
 					ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
 
 					ImGui::SameLine(0, 5);
@@ -772,31 +767,16 @@ void Gui::DrawTabMessages()
 					{
 						msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
 						ImGui::TextColored(msgSymbolColor, "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
-#if defined(_WIN32)
-						strcpy_s(msgSymbol, ICON_FA_XMARK);
-#else
-						std::strcpy(msgSymbol, ICON_FA_XMARK);
-#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::INFO)
 					{
 						msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
 						ImGui::TextColored(msgSymbolColor, "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
-#if defined(_WIN32)
-						strcpy_s(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
-#else
-						std::strcpy(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
-#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::WARNING)
 					{
 						msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
 						ImGui::TextColored(msgSymbolColor, "[Warning]  %s", ptrMessages->at(it).msg.c_str());
-#if defined(_WIN32)
-						strcpy_s(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
-#else
-						std::strcpy(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
-#endif
 					}
 					else if (ptrMessages->at(it).type == message_t::DEBUG)
 					{
@@ -806,42 +786,6 @@ void Gui::DrawTabMessages()
 					{
 						ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
 					}
-
-					static int numPopups = 0;
-					if (ptrMessages->at(it).popup && !numPopups)
-					{
-						ImGui::OpenPopup(popupID.str().c_str());
-						numPopups++;
-						ptrMessages->at(it).popup = false;
-					}
-
-					// Always center this window when appearing
-					ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-					ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-					
-					
-					if (ImGui::BeginPopupModal(popupID.str().c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
-					{
-						ImGui::PushFont(icons_40_);
-						ImGui::TextColored(msgSymbolColor, "%s", msgSymbol); ImGui::SameLine();
-						ImGui::PopFont();
-						ImVec2 popupPos = ImGui::GetCursorPos();
-						ImGui::SetCursorPos(ImVec2(popupPos.x + 10.0f, popupPos.y + 15.0f));
-						ImGui::Text("%s\n", ptrMessages->at(it).msg.c_str());
-						ImGui::Text("  ");
-						
-						ImGui::Separator();
-						float buttomPos = ImGui::GetCursorPos().x + (ImGui::GetWindowSize().x / 2.0f - 70.0f);
-						ImGui::SetCursorPosX(buttomPos);
-						if (ImGui::Button("OK", ImVec2(120.0f, 0.0f)))
-						{ 
-							numPopups--;
-							ptrMessages->at(it).popup = false;
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::SetItemDefaultFocus();
-						ImGui::EndPopup();
-					}
 				}
 			}
 		}
@@ -850,6 +794,98 @@ void Gui::DrawTabMessages()
 		ImGui::EndChild();
 		ImGui::SetScrollHereY(1.0f);
 		ImGui::EndTabItem();
+	}
+}
+
+void Gui::DrawPopupMessages()
+{
+	std::vector<Message>* ptrMessages;
+	ptrMessages = MessageManager::GetMessages();
+	if (ptrMessages->size() > 0)
+	{
+		ImGuiListClipper clipper((int)ptrMessages->size());
+		while (clipper.Step())
+		{
+			for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+			{
+#ifndef DEVELOPMENT
+				if (ptrMessages->at(it).type == message_t::DEBUG)
+					continue;
+#endif 
+				//std::string word;
+				//std::stringstream ss(ptrMessages->at(it).msg);
+				//char msgChr[250] = "";
+				char msgSymbol[250] = ICON_FA_BUG;
+				std::stringstream popupID;
+				popupID << "##" << ptrMessages->at(it).timeinfo.c_str() << ":" << ptrMessages->at(it).msg.c_str();
+				ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
+
+				ImGui::SameLine(0, 5);
+				if (ptrMessages->at(it).type == message_t::ERROR_T)
+				{
+					msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
+#if defined(_WIN32)
+					strcpy_s(msgSymbol, ICON_FA_XMARK);
+#else
+					std::strcpy(msgSymbol, ICON_FA_XMARK);
+#endif
+				}
+				else if (ptrMessages->at(it).type == message_t::INFO)
+				{
+					msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
+#if defined(_WIN32)
+					strcpy_s(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
+#else
+					std::strcpy(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
+#endif
+				}
+				else if (ptrMessages->at(it).type == message_t::WARNING)
+				{
+					msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
+#if defined(_WIN32)
+					strcpy_s(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
+#else
+					std::strcpy(msgSymbol, ICON_FA_TRIANGLE_EXCLAMATION);
+#endif
+				}
+
+				static int numPopups = 0;
+				if (ptrMessages->at(it).popup && !numPopups)
+				{
+					ImGui::OpenPopup(popupID.str().c_str());
+					numPopups++;
+					ptrMessages->at(it).popup = false;
+				}
+
+				// Always center this window when appearing
+				ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+				ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+				
+				
+				if (ImGui::BeginPopupModal(popupID.str().c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					ImGui::PushFont(icons_40_);
+					ImGui::TextColored(msgSymbolColor, "%s", msgSymbol); ImGui::SameLine();
+					ImGui::PopFont();
+					ImVec2 popupPos = ImGui::GetCursorPos();
+					ImGui::SetCursorPos(ImVec2(popupPos.x + 10.0f, popupPos.y + 15.0f));
+					ImGui::Text("%s\n", ptrMessages->at(it).msg.c_str());
+					ImGui::Text("  ");
+					
+					ImGui::Separator();
+					float buttomPos = ImGui::GetCursorPos().x + (ImGui::GetWindowSize().x / 2.0f - 70.0f);
+					ImGui::SetCursorPosX(buttomPos);
+					if (ImGui::Button("OK", ImVec2(120.0f, 0.0f)))
+					{ 
+						numPopups--;
+						ptrMessages->at(it).popup = false;
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::SetItemDefaultFocus();
+					ImGui::EndPopup();
+				}
+			}
+		}
 	}
 }
 
@@ -863,7 +899,7 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 			static ImGuiTableFlags flags1 = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders | ImGuiTableFlags_ContextMenuInBody;
 			if (ImGui::BeginTable("table_context_menu", 2, flags1))
 			{
-				ImGui::TableSetupColumn("Tilemaps");
+				ImGui::TableSetupColumn("Tilemaps", ImGuiTabBarFlags_None, 0.1f);
 				ImGui::TableSetupColumn("Tiles");
 
 				// [1.1]] Right-click on the TableHeadersRow() line to open the default table context menu.
