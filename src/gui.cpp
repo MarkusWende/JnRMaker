@@ -269,7 +269,9 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
         {
             if (ImGui::MenuItem("Fullscreen"))
             {
+#ifdef __EMSCRIPTEN__
                 viewFullscreen();
+#endif
             }
 
             ImGui::EndMenu();

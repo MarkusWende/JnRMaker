@@ -171,6 +171,27 @@ int main(int, char**)
         const GLubyte* version = glGetString(GL_VERSION);
         const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
+        if (glslVersion == NULL)
+        {
+#ifdef _WIN32
+            FILE* stream;
+            freopen_s(&stream, "log.txt", "w", stdout);
+                if (stream)
+                {
+                    fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
+                    fclose(stream);
+                }
+#endif // _WIN32
+#ifdef __linux__
+            FILE* stream;
+            stream = fopen("./log.txt", "w");
+            fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
+            fclose(stream);
+#endif // __linux__
+            return 1;
+        }
+        
+
         GLint major, minor, depthBufferBits;
         glGetIntegerv(GL_MAJOR_VERSION, &major);
         glGetIntegerv(GL_MINOR_VERSION, &minor);
