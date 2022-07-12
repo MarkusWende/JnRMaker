@@ -724,10 +724,17 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 		ImGuiStyle* style = &ImGui::GetStyle();
 		if (ImGui::BeginTabItem("Tiles"))
 		{
-			static ImGuiTableFlags flags1 = ImGuiTableFlags_Resizable | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable | ImGuiTableFlags_Borders | ImGuiTableFlags_ContextMenuInBody;
+			static ImGuiTableFlags flags1 = 
+				ImGuiTableFlags_Resizable |
+				ImGuiTableFlags_Reorderable |
+				ImGuiTableFlags_Hideable |
+				ImGuiTableFlags_Borders |
+				ImGuiTableFlags_ContextMenuInBody;
+
 			if (ImGui::BeginTable("table_context_menu", 2, flags1))
 			{
-				ImGui::TableSetupColumn("Tilemaps", ImGuiTabBarFlags_None, 0.1f);
+				const float TEXT_BASE_WIDT = ImGui::CalcTextSize("A").x;
+				ImGui::TableSetupColumn("Tilemaps", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDT * 25.0f);
 				ImGui::TableSetupColumn("Tiles");
 
 				// [1.1]] Right-click on the TableHeadersRow() line to open the default table context menu.
