@@ -134,6 +134,7 @@ int main(int, char**)
     SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     g_Window = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
     g_GLContext = SDL_GL_CreateContext(g_Window);
+
     if (!g_GLContext)
     {
         fprintf(stderr, "Failed to initialize WebGL context!\n");
@@ -144,6 +145,7 @@ int main(int, char**)
     // Initialize OpenGL loader
     // glewExperimental = GL_TRUE;
     bool err = glewInit() != GLEW_OK;
+    std::stringstream msg;
 
     //bool err = false;
     if (err)
@@ -197,7 +199,6 @@ int main(int, char**)
         glGetIntegerv(GL_MINOR_VERSION, &minor);
         glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
 
-        std::stringstream msg;
         msg << "Successful initialized OpenGL..." << std::endl;
         msg << "\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
         msg << "\t\t\tGL Renderer:\t\t\t\t" << renderer << std::endl;
@@ -206,37 +207,6 @@ int main(int, char**)
         msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion << std::endl;
         msg << "\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
         MessageManager::AddMessage(msg, message_t::DEBUG);
-
-#ifdef _WIN32
-        FILE* stream;
-        freopen_s(&stream, "log.txt", "w", stdout);
-
-        if (stream)
-        {
-            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", TimeHelper::GetTimeinfo().c_str());
-            fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
-            fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
-            fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
-            fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
-            fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
-            fclose(stream);
-        }
-#endif // _WIN32
-#ifdef __linux__
-        FILE* stream;
-        stream = fopen("./log.txt", "w");
-
-        if (stream)
-        {
-            fprintf(stream, "%s\tSuccessful initialized OpenGL...\n", TimeHelper::GetTimeinfo().c_str());
-            fprintf(stream, "\t\t\t\t\tGL Vendor\t\t: %s\n", vendor);
-            fprintf(stream, "\t\t\t\t\tGL Renderer\t\t: %s\n", renderer);
-            fprintf(stream, "\t\t\t\t\tGL Version (string)\t: %s\n", version);
-            fprintf(stream, "\t\t\t\t\tGL Version (integer)\t: %d.%d\n", major, minor);
-            fprintf(stream, "\t\t\t\t\tGLSL Version\t\t: %s\n", glslVersion);
-            fclose(stream);
-        }
-#endif // __linux__
     }
 
     glEnable(GL_BLEND);
@@ -249,7 +219,6 @@ int main(int, char**)
 
 #ifdef __EMSCRIPTEN_PTHREADS__
     {
-        std::stringstream msg;
         msg << "__EMSCRIPTEN_PTHREADS__ is enabled.";
         MessageManager::AddMessage(msg, message_t::DEBUG);
     }
