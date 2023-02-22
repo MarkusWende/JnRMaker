@@ -17,7 +17,7 @@ include_directories(${MAIN_INCLUDE_DIR})
 # OpenGL
 set(OpenGL_GL_PRFERENCE "LEGACY")
 find_package(OpenGL REQUIRED)
-find_package(GLFW3 REQUIRED)
+find_package(GLFW3 CONFIG REQUIRED)
 find_package(GLEW REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR})
 
@@ -26,7 +26,9 @@ include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_D
 # include_directories(${SOIL_INCLUDE_DIR})
 
 # Cereal
-add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
+set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
+include_directories(${CEREAL_DIR}/include)
+add_subdirectory(${CEREAL_DIR} ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
@@ -63,6 +65,11 @@ include_directories(${STB_DIR})
 # Googletest
 add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
 
+# GLM
+set(GLM_DIR ${THIRD_PARTY_DIR}/glm)
+include_directories(${GLM_DIR})
+add_subdirectory(${GLM_DIR} ${PROJECT_BINARY_DIR}/glm.dir)
+
 # json
 set(JSON_DIR ${THIRD_PARTY_DIR}/json)
 include_directories(${JSON_DIR}/single_include)
@@ -97,9 +104,9 @@ add_library(
 
 add_library(
     imgui
-    ${IMGUI_DIR}/backends/imgui_impl_sdl.h
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
-    ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
     ${IMGUI_DIR}/imgui.h
     ${IMGUI_DIR}/imconfig.h

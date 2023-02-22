@@ -117,9 +117,9 @@ add_library(
 
 add_library(
     imgui
-    ${IMGUI_DIR}/backends/imgui_impl_sdl.h
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
-    ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
     ${IMGUI_DIR}/imgui.h
     ${IMGUI_DIR}/imconfig.h
