@@ -141,6 +141,24 @@ public:
 	void DrawWindowSettings(Scene *scene);
 
     /**
+	 * @brief Draw the message tab.
+	 * @return Bool Void.
+	 */
+	void DrawTabWorld(Scene *scene);
+
+    /**
+	 * @brief Draw the message tab.
+	 * @return Bool Void.
+	 */
+	void DrawTabCamera(Scene *scene);
+
+    /**
+	 * @brief Draw the message tab.
+	 * @return Bool Void.
+	 */
+	void DrawTabSprites();
+
+    /**
 	 * @brief Draw the explorer window.
 	 * @return Bool Void.
 	 */

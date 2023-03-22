@@ -394,29 +394,58 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 										ImGuiWindowFlags_NoMove |
 										ImGuiWindowFlags_NoCollapse);
 
-	if (!scene->IsMapNull())
-	{
-		ImGui::SetCursorPos(ImVec2(15.f, 5.f));
-		glm::vec2 mapSize = glm::vec2((float)scene->GetMapWidth(), (float)scene->GetMapHeight());
-		mapSize = mapSize * scene->GetSpriteSize() * scene->GetSpriteScale();
-		//height = (int)((350.0f / (float)width) * (float)height);
-		ImGui::BeginChild("Minimap", ImVec2(400, 30));
-		ImGui::Text("Minimap");
-		ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
 
-		//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
-		ImGui::SetCursorPos(ImVec2(0.f, 18.f));
-		/*
-		ImGui::Image(tex->getTexture(),
-			sf::Vector2f(350, height),
-			sf::FloatRect(0, (float)scene->GetMapHeight(), (float)scene->GetMapWidth(), -(float)scene->GetMapHeight()),
-			sf::Color(255, 255, 255, 255),
-			sf::Color(0, 255, 0, 255));
-			*/
-		ImGui::EndChild();
+	if (ImGui::BeginTabBar("SettingsTabs", ImGuiTabBarFlags_None))
+	{
+		DrawTabWorld(scene);
+		DrawTabCamera(scene);
+		DrawTabSprites();
+		
+		ImGui::EndTabBar();
 	}
 
-	if (ImGui::CollapsingHeader("Map"))
+
+	// if (!scene->IsMapNull())
+	// {
+	// 	ImGui::SetCursorPos(ImVec2(15.f, 5.f));
+	// 	glm::vec2 mapSize = glm::vec2((float)scene->GetMapWidth(), (float)scene->GetMapHeight());
+	// 	mapSize = mapSize * scene->GetSpriteSize() * scene->GetSpriteScale();
+	// 	//height = (int)((350.0f / (float)width) * (float)height);
+	// 	ImGui::BeginChild("Minimap", ImVec2(400, 30));
+	// 	ImGui::Text("Minimap");
+	// 	ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
+
+	// 	//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
+	// 	ImGui::SetCursorPos(ImVec2(0.f, 18.f));
+	// 	/*
+	// 	ImGui::Image(tex->getTexture(),
+	// 		sf::Vector2f(350, height),
+	// 		sf::FloatRect(0, (float)scene->GetMapHeight(), (float)scene->GetMapWidth(), -(float)scene->GetMapHeight()),
+	// 		sf::Color(255, 255, 255, 255),
+	// 		sf::Color(0, 255, 0, 255));
+	// 		*/
+	// 	ImGui::EndChild();
+	// }
+
+
+	GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
+	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
+
+	if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
+	{
+		window_scene_.wPercent = (GLfloat)(width_ - windowWidth) / (GLfloat)width_;
+		window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
+
+		WindowUpdate(scene);
+	}
+
+	ImGui::End();
+	ImGui::PopStyleVar();
+}
+
+void Gui::DrawTabWorld(Scene *scene)
+{
+	if (ImGui::BeginTabItem("World"))
 	{
 		static int mapSize[2] = { 20, 20};
 		static std::string spriteSizeStr = "16x16";
@@ -442,25 +471,28 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 		ImGui::SliderInt2("width x height", mapSize, 1, 255);
 		ImGui::Separator();
 
-		if (ImGui::Button("Create")) {
+		if (ImGui::Button("New"))
+		{
 			std::string delimiter = "x";
 			size_t pos = 0;
 			std::vector<std::string> tokens;
 			std::string s = spriteSizeStr;
-			while ((pos = s.find(delimiter)) != std::string::npos) {
+			while ((pos = s.find(delimiter)) != std::string::npos)
+			{
 				tokens.push_back(s.substr(0, pos));
 				s.erase(0, pos + delimiter.length());
 			}
 			tokens.push_back(s);
 
-			if (tokens.size() == 2) {
+			if (tokens.size() == 2)
+			{
 				int width = std::stoi(tokens.at(0));
 				int height = std::stoi(tokens.at(1));
 
-				if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height)) {
+				if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height))
 					scene->CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
-				}
 			}
+			ImGui::SetWindowFocus("View");
 		}
 
 		static int selected = 0;
@@ -484,9 +516,13 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 		else if (selected == 2) {
 			scene->SetActiveLayer(layer_t::FORE);
 		}
+		ImGui::EndTabItem();
 	}
+}
 
-	if (ImGui::CollapsingHeader("Camera"))
+void Gui::DrawTabCamera(Scene *scene)
+{
+	if (ImGui::BeginTabItem("Camera"))
 	{
 		ImGui::Text("Pos: (%.2f|%.2f|%.2f)", scene->GetCamera("SceneCamera")->GetPosition().x, scene->GetCamera("SceneCamera")->GetPosition().y, scene->GetCamera("SceneCamera")->GetPosition().z);
 		ImGui::Text("Yaw: %.2f", scene->GetCamera("SceneCamera")->GetYaw());
@@ -507,26 +543,17 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 			scene->GetCamera("SceneCamera")->SetState(CameraState::ORTHOGRAPHIC);
 			// cState = CameraState::ORTHOGRAPHIC;
 		}
+		ImGui::EndTabItem();
 	}
+}
 
-	if (ImGui::CollapsingHeader("Sprites"))
+void Gui::DrawTabSprites()
+{
+	if (ImGui::BeginTabItem("Sprites"))
 	{
 		
+		ImGui::EndTabItem();
 	}
-
-	GLuint windowWidth = (GLuint)ImGui::GetWindowWidth() - 1;
-	GLuint windowHeight = (GLuint)ImGui::GetWindowHeight() - 1;
-
-	if ((windowWidth != window_sidebar_right_.w) || (windowHeight != window_sidebar_right_.h))
-	{
-		window_scene_.wPercent = (GLfloat)(width_ - windowWidth) / (GLfloat)width_;
-		window_scene_.hPercent = (GLfloat)windowHeight / (GLfloat)height_;
-
-		WindowUpdate(scene);
-	}
-
-	ImGui::End();
-	ImGui::PopStyleVar();
 }
 
 void Gui::DrawWindowExplorer(Scene *scene)
