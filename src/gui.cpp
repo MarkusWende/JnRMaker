@@ -578,7 +578,8 @@ void Gui::DrawTabMessages()
 		ptrMessages = MessageManager::GetMessages();
 		if (ptrMessages->size() > 0)
 		{
-			ImGuiListClipper clipper((int)ptrMessages->size());
+			ImGuiListClipper clipper;
+        	clipper.Begin(ptrMessages->size());
 			while (clipper.Step())
 			{
 				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
