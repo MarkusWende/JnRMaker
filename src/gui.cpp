@@ -319,7 +319,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 				ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
 				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
 				ImVec2 mousePos = ImGui::GetMousePos();
-				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
+				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_ && ImGui::IsItemFocused())
 				{
 					if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 					{
@@ -579,7 +579,7 @@ void Gui::DrawTabMessages()
 		if (ptrMessages->size() > 0)
 		{
 			ImGuiListClipper clipper;
-        	clipper.Begin(ptrMessages->size());
+        	clipper.Begin((int)ptrMessages->size());
 			while (clipper.Step())
 			{
 				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
@@ -722,7 +722,7 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 {
 	if (!TilemapManager::IsEmpty())
 	{
-		ImGuiStyle* style = &ImGui::GetStyle();
+		//ImGuiStyle* style = &ImGui::GetStyle();
 		if (ImGui::BeginTabItem("Tiles"))
 		{
 			static ImGuiTableFlags flags1 = 
@@ -744,17 +744,27 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 
+				static int selected = 0;
+				int index = 0;
 				for (auto const& [key, val] : TilemapManager::Tilemaps)
 				{
 					if(key != "")
 					{
 						ImGui::PushID(key.c_str());
-						if (ImGui::Selectable(key.c_str(), key.compare(scene->GetActiveTilemap())))
+						char label[128];
+#ifdef _WIN32
+						sprintf_s(label, "%s", key.c_str());
+#else
+						sprintf(label, "%s", key.c_str());
+#endif
+						if (ImGui::Selectable(label, selected == index))
 						{
 							scene->SetActiveTilemap(key);
+							selected = index;
 						}
 						ImGui::PopID();
 					}
+					index++;
 				}
 
 				ImGui::TableSetColumnIndex(1);
@@ -763,19 +773,11 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
 				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
-				// ImGui::BeginChild("##TileSelector",
-				// 	ImVec2(0,
-				// 		((tilemap->NumRows() > 0) ? tilemap->NumRows() : 1.0f)
-				// 		* tilemap->GetSpriteSize().y
-				// 		* tilemap->GetSpriteScale().y 
-				// 		* tileButtonScale.y + 5.0f + style->ScrollbarSize),
-				// 	true,
-				// 	ImGuiWindowFlags_HorizontalScrollbar
-				// );
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 				GLuint i = 0;
-				ImGuiListClipper clipper(tilemap->NumRows());
+				ImGuiListClipper clipper;
+        		clipper.Begin(tilemap->NumRows());
 
 				while (clipper.Step())
 				{
