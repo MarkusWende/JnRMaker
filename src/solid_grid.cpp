@@ -61,20 +61,22 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	glEnable(GL_LINE_SMOOTH);
 #endif
 	glLineWidth(line_width_);
-	for (size_t i = 0; i <= height_; i++)
+	for (GLfloat i = 0.0f; i <= (GLfloat)height_;)
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
 		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_h_[key.str()]->Draw();
+		i = i + 1.0f;
 	}
 
-	for (size_t i = 0; i <= width_; i++)
+	for (GLfloat i = 0.0f; i <= (GLfloat)width_;)
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
 		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_v_[key.str()]->Draw();
+		i = i + 1.0f;
 	}
 	glLineWidth(1.0f);
 	
@@ -85,21 +87,23 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 
 GLvoid Grid::build()
 {
-	for (size_t i = 0; i <= height_; i++)
+	for (GLfloat i = 0.0f; i <= (GLfloat)height_;)
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
-		axis_h_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3(0.0f, (float)i, 0.0f) * scale_, glm::vec3((float)width_, (float)i, 0.0f) * scale_)));
+		axis_h_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3(0.0f, i, 0.0f) * scale_, glm::vec3((GLfloat)width_, i, 0.0f) * scale_)));
 		axis_h_[key.str()]->SetColor({1.0f, 1.0f, 1.0f});
 		axis_h_[key.str()]->SetAlpha(1.0f);
+		i = i + 1.0f;
 	}
 
-	for (size_t i = 0; i <= width_; i++)
+	for (GLfloat i = 0.0f; i <= (GLfloat)width_;)
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
-		axis_v_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3((float)i, 0.0f, 0.0f) * scale_, glm::vec3((float)i, (float)height_, 0.0f) * scale_)));
+		axis_v_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3(i, 0.0f, 0.0f) * scale_, glm::vec3(i, (GLfloat)height_, 0.0f) * scale_)));
 		axis_v_[key.str()]->SetColor({ 1.0f, 1.0f, 1.0f });
 		axis_v_[key.str()]->SetAlpha(1.0f);
+		i = i + 1.0f;
 	}
 }

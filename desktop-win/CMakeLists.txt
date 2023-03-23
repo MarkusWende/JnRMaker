@@ -80,7 +80,7 @@ file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYP
 
 add_library(
     app
-    ${MAIN_SOURCE_DIR}/entity_level_layer.cpp
+    ${MAIN_SOURCE_DIR}/entity_world_layer.cpp
     ${MAIN_SOURCE_DIR}/entity_solid.cpp
     ${MAIN_SOURCE_DIR}/framebuffer.cpp
     ${MAIN_SOURCE_DIR}/gui.cpp

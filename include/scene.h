@@ -37,7 +37,7 @@
 #include "entity_solid.h"
 #include "entity_object.h"
 #include "entity_player.h"
-#include "entity_level_layer.h"
+#include "entity_world_layer.h"
 #include "message_manager.h"
 #include "tilemap_manager.h"
 #include "project_manager.h"
@@ -72,10 +72,16 @@ public:
 	~Scene();																				//!< destructor
 
 	/**
-	 * @brief Create a new map.
+	 * @brief Create a new level.
 	 * @return GLvoid.
 	 */
-	GLvoid CreateMap(GLuint width, GLuint height, glm::vec2 spriteSize, glm::vec2 spriteScale);
+	GLvoid CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm::vec2 spriteScale);
+
+	/**
+	 * @brief Resize the level.
+	 * @return GLvoid.
+	 */
+	GLvoid ResizeLevel(GLuint width, GLuint height);
 
 	/**
 	 * @brief Update the scene, when the window size changes.
@@ -170,7 +176,7 @@ private:
 	std::map<std::string, std::unique_ptr<Grid>> 					e_grids_;					/**< All grids used in the scene. */
 	std::map<std::string, std::unique_ptr<Object>> 					e_objects_;					/**< All moving and interactable objects used in the scene. */
 	//std::map<std::string, std::vector<std::vector<std::string>>> 	e_level_;					/**< Store the hashes of the drawn sprites in each layer used. */
-	std::map<std::string, std::unique_ptr<LevelLayer>> 				e_level_layers_;			/**< Store the hashes of the drawn sprites in each layer used. */
+	std::map<std::string, std::unique_ptr<WorldLayer>> 				e_level_layers_;			/**< Store the hashes of the drawn sprites in each layer used. */
 	Player											e_player_;
 	GLuint											width_;			/**< Height of the map in pixels. */
 	GLuint											height_;			/**< Height of the map in pixels. */
@@ -179,13 +185,14 @@ private:
 	//std::vector<sf::Vertex> 						grid_;
 	GLboolean										add_sprite_flag_;
 	GLboolean										mouse_over_scene_;
-	GLboolean										mouse_over_map_;
+	GLboolean										mouse_inside_level_;
 	GLboolean										map_is_null_;
 	GLuint											map_width_;					/**< Width of the map. */
 	GLuint											map_height_;				/**< Height of the map. */
 	layer_t											active_layer_;
 	glm::vec2										sprite_size_;
 	glm::vec2										sprite_scale_;
+	GLuint											level_border_size_;
 	//sf::VertexArray									map_bg_vao_;
 	//std::vector<std::vector<GLuint>>				map_bg_;
 	//sf::VertexArray									map_pg_vao_;

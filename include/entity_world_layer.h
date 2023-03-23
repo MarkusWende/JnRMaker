@@ -32,21 +32,14 @@
 #include "scene_entity.h"
 #include "tilemap_manager.h"
 
-struct offset
-{
-    GLfloat x;
-    GLfloat y;
-};
-
-
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */
-class LevelLayer : public SceneEntity
+class WorldLayer : public SceneEntity
 {
 public:
-	LevelLayer();
-	LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize);                            //!< constructor
+	WorldLayer();
+	WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize);                            //!< constructor
 
     GLuint GetHeight() {return height_;};
     GLuint GetWidth() {return width_;};
@@ -56,7 +49,7 @@ public:
 
     std::string GetHash(GLuint posX, GLuint posY) { return hash_map_.at(posY).at(posX); };
 
-    ~LevelLayer();                                               //!< destructor
+    ~WorldLayer();                                               //!< destructor
 
 private:
     GLvoid init();
@@ -70,8 +63,9 @@ private:
     GLuint                                  height_pixels_;
     glm::vec2                               tile_size_;
     glm::vec2                               tile_scale_;
+    GLfloat                                 border_size_;
 
-    std::vector<offset>                  translations_;
+    std::vector<glm::vec2>                  translations_;
     std::vector<GLfloat>                    tile_id_;
     GLuint                                  quad_vao_;
     GLuint                                  quad_vbo_;
@@ -85,7 +79,7 @@ private:
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(LevelLayer, 1)
+CEREAL_CLASS_VERSION(WorldLayer, 1)
 #endif
 
 #endif

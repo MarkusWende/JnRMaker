@@ -93,7 +93,7 @@ include_directories(${JSON_DIR}/single_include)
 
 add_library(
     app
-    ${MAIN_SOURCE_DIR}/entity_level_layer.cpp
+    ${MAIN_SOURCE_DIR}/entity_world_layer.cpp
     ${MAIN_SOURCE_DIR}/entity_solid.cpp
     ${MAIN_SOURCE_DIR}/framebuffer.cpp
     ${MAIN_SOURCE_DIR}/gui.cpp

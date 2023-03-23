@@ -319,7 +319,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 				ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
 				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
 				ImVec2 mousePos = ImGui::GetMousePos();
-				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_ && ImGui::IsItemFocused())
+				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
 				{
 					if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 					{
@@ -490,11 +490,16 @@ void Gui::DrawTabWorld(Scene *scene)
 				int height = std::stoi(tokens.at(1));
 
 				if ((width == 16 || width == 24 || width == 32 || width == 64) && (width == height))
-					scene->CreateMap(mapSize[0], mapSize[1], { width, height }, { 1.0f, 1.0f });
+					scene->CreateLevel((mapSize[0]), (mapSize[1]), { width, height }, { 1.0f, 1.0f });
 			}
-			ImGui::SetWindowFocus("View");
 		}
 
+		ImGui::SameLine();
+		if (ImGui::Button("Resize"))
+		{
+			scene->ResizeLevel(mapSize[0], mapSize[1]);
+		}
+		
 		static int selected = 0;
 		for (int n = 0; n < 3; n++) {
 			char buf[32];

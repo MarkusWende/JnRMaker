@@ -25,25 +25,26 @@
   * https://github.com/MarkusWende
   */
 
-#include "../include/entity_level_layer.h"
+#include "entity_world_layer.h"
 
 
 // PUBLIC:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-LevelLayer::LevelLayer()
+WorldLayer::WorldLayer()
 {
 
 }
 
-LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize)
+WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize)
 {
     name_ = name;
     width_ = width;
     height_ = height;
-    width_pixels_ = width * (GLuint)spriteSize.x;
-    height_pixels_ = height * (GLuint)spriteSize.y;
+    width_pixels_ = width_ * (GLuint)spriteSize.x;
+    height_pixels_ = height_ * (GLuint)spriteSize.y;
     tile_scale_ = { 1.0f, 1.0f };
     tile_size_ = spriteSize;
+    border_size_ = (GLfloat)borderSize;
     //tile_id_max_ = 0.0f;
 
     // std::stringstream keyEmptyFile;
@@ -59,7 +60,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
     hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
 
-    hash_map_.resize(height, std::vector<std::string>(width, ""));
+    hash_map_.resize(height_ + 2*border_size_, std::vector<std::string>(width_ + 2*border_size_, ""));
 
     // std::stringstream msg;
     // // msg << "hash_map_empty_key_: " << hash_map_empty_key_ << std::endl;
@@ -77,7 +78,7 @@ LevelLayer::LevelLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     init();
 }
 
-LevelLayer::~LevelLayer()
+WorldLayer::~WorldLayer()
 {
     glDeleteVertexArrays(1, &quad_vao_);
     glDeleteBuffers(1, &quad_vbo_);
@@ -85,7 +86,7 @@ LevelLayer::~LevelLayer()
     glDeleteBuffers(1, &tile_id_vbo_);
 }
 
-GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
+GLvoid WorldLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {
     auto tiles = TilemapManager::GetTilemap(name_);
     auto tileHashes = tiles->GetHashs();
@@ -112,7 +113,7 @@ GLvoid LevelLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
     
 }
 
-GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
+GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
 {
     ResourceManager::GetShader("llayer").Use();
     ResourceManager::GetShader("llayer").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
@@ -125,7 +126,7 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
     ResourceManager::GetTextureArray(name_).Bind();
     //ResourceManager::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_ * 2 * border_size_);
 
     // std::stringstream msg;
     // msg << "width: " << width_ << "\theight: " << height_;
@@ -135,25 +136,28 @@ GLvoid LevelLayer::Draw(glm::mat4 projection, glm::mat4 view)
 
 // PRIVATE:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-GLvoid LevelLayer::init()
+GLvoid WorldLayer::init()
 {
-    for (size_t y = 0; y < height_; y++)
+    for (GLfloat y = -border_size_; y < (GLfloat)height_ + border_size_;)
     {
-        for (size_t x = 0; x < width_; x++)
+        for (GLfloat x = -border_size_; x < (GLfloat)width_ + border_size_;)
         {
-            offset translation;
-            translation.x = (float)x + 0.5f;
-            translation.y = (float)y + 0.5f;
+            glm::vec2 translation;
+            // -1.0f => To draw the border around the level
+            translation.x = x;
+            translation.y = y;
             //translation.z = 0.0f;
             //translation.w = 0.0f;
             translations_.push_back(translation);
             tile_id_.push_back(0.0f);
+            x = x + 1.0f;
         }
+        y = y + 1.0f;
     }
 
     glGenBuffers(1, &tile_trans_vbo_);
     glBindBuffer(GL_ARRAY_BUFFER, tile_trans_vbo_);
-    glBufferData(GL_ARRAY_BUFFER, translations_.size() * sizeof(offset), translations_.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, translations_.size() * sizeof(glm::vec2), translations_.data(), GL_STATIC_DRAW);
     
 
     glGenBuffers(1, &tile_id_vbo_);
@@ -163,13 +167,13 @@ GLvoid LevelLayer::init()
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
        // positions   // texCoords
-       -0.5f,  0.5f,  0.0f, 0.0f,
-       -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  1.0f, 1.0f,
+        0.0f,  1.0f,  0.0f, 0.0f,
+        0.0f,  0.0f,  0.0f, 1.0f,
+        1.0f,  0.0f,  1.0f, 1.0f,
 
-       -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  1.0f, 0.0f
+        0.0f,  1.0f,  0.0f, 0.0f,
+        1.0f,  0.0f,  1.0f, 1.0f,
+        1.0f,  1.0f,  1.0f, 0.0f
     };
 
     glGenVertexArrays(1, &quad_vao_);
@@ -197,31 +201,34 @@ GLvoid LevelLayer::init()
     draw_border();
 }
 
-GLvoid LevelLayer::draw_border()
+GLvoid WorldLayer::draw_border()
 {
     //ResourceManager::
     //tile_size_
     // std::stringstream key = "border";
     // draw left and right border
-    for (size_t i = 0; i < height_; i++)
+    for (size_t b = 0; b < (size_t)border_size_; b++)
     {
-        hash_map_.at(i).at(0) = hash_map_border_key_;
-        hash_map_.at(i).at(width_ - 1) = hash_map_border_key_;
-    }
-    // draw upper and lower border
-    for (size_t i = 1; i < width_ - 1; i++)
-    {
-        hash_map_.at(0).at(i) = hash_map_border_key_;
-        hash_map_.at(height_ - 1).at(i) = hash_map_border_key_;
+        for (size_t i = b; i < height_ + 2*(size_t)border_size_ - b; i++)
+        {
+            hash_map_.at(i).at(b) = hash_map_border_key_;
+            hash_map_.at(i).at(width_ + 2*(size_t)border_size_ - b - 1) = hash_map_border_key_;
+        }
+        // draw upper and lower border
+        for (size_t i = b; i < width_ + 2*(size_t)border_size_ - b; i++)
+        {
+            hash_map_.at(b).at(i) = hash_map_border_key_;
+            hash_map_.at(height_ + 2*(size_t)border_size_ - b - 1).at(i) = hash_map_border_key_;
+        }
     }
 
     tile_id_.clear();
     // std::string emptyHash = "empty";
 
     //GLuint counter = 0;
-    for (size_t i = 0; i < height_; i++)
+    for (size_t i = 0; i < height_ + 2*(size_t)border_size_; i++)
     {
-        for (size_t j = 0; j < width_; j++)
+        for (size_t j = 0; j < width_ + 2*(size_t)border_size_; j++)
         {
             if (hash_map_.at(i).at(j).compare("") != 0)
             {
