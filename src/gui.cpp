@@ -347,11 +347,13 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 			ImGui::BeginChildFrame(2, ImVec2((float)window_scene_.w, (float)window_scene_.h - 50.0f));
 			{
 				ImGui::Separator();
-
+				double cummSize = 0.0;
 				for (const auto& [key, value] : ResourceManager::GetTextureMap())
 				{
 					GLuint64 texID = (GLuint64)value.ID;
-					ImGui::Text("key: %s\tid: %llu", key.c_str(), texID);
+					double size = (double)(value.Width * value.Height * 4) / 1024.0;
+					cummSize += size;
+					ImGui::Text("key: %s\tid: %llu\tsize: %0.2fkB", key.c_str(), texID, size);
 					ImGui::Image((ImTextureID)texID,
 						ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
 						ImVec2(0,0),
@@ -359,6 +361,9 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 						ImColor(255, 255, 255, 255),
 						ImColor(0, 255, 0, 255));
 				}
+				
+				ImGui::Separator();
+				ImGui::Text("size: %0.2fkB", cummSize);
 			}
 			ImGui::EndChildFrame();
 			ImGui::PopStyleColor();

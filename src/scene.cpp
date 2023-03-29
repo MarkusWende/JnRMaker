@@ -41,7 +41,7 @@ Scene::Scene(GLuint width, GLuint height)
     map_width_ = 0;
     sprite_size_ = glm::vec2(0);
     sprite_scale_ = glm::vec2(0);
-    level_border_size_ = 10;
+    level_border_size_ = 2;
     current_tile_id_ = 0;
     active_layer_ = layer_t::BACK;
 

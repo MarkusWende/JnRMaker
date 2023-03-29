@@ -60,13 +60,18 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
     hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
 
-    hash_map_.resize(height_ + 2*border_size_, std::vector<std::string>(width_ + 2*border_size_, ""));
+    hash_map_.resize((size_t)height_ + 2 * (size_t)border_size_, std::vector<std::string>((size_t)width_ + 2 * (size_t)border_size_, ""));
 
     // std::stringstream msg;
     // // msg << "hash_map_empty_key_: " << hash_map_empty_key_ << std::endl;
     // msg << "hash_map_border_key_: " << hash_map_border_key_;
     // MessageManager::AddMessage(msg, message_t::INFO);
+    
 
+    //TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, emptyTile, 1024);
+    //auto tiles = TilemapManager::GetTilemap(name_);
+    //ResourceManager::CreateTexture(emptyTile.data(), sizeof(emptyTile.data()), "border");
+    //tiles->AddTile("border", ResourceManager::GetTexture("border").ID);
     TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
     // ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
     // GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
