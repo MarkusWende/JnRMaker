@@ -353,7 +353,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 					GLuint64 texID = (GLuint64)value.ID;
 					double size = (double)(value.Width * value.Height * 4) / 1024.0;
 					cummSize += size;
-					
+
 					ImGui::Text("key: %s\tid: %llu\tsize: %0.2fkB", key.c_str(), texID, size);
 					ImGui::Image((ImTextureID)texID,
 						ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
@@ -807,7 +807,7 @@ void Gui::DrawTabTileExplorer(Scene *scene)
 
 				ImGui::TableSetColumnIndex(1);
 				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-				Tilemap* tilemap = TilemapManager::GetTilemap(scene->GetActiveTilemap());
+				Tilemap* tilemap = TilemapManager::Get(scene->GetActiveTilemap());
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
 				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
@@ -1242,7 +1242,7 @@ GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension
 				//tilemap_list_.push_back(str);
 				//ResourceManager::LoadTexture(str.c_str(), GL_TRUE, str);
 				// TODO: find or ask for sprite size and scale
-				TilemapManager::AddTilemap(str, { 16, 16 }, { 1.0f, 1.0f }, str);
+				TilemapManager::Add(str, { 16, 16 }, { 1.0f, 1.0f }, str);
 				scene->SetActiveTilemap(str);
 				file_browser_add_tiles_ = false;
 				ImGui::CloseCurrentPopup();

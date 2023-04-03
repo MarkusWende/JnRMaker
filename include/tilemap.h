@@ -98,6 +98,8 @@ public:
 
     std::vector<std::string> GetHashs();
 
+    GLvoid Delete();
+
 private:
   /**
 	 * @brief Load a Tilemap.

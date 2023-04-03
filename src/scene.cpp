@@ -68,7 +68,7 @@ Scene::Scene(GLuint width, GLuint height)
     //ResourceManager::LoadShader("src/shaders/tile.vert", "src/shaders/tile.frag", nullptr, "tile");
 #endif
     // Testing
-    TilemapManager::AddTilemap("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
+    TilemapManager::Add("data/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "data/assets/tiles/game-tiles_cut.png");
 
 
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
@@ -158,7 +158,7 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
     // Create default brush
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, (GLuint)spriteSize.x, (GLuint)spriteSize.y)));
-    std::string keyEmptyHash = ResourceManager::getNameHash("Tiles", "r0c1");
+    std::string keyEmptyHash = ResourceManager::GetNameHash("Tiles", "r0c1");
     e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(keyEmptyHash.c_str()).ID);
     active_sprite_name_ = keyEmptyHash.c_str();
 

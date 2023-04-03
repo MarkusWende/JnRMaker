@@ -61,7 +61,7 @@ public:
 	 * @param scale The global scale of aall the sprite along the x and y axis.
    * @return GLvoid.
 	 */
-  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale);
+  static GLvoid Add(std::string name, glm::vec2 size, glm::vec2 scale);
 
   /**
     * @brief Add a new tilemap to the map of tilemaps.
@@ -72,19 +72,20 @@ public:
     * @param file Path to the tileset file.
     * @return GLvoid.
     */
-  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file);
+  static GLvoid Add(std::string name, glm::vec2 size, glm::vec2 scale, std::string file);
 
-  static GLvoid AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize);
+  static GLvoid Add(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize);
 
   /**
 	 * @brief Get a tilemap by name.
 	 * @param name The name of the tilemap.
 	 * @return A pointer to the tilemap.
 	 */
-  static Tilemap* GetTilemap(std::string name);
+  static Tilemap* Get(std::string name);
 
   static GLboolean IsEmpty() { return Tilemaps.empty(); }
   static GLuint GetSize() { return (GLuint)Tilemaps.size(); }
+  static GLvoid Delete(std::string name);
 
 private:
   // Private constructor, that is we do not want any actual tilemap manager objects. Its members and functions should be publicly available (static).

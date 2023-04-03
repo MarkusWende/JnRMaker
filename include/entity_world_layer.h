@@ -40,6 +40,7 @@ class WorldLayer : public SceneEntity
 public:
 	WorldLayer();
 	WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize);                            //!< constructor
+    ~WorldLayer();                                               //!< destructor
 
     GLuint GetHeight() {return height_;};
     GLuint GetWidth() {return width_;};
@@ -49,7 +50,7 @@ public:
 
     std::string GetHash(GLuint posX, GLuint posY) { return hash_map_.at(posY).at(posX); };
 
-    ~WorldLayer();                                               //!< destructor
+    GLvoid Delete();
 
 private:
     GLvoid init();

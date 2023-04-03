@@ -162,7 +162,9 @@ public:
    */
   static Framebuffer GetFramebuffer(std::string name);
 
-  static std::string getNameHash(std::string tilesetName, std::string tileName);
+  static std::string GetNameHash(std::string tilesetName, std::string tileName);
+
+  static GLvoid DeleteTextureArray(std::string name);
 
 private:
   // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).

@@ -93,7 +93,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
                 
                 std::stringstream key;
                 key << "r" << i << "c" << j;
-                std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+                std::string hashKey = ResourceManager::GetNameHash(name_, key.str());
                 tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
                 // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
                 // tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
@@ -159,7 +159,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
                 
                 std::stringstream key;
                 key << "r" << i << "c" << j;
-                std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+                std::string hashKey = ResourceManager::GetNameHash(name_, key.str());
                 tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
                 // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
                 // tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
@@ -398,6 +398,11 @@ std::vector<std::string> Tilemap::GetHashs()
         hashes.push_back(hash);
     }
     return hashes;
+}
+
+GLvoid Tilemap::Delete()
+{
+    ResourceManager::DeleteTextureArray(name_);
 }
 
 // GLvoid Tilemap::loadTilemapFromTexture()

@@ -58,7 +58,7 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     std::stringstream keyBorderPath;
     keyBorderPath << "data/assets/tiles/" << keyBorderFile.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
-    hash_map_border_key_ = ResourceManager::getNameHash(name, "r0c1");
+    hash_map_border_key_ = ResourceManager::GetNameHash(name, "r0c1");
 
     hash_map_.resize((size_t)height_ + 2 * (size_t)border_size_, std::vector<std::string>((size_t)width_ + 2 * (size_t)border_size_, ""));
 
@@ -72,7 +72,7 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     //auto tiles = TilemapManager::GetTilemap(name_);
     //ResourceManager::CreateTexture(emptyTile.data(), sizeof(emptyTile.data()), "border");
     //tiles->AddTile("border", ResourceManager::GetTexture("border").ID);
-    TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
+    TilemapManager::Add(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
     // ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
     // GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
     // TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
@@ -89,11 +89,12 @@ WorldLayer::~WorldLayer()
     glDeleteBuffers(1, &quad_vbo_);
     glDeleteBuffers(1, &tile_trans_vbo_);
     glDeleteBuffers(1, &tile_id_vbo_);
+    Delete();
 }
 
 GLvoid WorldLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {
-    auto tiles = TilemapManager::GetTilemap(name_);
+    auto tiles = TilemapManager::Get(name_);
     auto tileHashes = tiles->GetHashs();
     //if (!tiles->HashExists(key))
     {
@@ -136,6 +137,17 @@ GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
     // std::stringstream msg;
     // msg << "width: " << width_ << "\theight: " << height_;
     // MessageManager::AddMessage(msg, message_t::INFO);
+}
+
+GLvoid WorldLayer::Delete()
+{
+    ResourceManager::GetTextureArray(name_).Delete();
+    ResourceManager::GetTexture(name_).Delete();
+    TilemapManager::Delete(name_);
+    glDeleteVertexArrays(1, &quad_vao_);
+    glDeleteBuffers(1, &quad_vbo_);
+    glDeleteBuffers(1, &tile_trans_vbo_);
+    glDeleteBuffers(1, &tile_id_vbo_);
 }
 
 

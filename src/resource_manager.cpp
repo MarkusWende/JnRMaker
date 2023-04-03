@@ -174,13 +174,18 @@ Framebuffer ResourceManager::ResizeFramebuffer(std::string name, GLuint width, G
     return Framebuffers[name];
 }
 
-std::string ResourceManager::getNameHash(std::string tilesetName, std::string tileName)
+std::string ResourceManager::GetNameHash(std::string tilesetName, std::string tileName)
 {
     std::stringstream hash;
     std::hash<std::string> hash_fn;
     size_t str_hash = hash_fn(tilesetName);
     hash << str_hash << ":" << tileName;
     return hash.str();
+}
+
+GLvoid ResourceManager::DeleteTextureArray(std::string name)
+{
+    TextureArrays[name].Delete();
 }
 
 // PRIVATE:
@@ -327,7 +332,7 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char *data, GL
 
             std::stringstream tileName;
             tileName << "r" << iy << "c" << ix;
-            std::string hashKey = getNameHash(name, tileName.str());
+            std::string hashKey = GetNameHash(name, tileName.str());
             CreateTexture(tile.data(), spriteSizeX, spriteSizeY, alpha, hashKey);
         }
     }

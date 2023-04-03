@@ -31,7 +31,7 @@
 
 std::map<std::string, Tilemap> TilemapManager::Tilemaps;
 
-GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, std::string file)
+GLvoid TilemapManager::Add(std::string name, glm::vec2 size, glm::vec2 scale, std::string file)
 {
     if (Tilemaps.find(name) == Tilemaps.end())
     {
@@ -45,7 +45,7 @@ GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 sc
     }
 }
 
-GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize)
+GLvoid TilemapManager::Add(std::string name, glm::vec2 size, glm::vec2 scale, const unsigned char *data, int dataSize)
 {
     if (Tilemaps.find(name) == Tilemaps.end())
     {
@@ -59,7 +59,12 @@ GLvoid TilemapManager::AddTilemap(std::string name, glm::vec2 size, glm::vec2 sc
     }
 }
 
-Tilemap* TilemapManager::GetTilemap(std::string name)
+Tilemap* TilemapManager::Get(std::string name)
 {
 	return &Tilemaps[name];
+}
+
+GLvoid TilemapManager::Delete(std::string name)
+{
+	Tilemaps.erase(name);
 }

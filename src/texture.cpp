@@ -37,6 +37,12 @@ void Texture2D::Bind() const
 	glBindTexture(GL_TEXTURE_2D, this->ID);
 }
 
+void Texture2D::Delete()
+{
+	if (this->ID != 0)
+		glDeleteTextures(1, &this->ID);
+}
+
 
 // Class TextureCM
 TextureCM::TextureCM()
@@ -235,4 +241,10 @@ void TextureArray::Bind() const
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D_ARRAY, this->ID);
+}
+
+void TextureArray::Delete()
+{
+	if (this->ID != 0)
+		glDeleteTextures(1, &this->ID);
 }

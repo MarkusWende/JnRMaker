@@ -65,6 +65,8 @@ public:
 	void Generate(GLuint width, GLuint height, unsigned char* data);
 	// Binds the texture as the current active GL_TEXTURE_2D texture object
 	void Bind() const;
+
+	void Delete();
 };
 
 // TextureCM is able to store and configure a cube map texture in OpenGL.
