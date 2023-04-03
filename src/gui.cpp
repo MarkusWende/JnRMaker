@@ -353,6 +353,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 					GLuint64 texID = (GLuint64)value.ID;
 					double size = (double)(value.Width * value.Height * 4) / 1024.0;
 					cummSize += size;
+					
 					ImGui::Text("key: %s\tid: %llu\tsize: %0.2fkB", key.c_str(), texID, size);
 					ImGui::Image((ImTextureID)texID,
 						ImVec2((float)value.Width * 2.0f, (float)value.Height * 2.0f),
