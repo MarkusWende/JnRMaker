@@ -54,7 +54,7 @@ void openTilemapFile(std::string const& name, std::string const& type, emscripte
         msg << "emscripten::vecFromJSArray" << TimeHelper::toc(1);
         MessageManager::AddMessage(msg, message_t::DEBUG);
         TimeHelper::tic();
-		TilemapManager::AddTilemap(name, { 16.0f, 16.0f }, { 1.0f, 1.0f }, uchrs, dataSize);
+		TilemapManager::Add(name, { 16.0f, 16.0f }, { 1.0f, 1.0f }, uchrs, dataSize);
         msg << "ResourceManager::CreateTexture(): " << TimeHelper::toc(1);
         MessageManager::AddMessage(msg, message_t::DEBUG);
     }

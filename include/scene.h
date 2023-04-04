@@ -154,8 +154,8 @@ private:
 		GLuint width, height;
 		ar(width, height);
 
-		glm::vec2 sprSize = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteSize();
-		glm::vec2 sprScale = TilemapManager::GetTilemap(active_tilemap_name_)->GetSpriteScale();
+		glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
+		glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
 		CreateMap(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
 
 		ar(width, height);

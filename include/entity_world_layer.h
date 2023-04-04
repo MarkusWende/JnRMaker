@@ -32,6 +32,7 @@
 #include "scene_entity.h"
 #include "tilemap_manager.h"
 
+
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */

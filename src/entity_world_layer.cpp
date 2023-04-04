@@ -132,7 +132,7 @@ GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
     ResourceManager::GetTextureArray(name_).Bind();
     //ResourceManager::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, width_ * height_ * 2 * border_size_);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (width_ + 2 * border_size_) * (height_+   2 * border_size_));
 
     // std::stringstream msg;
     // msg << "width: " << width_ << "\theight: " << height_;
