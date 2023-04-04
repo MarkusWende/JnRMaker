@@ -645,11 +645,13 @@ GLvoid Scene::RemoveTile()
             /* std::stringstream msg;
             msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO); */
+            std::string currentActiveSprite = active_sprite_name_;
             std::string keyEmptyHash = ResourceManager::GetNameHash("Tiles", "r0c0");
             e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(keyEmptyHash.c_str()).ID);
             active_sprite_name_ = keyEmptyHash.c_str();
             e_level_layers_["Tiles"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTextureID());
-
+            e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(currentActiveSprite.c_str()).ID);
+            active_sprite_name_ = currentActiveSprite.c_str();
             //TilemapManager::GetTilemap("Testing")->AddTile(active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
         }
     }
