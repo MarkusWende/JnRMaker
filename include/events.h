@@ -77,27 +77,28 @@ void processEvents(Scene* scene, Gui* gui)
         {
             if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene->PlaceSprite();
+                    scene->PlaceTile();
                 }
         }
 
         // Mouse clicks, single
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 	    {
-            if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 1)
+            if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 2)
             {
                 if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
-                    scene->PlaceSprite();
-                }
-            }
-            else if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 2)
-            {
-                if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
-                {
+                    scene->RemoveTile();
                     std::stringstream msg;
                     msg << "Deleted...";
                     MessageManager::AddMessage(msg, message_t::INFO);
+                }
+            }
+            else if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 1)
+            {
+                if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
+                {
+                    scene->PlaceTile();
                 }
             }
 	    }

@@ -104,7 +104,8 @@ public:
 	GLvoid SetActiveLayer(layer_t layer) { active_layer_ = layer; };
 	GLvoid SetMousePosition(glm::vec2 pos) { mouse_position_ = pos; };
 
-	GLvoid PlaceSprite();
+	GLvoid PlaceTile();
+	GLvoid RemoveTile();
 
 	GLboolean IsMouseOverScene() { return mouse_over_scene_; };
 	GLboolean IsMapNull() { return map_is_null_; };
