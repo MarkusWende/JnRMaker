@@ -325,9 +325,9 @@ static void main_loop(void* arg)
             ar ( cereal::make_nvp("a_very_small_value_", c) );
         }
 
-        MessageManager::AddMessage(msg, message_t::INFO);
         ProjectManager::AddSaveFile(msg);
         ProjectManager::Save();
+        MessageManager::AddMessage(msg, message_t::INFO);
         ProjectManager::SetStatus(project_status_t::IDLE);
     }
     else if (ProjectManager::GetStatus() == project_status_t::LOAD)
