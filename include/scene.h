@@ -128,7 +128,7 @@ private:
 	template <class Archive>
 	void save(Archive& ar, std::uint32_t const version) const
 	{
-		ar(CEREAL_NVP(e_solids_));
+		//ar(CEREAL_NVP(e_solids_));
 		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
 
 		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
@@ -147,14 +147,14 @@ private:
 	template <class Archive>
 	void load(Archive& ar, std::uint32_t const version)
 	{
-		ar(e_solids_);
+		//ar(e_solids_);
 
 		GLuint width, height;
 		ar(width, height);
 
-		glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
-		glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
-		CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
+		//glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
+		//glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
+		//CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
 
 		//ar(width, height);
 		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];

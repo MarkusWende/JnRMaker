@@ -85,10 +85,6 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
 
 WorldLayer::~WorldLayer()
 {
-    glDeleteVertexArrays(1, &quad_vao_);
-    glDeleteBuffers(1, &quad_vbo_);
-    glDeleteBuffers(1, &tile_trans_vbo_);
-    glDeleteBuffers(1, &tile_id_vbo_);
     Delete();
 }
 
