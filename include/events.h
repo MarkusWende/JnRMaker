@@ -36,7 +36,7 @@
 /**
  * @brief A function that is called every main loop, to handle keyboard input.
  */
-void processEvents(Scene* scene, Gui* gui)
+void processEvents(std::shared_ptr<Scene> scene, std::shared_ptr<Gui> gui)
 {
     if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Escape)))
 	{

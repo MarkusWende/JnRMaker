@@ -47,7 +47,7 @@ Gui::~Gui()
 
 }
 
-GLvoid Gui::WindowUpdate(Scene *scene, GLuint width, GLuint height)
+GLvoid Gui::WindowUpdate(std::shared_ptr<Scene> scene, GLuint width, GLuint height)
 {
 	if (glm::abs(width_ - width) > 2 || glm::abs(height_ - height) > 2)
 	{
@@ -58,7 +58,7 @@ GLvoid Gui::WindowUpdate(Scene *scene, GLuint width, GLuint height)
 	}
 }
 
-GLvoid Gui::WindowUpdate(Scene *scene)
+GLvoid Gui::WindowUpdate(std::shared_ptr<Scene> scene)
 {
 	window_scene_.w = (GLuint)(width_ * (glm::round(window_scene_.wPercent * 100.0f) / 100.0f));
 	window_scene_.h = (GLuint)(height_ * (glm::round(window_scene_.hPercent * 100.0f) / 100.0f));
@@ -74,7 +74,7 @@ GLvoid Gui::WindowUpdate(Scene *scene)
 	scene->GetCamera("SceneCamera")->SetSceneHeight(window_scene_.hPercent);
 }
 
-void Gui::Draw(Scene *scene)
+void Gui::Draw(std::shared_ptr<Scene> scene)
 {
 	if (file_browser_add_tiles_)
 	{
@@ -108,7 +108,7 @@ void Gui::Draw(Scene *scene)
 	}
 }
 
-GLvoid Gui::DrawMenuMain(Scene *scene)
+GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 {
 	(void)scene->IsMapNull();
 	if (ImGui::BeginMainMenuBar())
@@ -225,7 +225,7 @@ GLvoid Gui::DrawMenuMain(Scene *scene)
 	}
 }
 
-GLvoid Gui::DrawWindowView(Scene *scene)
+GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 {
 	ImGuiStyle* style = &ImGui::GetStyle();
 	ImGui::SetNextWindowSize(ImVec2(window_scene_.w + style->WindowBorderSize, window_scene_.h + style->WindowBorderSize));
@@ -330,7 +330,7 @@ GLvoid Gui::DrawWindowView(Scene *scene)
 	ImGui::PopStyleVar();
 }
 
-GLvoid Gui::DrawWindowSettings(Scene *scene)
+GLvoid Gui::DrawWindowSettings(std::shared_ptr<Scene> scene)
 {
 	ImGuiStyle* style = &ImGui::GetStyle();
 	ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
@@ -389,7 +389,7 @@ GLvoid Gui::DrawWindowSettings(Scene *scene)
 	ImGui::PopStyleVar();
 }
 
-void Gui::DrawTabWorld(Scene *scene)
+void Gui::DrawTabWorld(std::shared_ptr<Scene> scene)
 {
 	if (ImGui::BeginTabItem("World"))
 	{
@@ -471,7 +471,7 @@ void Gui::DrawTabWorld(Scene *scene)
 	}
 }
 
-void Gui::DrawTabCamera(Scene *scene)
+void Gui::DrawTabCamera(std::shared_ptr<Scene> scene)
 {
 	if (ImGui::BeginTabItem("Camera"))
 	{
@@ -507,7 +507,7 @@ void Gui::DrawTabSprites()
 	}
 }
 
-void Gui::DrawWindowExplorer(Scene *scene)
+void Gui::DrawWindowExplorer(std::shared_ptr<Scene> scene)
 {
 	ImGui::SetNextWindowSize(ImVec2((float)window_messages_.w, (float)window_messages_.h));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)window_scene_.h + (float)main_menubar_height_));
@@ -696,7 +696,7 @@ void Gui::DrawPopupMessages()
 	}
 }
 
-void Gui::DrawTabTileExplorer(Scene *scene)
+void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 {
 	if (!TilemapManager::IsEmpty())
 	{
@@ -1071,7 +1071,7 @@ GLvoid Gui::listDirectoryContent()
 {
 }
 #else
-GLvoid Gui::fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
+GLvoid Gui::fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
 {
 	//prepare for file browser popup
 	ImGui::SetNextWindowSize(ImVec2(800, 580));

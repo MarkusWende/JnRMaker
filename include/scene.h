@@ -156,7 +156,7 @@ private:
 		glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
 		CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
 
-		ar(width, height);
+		//ar(width, height);
 		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
 		//ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
 		//ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");

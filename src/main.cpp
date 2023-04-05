@@ -40,10 +40,10 @@ SDL_Window*     g_Window = NULL;
 SDL_GLContext   g_GLContext = NULL;
 
 // Gui
-//std::shared_ptr<Gui> appGui;
-//std::shared_ptr<Scene> appScene;
-Gui* appGui;
-Scene* appScene;
+std::shared_ptr<Gui> appGui;
+std::shared_ptr<Scene> appScene;
+//Gui* appGui;
+//Scene* appScene;
 
 // For clarity, our main loop code is declared at the end.
 static void main_loop(void*);
@@ -250,10 +250,11 @@ int main(int, char**)
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // Gui
-    appGui = new Gui();
+    //appGui = new Gui();
+    appGui = std::make_shared<Gui>();
 
     // Scene
-    appScene = new Scene(1280, 720);
+    appScene = std::make_shared<Scene>(1280, 720);
 
 #ifdef __EMSCRIPTEN__
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
@@ -313,17 +314,15 @@ static void main_loop(void* arg)
     //     std::ofstream ofs(ProjectManager::GetName() + ".jrm");
 
     //     // save data to archive
-        {
-            // cereal::XMLOutputArchive ar(msg, cereal::XMLOutputArchive::Options(6, true, false));
-            cereal::JSONOutputArchive ar(msg);
-    //         //cereal::BinaryOutputArchive ar(ofs);
-    //         ar( CEREAL_NVP(appGui) );
-    //         ar( CEREAL_NVP(appScene) );
-    //         //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
+        // cereal::XMLOutputArchive ar(msg, cereal::XMLOutputArchive::Options(6, true, false));
+        cereal::JSONOutputArchive ar(msg);
+//         //cereal::BinaryOutputArchive ar(ofs);
+        ar( CEREAL_NVP(appGui) );
+        ar( CEREAL_NVP(appScene) );
+//         //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
 
-            long double c = pow(0.5, 1000);
-            ar ( cereal::make_nvp("a_very_small_value_", c) );
-        }
+        // long double c = pow(0.5, 1000);
+        // ar ( cereal::make_nvp("a_very_small_value_", c) );
 
         ProjectManager::AddSaveFile(msg);
         ProjectManager::Save();

@@ -64,16 +64,13 @@ namespace fs = std::experimental::filesystem;
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
-struct GuiWindow {
-#ifdef __EMSCRIPTEN__
-
-#else
+struct GuiWindow
+{
     template <class Archive>
     void save( Archive & ar, std::uint32_t const version )
     {
         ar( CEREAL_NVP(wPercent), CEREAL_NVP(hPercent) );
     }
-#endif
 
     GLuint w;                     /**< Width in pixel of the gui window. */
     GLuint h;                     /**< Height in pixel of the gui window. */
@@ -106,43 +103,43 @@ public:
      * @param window Render window.
 	 * @return GLvoid.
 	 */
-    GLvoid WindowUpdate(Scene *scene, GLuint width, GLuint height);
-    GLvoid WindowUpdate(Scene *scene);
+    GLvoid WindowUpdate(std::shared_ptr<Scene> scene, GLuint width, GLuint height);
+    GLvoid WindowUpdate(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw gui windows.
 	 * @return Bool Void.
 	 */
-	void Draw(Scene *scene);
+	void Draw(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw gui windows.
 	 * @return Bool Void.
 	 */
-	void DrawMenuMain(Scene *scene);
+	void DrawMenuMain(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw gui windows.
 	 * @return Bool Void.
 	 */
-	void DrawWindowView(Scene *scene);
+	void DrawWindowView(std::shared_ptr<Scene> scene);
     /**
 	 * @brief Draw gui windows.
 	 * @return Bool Void.
 	 */
-	void DrawWindowSettings(Scene *scene);
+	void DrawWindowSettings(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.
 	 */
-	void DrawTabWorld(Scene *scene);
+	void DrawTabWorld(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.
 	 */
-	void DrawTabCamera(Scene *scene);
+	void DrawTabCamera(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw the message tab.
@@ -154,7 +151,7 @@ public:
 	 * @brief Draw the explorer window.
 	 * @return Bool Void.
 	 */
-	void DrawWindowExplorer(Scene *scene);
+	void DrawWindowExplorer(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Draw the message tab.
@@ -168,7 +165,7 @@ public:
 	 * @brief Draw the message tab.
 	 * @return Bool Void.
 	 */
-	void DrawTabTileExplorer(Scene *scene);
+	void DrawTabTileExplorer(std::shared_ptr<Scene> scene);
 
     /**
 	 * @brief Show a backend information window.
@@ -184,28 +181,28 @@ public:
 #endif
 
 private:
-    /* friend class cereal::access;
+    friend class cereal::access;
     template <class Archive>
     void save(Archive& ar, std::uint32_t const version) const
     {
-        ar( CEREAL_NVP(window_scene_) );
-        ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
-        ar( CEREAL_NVP(tilemap_list_) );
+        ar( CEREAL_NVP(width_), CEREAL_NVP(height_) );
+        //ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
+        //ar( CEREAL_NVP(tilemap_list_) );
     }
 
     template <class Archive>
     void load(Archive& ar, std::uint32_t const version)
     {
-        ar(window_scene_);
-        WindowUpdate();
-        ar(active_tilemap_name_, active_sprite_name_);
-        ar(tilemap_list_);
-        for (auto const& tilemapItem : tilemap_list_)
-        {
-            ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
-            TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
-        }
-    } */
+        //ar(width_, height_);
+        //WindowUpdate();
+        //ar(active_tilemap_name_, active_sprite_name_);
+        //ar(tilemap_list_);
+        // for (auto const& tilemapItem : tilemap_list_)
+        // {
+        //     ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
+        //     TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
+        // }
+    }
 
     GLuint                      width_;                     /**< Width of the application window. */
     GLuint                      height_;                    /**< Height of the application window. */
@@ -248,7 +245,7 @@ private:
     GLvoid fileBrowserAddTile();
     GLvoid listDirectoryContent();
 #else
-    GLvoid fileBrowserAddTile(Scene* scene, fs::path& path, GLboolean extension_only, fs::path extension);
+    GLvoid fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 #endif
     
