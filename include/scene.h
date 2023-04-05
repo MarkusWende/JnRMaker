@@ -124,9 +124,6 @@ public:
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
-#ifdef __EMSCRIPTEN__
-
-#else
 	friend class cereal::access;
 	template <class Archive>
 	void save(Archive& ar, std::uint32_t const version) const
@@ -157,7 +154,7 @@ private:
 
 		glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
 		glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
-		CreateMap(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
+		CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
 
 		ar(width, height);
 		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
@@ -168,7 +165,6 @@ private:
 		//ar( map_pg_ );
 		//ar( map_bg_ );
 	}
-#endif
 
 	std::map<std::string, std::unique_ptr<Camera>> 					e_cameras_;					/**< All camera entities used in the scene. */
 	std::map<std::string, std::unique_ptr<Sprite>> 					e_sprites_;					/**< All sprite entities used in the scene. */
@@ -207,10 +203,6 @@ private:
 	GLuint											current_tile_id_;
 
 };
-#ifdef __EMSCRIPTEN__
-
-#else
 CEREAL_CLASS_VERSION(Scene, 1)
-#endif
 
 #endif

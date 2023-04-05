@@ -54,19 +54,19 @@ std::vector<Message> MessageManager::messages;
 
 Message MessageManager::AddMessage(std::stringstream& msg, message_t type, bool popup)
 {
-  Message tmpMsg;
+	Message tmpMsg;
 
-  tmpMsg.msg = msg.str();
-  tmpMsg.timeinfo = TimeHelper::GetTimeinfo();
-  tmpMsg.type = type;
-  tmpMsg.popup = popup;
+	tmpMsg.msg = msg.str();
+	tmpMsg.timeinfo = TimeHelper::GetTimeinfo();
+	tmpMsg.type = type;
+	tmpMsg.popup = popup;
 
-  messages.insert(messages.begin(), tmpMsg);
+	messages.insert(messages.begin(), tmpMsg);
 
-  if (messages.size() > MAX_STORED_MSG)
-    messages.pop_back();
+	if (messages.size() > MAX_STORED_MSG)
+	messages.pop_back();
 
-  msg.str("");
+	msg.str("");
 
-  return tmpMsg;
+	return tmpMsg;
 }

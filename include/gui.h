@@ -61,14 +61,6 @@ namespace fs = std::experimental::filesystem;
 
 #include "nlohmann/json.hpp"
 
-#ifdef __EMSCRIPTEN__
-extern "C" {
-    extern int getLocalTilemapFile();
-    extern int saveLocalFile();
-    extern int viewFullscreen();
-}
-#endif
-
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
@@ -77,7 +69,7 @@ struct GuiWindow {
 
 #else
     template <class Archive>
-    void serialize( Archive & ar, std::uint32_t const version )
+    void save( Archive & ar, std::uint32_t const version )
     {
         ar( CEREAL_NVP(wPercent), CEREAL_NVP(hPercent) );
     }

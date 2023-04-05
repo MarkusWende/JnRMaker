@@ -89,9 +89,6 @@ void processEvents(Scene* scene, Gui* gui)
                 if (scene->GetCamera("SceneCamera")->GetState() == CameraState::ORTHOGRAPHIC)
                 {
                     scene->RemoveTile();
-                    std::stringstream msg;
-                    msg << "Deleted...";
-                    MessageManager::AddMessage(msg, message_t::INFO);
                 }
             }
             else if (ImGui::GetMouseClickedCount(ImGuiMouseButton_Left) == 1)

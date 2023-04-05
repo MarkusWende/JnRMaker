@@ -42,7 +42,9 @@ SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../..
 # include_directories(${SOIL_INCLUDE_DIR})
 
 # Cereal
-#add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
+set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
+include_directories(${CEREAL_DIR}/include)
+# add_subdirectory(${CEREAL_DIR} ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)

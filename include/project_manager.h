@@ -32,9 +32,6 @@
 #include <string>
 #include <fstream>
 
-#ifdef __EMSCRIPTEN__
-
-#else
 #include <cereal/archives/xml.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/binary.hpp>
@@ -43,6 +40,18 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/map.hpp>
+
+#include "nlohmann/json.hpp"
+
+#define MAX_STORED_SAVE_FILES 20               /**< Defines the maximal number of save files to be stored. */
+
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    extern int getLocalTilemapFile();
+    extern int saveLocalFile();
+    extern int viewFullscreen();
+}
 #endif
 
 /**
@@ -54,6 +63,17 @@ enum class project_status_t {
   LOAD = 2,                             /**< Info message. */
 };
 
+enum class save_file_t {
+  JSON = 0,
+  XML = 1
+};
+
+struct SaveFile {
+	std::string data;
+	std::string timeinfo;
+    save_file_t type;
+};
+
 /**
  * @brief The sindgleton project manager class manages project related informations accross the application.
  */
@@ -62,6 +82,7 @@ class ProjectManager
 public:
     static std::string name;
     static project_status_t status;
+    static std::vector<SaveFile> SaveFiles;
 
     /**
 	 * @brief Set the project name.
@@ -74,6 +95,10 @@ public:
 
     static void SetStatus(project_status_t newStatus) { status = newStatus; };
     static project_status_t GetStatus() { return status; };
+    static std::vector<SaveFile>* GetSaveFiles() { return &SaveFiles; };
+
+    static SaveFile AddSaveFile(std::stringstream& data, save_file_t type = save_file_t::JSON);
+    static void Save();
 
 private:
     ProjectManager() { };                             //!< constructor

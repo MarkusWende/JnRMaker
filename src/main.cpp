@@ -40,6 +40,8 @@ SDL_Window*     g_Window = NULL;
 SDL_GLContext   g_GLContext = NULL;
 
 // Gui
+//std::shared_ptr<Gui> appGui;
+//std::shared_ptr<Scene> appScene;
 Gui* appGui;
 Scene* appScene;
 
@@ -300,6 +302,56 @@ static void main_loop(void* arg)
             appGui->Close();
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(g_Window))
             appGui->Close();
+    }
+
+    if (ProjectManager::GetStatus() == project_status_t::SAVE)
+    {
+        std::stringstream msg;
+        msg << "Saving..";
+        MessageManager::AddMessage(msg, message_t::INFO);
+    //     // create and open a character archive for output
+    //     std::ofstream ofs(ProjectManager::GetName() + ".jrm");
+
+    //     // save data to archive
+        {
+            // cereal::XMLOutputArchive ar(msg, cereal::XMLOutputArchive::Options(6, true, false));
+            cereal::JSONOutputArchive ar(msg);
+    //         //cereal::BinaryOutputArchive ar(ofs);
+    //         ar( CEREAL_NVP(appGui) );
+    //         ar( CEREAL_NVP(appScene) );
+    //         //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
+
+            long double c = pow(0.5, 1000);
+            ar ( cereal::make_nvp("a_very_small_value_", c) );
+        }
+
+        MessageManager::AddMessage(msg, message_t::INFO);
+        ProjectManager::AddSaveFile(msg);
+        ProjectManager::Save();
+        ProjectManager::SetStatus(project_status_t::IDLE);
+    }
+    else if (ProjectManager::GetStatus() == project_status_t::LOAD)
+    {
+        std::stringstream msg;
+        msg << "Loading..";
+        MessageManager::AddMessage(msg, message_t::INFO);
+        //std::ifstream is(ProjectManager::GetName() + ".jrm");
+        // cereal::XMLInputArchive ar(msg);
+    //     //cereal::JSONInputArchive ar(is);
+    //     //cereal::BinaryInputArchive ar(is);
+
+        // GLuint width = 12;
+        // GLuint height = 4;
+
+    //     ar( appGui );
+    //     ar( appScene );
+        // ar( width, height);
+
+    //     //window->setSize({ width, height });
+
+        MessageManager::AddMessage(msg, message_t::INFO);
+
+        ProjectManager::SetStatus(project_status_t::IDLE);
     }
 
     // Start the Dear ImGui frame
