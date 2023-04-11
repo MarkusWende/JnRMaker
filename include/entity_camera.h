@@ -442,7 +442,24 @@ private:
 
 	CameraState			state_;							/**< Camera state. */
 	std::unique_ptr<Cube>	focus_model_;
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+		
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+	
 };
+
+CEREAL_CLASS_VERSION(Camera, 1)
+
 #endif
 
 /**

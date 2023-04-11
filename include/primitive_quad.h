@@ -41,6 +41,22 @@ private:
 	 * @return Void.
 	 */
 	GLvoid build();
+
+    friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+		
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+	
 };
+
+CEREAL_CLASS_VERSION(Quad, 1)
 
 #endif	/* PRIMITIVE_QUAD_H */

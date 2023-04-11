@@ -63,6 +63,22 @@ private:
 	 * @return Void.
 	 */
 	GLvoid buildVerticesFlat();
+
+    friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+		
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+	
 };
+
+CEREAL_CLASS_VERSION(Cube, 1)
 
 #endif

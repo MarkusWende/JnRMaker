@@ -82,31 +82,46 @@ emscripten::val getBytes()
     // }
     // )";
     // create an empty structure (null)
-    nlohmann::json j;
 
-    // add a number that is stored as double (note the implicit conversion of j to an object)
-    j["pi"] = 3.141;
 
-    // add a Boolean that is stored as bool
-    j["happy"] = true;
+    std::vector<SaveFile>* ptrSaveFiles;
+	ptrSaveFiles = ProjectManager::GetSaveFiles();
+    if (ptrSaveFiles->begin() == ptrSaveFiles->end())
+    {
+        std::stringstream msg;
+        msg << "No save file.";
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
 
-    // add a string that is stored as std::string
-    j["name"] = "Niels";
+        nlohmann::json j;
 
-    // add another null object by passing nullptr
-    j["nothing"] = nullptr;
+        // add a number that is stored as double (note the implicit conversion of j to an object)
+        j["pi"] = 3.141;
 
-    // add an object inside the object
-    j["answer"]["everything"] = 42;
+        // add a Boolean that is stored as bool
+        j["happy"] = true;
 
-    // add an array that is stored as std::vector (using an initializer list)
-    j["list"] = { 1, 0, 2 };
+        // add a string that is stored as std::string
+        j["name"] = "Niels";
 
-    // add another object (using an initializer list of pairs)
-    j["object"] = { {"currency", "USD"}, {"value", 42.99} };
-    const auto& tmp = j.dump(2);
-    std::basic_string<unsigned char> str(tmp.data(), std::next(tmp.data(), tmp.size()));
-    return emscripten::val(emscripten::typed_memory_view(str.size(), str.data()));
+        // add another null object by passing nullptr
+        j["nothing"] = nullptr;
+
+        // add an object inside the object
+        j["answer"]["everything"] = 42;
+
+        // add an array that is stored as std::vector (using an initializer list)
+        j["list"] = { 1, 0, 2 };
+
+        // add another object (using an initializer list of pairs)
+        j["object"] = { {"currency", "USD"}, {"value", 42.99} };
+        const auto& tmp = j.dump(2);
+        std::basic_string<unsigned char> str(tmp.data(), std::next(tmp.data(), tmp.size()));
+
+        return emscripten::val(emscripten::typed_memory_view(str.size(), str.data()));
+    }
+
+    std::string saveFileJSON = ptrSaveFiles->front().data;
+    return emscripten::val(emscripten::typed_memory_view(saveFileJSON.size(), saveFileJSON.data()));
 }
 
 EMSCRIPTEN_BINDINGS(my_module)
@@ -119,14 +134,15 @@ EMSCRIPTEN_BINDINGS(my_module)
 SaveFile ProjectManager::AddSaveFile(std::stringstream& data, save_file_t type)
 {
     SaveFile newSaveFile;
+    data << "\n}";
 
 	newSaveFile.data = data.str();
 	newSaveFile.timeinfo = TimeHelper::GetTimeinfo();
 	newSaveFile.type = type;
 
-    std::stringstream msg;
-    msg << data.str();
-    MessageManager::AddMessage(msg, message_t::DEBUG);
+    // std::stringstream msg;
+    // msg << data.str();
+    // MessageManager::AddMessage(msg, message_t::DEBUG);
 
 	SaveFiles.insert(SaveFiles.begin(), newSaveFile);
 

@@ -124,51 +124,10 @@ public:
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
-	friend class cereal::access;
-	template <class Archive>
-	void save(Archive& ar, std::uint32_t const version) const
-	{
-		//ar(CEREAL_NVP(e_solids_));
-		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
-
-		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
-		//sf::Image img;
-		//img = tex.copyToImage();
-		//const sf::Uint8* imgData = img.getPixelsPtr();
-		//ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
-		//ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
-		//ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
-
-		//ar(CEREAL_NVP(map_fg_));
-		//ar(CEREAL_NVP(map_pg_));
-		//ar(CEREAL_NVP(map_bg_));
-	}
-
-	template <class Archive>
-	void load(Archive& ar, std::uint32_t const version)
-	{
-		//ar(e_solids_);
-
-		GLuint width, height;
-		ar(width, height);
-
-		//glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
-		//glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
-		//CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
-
-		//ar(width, height);
-		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
-		//ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
-		//ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
-
-		//ar( map_fg_ );
-		//ar( map_pg_ );
-		//ar( map_bg_ );
-	}
-
 	std::map<std::string, std::unique_ptr<Camera>> 					e_cameras_;					/**< All camera entities used in the scene. */
 	std::map<std::string, std::unique_ptr<Sprite>> 					e_sprites_;					/**< All sprite entities used in the scene. */
 	std::map<std::string, std::unique_ptr<Solid>> 					e_solids_;					/**< All primitives used in the scene. */
+	std::map<std::string, std::unique_ptr<Solid>> 					e_solids_test_;					/**< All primitives used in the scene. */
 	std::map<std::string, std::unique_ptr<CoordinateSystem>> 		e_cs_;						/**< All Coordinates systems used in the scene. */
 	std::map<std::string, std::unique_ptr<Grid>> 					e_grids_;					/**< All grids used in the scene. */
 	std::map<std::string, std::unique_ptr<Object>> 					e_objects_;					/**< All moving and interactable objects used in the scene. */
@@ -201,6 +160,50 @@ private:
 	glm::vec2						mouse_position_;
 	GLuint							vao_;
 	GLuint											current_tile_id_;
+
+	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version) const
+	{
+		ar( CEREAL_NVP(filter_));
+		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
+
+		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
+		//sf::Image img;
+		//img = tex.copyToImage();
+		//const sf::Uint8* imgData = img.getPixelsPtr();
+		//ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
+		//ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
+		//ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
+
+		//ar(CEREAL_NVP(map_fg_));
+		//ar(CEREAL_NVP(map_pg_));
+		//ar(CEREAL_NVP(map_bg_));
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+		//ar(e_solids_);
+
+		// GLuint width, height;
+		// ar(width, height);
+
+		//glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
+		//glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
+		//CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
+
+		//ar(width, height);
+		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
+		//ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
+		//ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
+
+		//ar( map_fg_ );
+		//ar( map_pg_ );
+		//ar( map_bg_ );
+	}
 
 };
 CEREAL_CLASS_VERSION(Scene, 1)

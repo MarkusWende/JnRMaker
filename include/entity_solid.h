@@ -259,25 +259,27 @@ protected:
     GLfloat pitch_;
     GLfloat roll_;
 
+private:
+    ModelNew	            model_;								/**< @brief Every vertex, index, face etc. is stored in the model attribute. */
 
 	friend class cereal::access;
 	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
+	void save(Archive& ar, std::uint32_t const version)
 	{
-		//ar(cereal::base_class<SceneEntity>(this));
-		//ar(CEREAL_NVP(layer_));
+		ar(cereal::base_class<SceneEntity>(this));
+		ar(CEREAL_NVP(layer_));
 		ar(CEREAL_NVP(name_));
 		ar(CEREAL_NVP(id_));
 	}
 
-private:
-    ModelNew	            model_;								/**< @brief Every vertex, index, face etc. is stored in the model attribute. */
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
 };
-#ifdef __EMSCRIPTEN__
 
-#else
-	CEREAL_CLASS_VERSION(Solid, 1)
-#endif
-
+CEREAL_CLASS_VERSION(Solid, 1)
 
 #endif

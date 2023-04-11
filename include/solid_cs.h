@@ -55,6 +55,22 @@ private:
 	std::map<std::string, std::unique_ptr<Line>>	axis_;
 	glm::vec2										resolution_;
 	//std::map<std::string, glm::vec4>				colors_;
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
 };
+
+CEREAL_CLASS_VERSION(CoordinateSystem, 1)
 
 #endif	/* SOLID_CS_H */

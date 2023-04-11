@@ -76,12 +76,23 @@ private:
     //std::map<std::string, GLfloat> 			tile_hash_id_map_;
     //GLfloat                                 tile_id_max_;
     std::string                             hash_map_border_key_;
+
+
+    friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+		
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+	
 };
 
-#ifdef __EMSCRIPTEN__
-
-#else
 CEREAL_CLASS_VERSION(WorldLayer, 1)
-#endif
 
 #endif

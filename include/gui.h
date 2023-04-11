@@ -181,29 +181,6 @@ public:
 #endif
 
 private:
-    friend class cereal::access;
-    template <class Archive>
-    void save(Archive& ar, std::uint32_t const version) const
-    {
-        ar( CEREAL_NVP(width_), CEREAL_NVP(height_) );
-        //ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
-        //ar( CEREAL_NVP(tilemap_list_) );
-    }
-
-    template <class Archive>
-    void load(Archive& ar, std::uint32_t const version)
-    {
-        //ar(width_, height_);
-        //WindowUpdate();
-        //ar(active_tilemap_name_, active_sprite_name_);
-        //ar(tilemap_list_);
-        // for (auto const& tilemapItem : tilemap_list_)
-        // {
-        //     ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
-        //     TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
-        // }
-    }
-
     GLuint                      width_;                     /**< Width of the application window. */
     GLuint                      height_;                    /**< Height of the application window. */
     GuiWindow                   window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
@@ -248,12 +225,32 @@ private:
     GLvoid fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 #endif
+
+    friend class cereal::access;
+    template <class Archive>
+    void save(Archive& ar, std::uint32_t const version) const
+    {
+        ar( CEREAL_NVP(width_), CEREAL_NVP(height_) );
+        //ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
+        //ar( CEREAL_NVP(tilemap_list_) );
+    }
+
+    template <class Archive>
+    void load(Archive& ar, std::uint32_t const version)
+    {
+        //ar(width_, height_);
+        //WindowUpdate();
+        //ar(active_tilemap_name_, active_sprite_name_);
+        //ar(tilemap_list_);
+        // for (auto const& tilemapItem : tilemap_list_)
+        // {
+        //     ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
+        //     TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
+        // }
+    }
     
 };
-#ifdef __EMSCRIPTEN__
 
-#else
 CEREAL_CLASS_VERSION(Gui, 1)
-#endif
 
 #endif	// GUI_H

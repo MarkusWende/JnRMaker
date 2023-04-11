@@ -876,5 +876,22 @@ private:
 	std::map<GLuint, GLfloat>	queue_costs_;
 	GLboolean					queue_is_locked_;
 	GLfloat						progress_mesh_reduction_;
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
 };
+
+CEREAL_CLASS_VERSION(MeshNew, 1)
+
 #endif

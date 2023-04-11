@@ -52,6 +52,22 @@ private:
     GLfloat line_width_;
     GLuint height_;
     GLuint width_;
+
+	friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+
 };
+
+CEREAL_CLASS_VERSION(Grid, 1)
 
 #endif

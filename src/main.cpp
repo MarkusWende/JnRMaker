@@ -326,7 +326,6 @@ static void main_loop(void* arg)
 
         ProjectManager::AddSaveFile(msg);
         ProjectManager::Save();
-        MessageManager::AddMessage(msg, message_t::INFO);
         ProjectManager::SetStatus(project_status_t::IDLE);
     }
     else if (ProjectManager::GetStatus() == project_status_t::LOAD)

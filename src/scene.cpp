@@ -73,6 +73,7 @@ Scene::Scene(GLuint width, GLuint height)
 
     //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+    filter_.insert(std::make_pair("asdasd", new SceneEntity()));
 
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
     e_solids_.insert(std::make_pair("TestQuad", new Quad("TestQuad")));

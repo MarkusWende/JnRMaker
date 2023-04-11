@@ -138,6 +138,23 @@ protected:
 	//std::vector<unsigned int>	indices;							/**< Vector of the object indices. */
 	//std::vector<Edge>			edges;								/**< Vector of the object edges. */
 	//std::vector<Face>			faces;								/**< Vector of the object faces. */
+
+private:
+    friend class cereal::access;
+	template <class Archive>
+	void save(Archive& ar, std::uint32_t const version)
+	{
+		
+	}
+
+	template <class Archive>
+	void load(Archive& ar, std::uint32_t const version)
+	{
+
+	}
+	
 };
+
+CEREAL_CLASS_VERSION(Primitive, 1)
 
 #endif

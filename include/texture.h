@@ -147,6 +147,7 @@ public:
 	void Delete();
 };
 
+
 class TextureArray
 {
 public:
