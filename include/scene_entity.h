@@ -81,15 +81,9 @@ private:
 
 	friend class cereal::access;
 	template <class Archive>
-	void save(Archive& ar, std::uint32_t const version)
+	void serialize(Archive& ar, std::uint32_t const version)
 	{
 		ar(center_.x, center_.y, center_.z);
-	}
-
-	template <class Archive>
-	void load(Archive& ar, std::uint32_t const version)
-	{
-
 	}
 
 protected:

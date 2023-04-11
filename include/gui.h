@@ -228,25 +228,11 @@ private:
 
     friend class cereal::access;
     template <class Archive>
-    void save(Archive& ar, std::uint32_t const version) const
+    void serialize(Archive& ar, std::uint32_t const version) const
     {
         ar( CEREAL_NVP(width_), CEREAL_NVP(height_) );
         //ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
         //ar( CEREAL_NVP(tilemap_list_) );
-    }
-
-    template <class Archive>
-    void load(Archive& ar, std::uint32_t const version)
-    {
-        //ar(width_, height_);
-        //WindowUpdate();
-        //ar(active_tilemap_name_, active_sprite_name_);
-        //ar(tilemap_list_);
-        // for (auto const& tilemapItem : tilemap_list_)
-        // {
-        //     ResourceManager::LoadTexture(tilemapItem.c_str(), GL_TRUE, tilemapItem);
-        //     TilemapManager::AddTilemap(tilemapItem, glm::vec2(16, 16), glm::vec2( 2.0f, 2.0f ));
-        // }
     }
     
 };

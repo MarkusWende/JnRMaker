@@ -165,7 +165,7 @@ private:
 
 	friend class cereal::access;
 	template <class Archive>
-	void save(Archive& ar, std::uint32_t const version) const
+	void serialize(Archive& ar, std::uint32_t const version) const
 	{
 		ar( CEREAL_NVP(filter_));
 		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
@@ -181,28 +181,6 @@ private:
 		//ar(CEREAL_NVP(map_fg_));
 		//ar(CEREAL_NVP(map_pg_));
 		//ar(CEREAL_NVP(map_bg_));
-	}
-
-	template <class Archive>
-	void load(Archive& ar, std::uint32_t const version)
-	{
-		//ar(e_solids_);
-
-		// GLuint width, height;
-		// ar(width, height);
-
-		//glm::vec2 sprSize = TilemapManager::Get(active_tilemap_name_)->GetSpriteSize();
-		//glm::vec2 sprScale = TilemapManager::Get(active_tilemap_name_)->GetSpriteScale();
-		//CreateLevel(width, height, glm::vec2(sprSize.x, sprSize.y), glm::vec2( sprScale.x, sprScale.y ));
-
-		//ar(width, height);
-		//sf::Uint8* imgData = new sf::Uint8[sizeof(sf::Uint8) * width * height * 4];
-		//ar.loadBinaryValue(imgData, sizeof(sf::Uint8) * width * height * 4, "tex_used_tiles");
-		//ResourceManager::UpdateRenderTexture(imgData, width, height, "tex_used_tiles");
-
-		//ar( map_fg_ );
-		//ar( map_pg_ );
-		//ar( map_bg_ );
 	}
 
 };

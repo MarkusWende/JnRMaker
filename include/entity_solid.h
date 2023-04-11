@@ -264,18 +264,12 @@ private:
 
 	friend class cereal::access;
 	template <class Archive>
-	void save(Archive& ar, std::uint32_t const version)
+	void serialize(Archive& ar, std::uint32_t const version)
 	{
 		ar(cereal::base_class<SceneEntity>(this));
 		ar(CEREAL_NVP(layer_));
 		ar(CEREAL_NVP(name_));
 		ar(CEREAL_NVP(id_));
-	}
-
-	template <class Archive>
-	void load(Archive& ar, std::uint32_t const version)
-	{
-
 	}
 
 };
