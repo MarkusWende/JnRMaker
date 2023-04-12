@@ -32,16 +32,25 @@
 #include <string>
 #include <fstream>
 
-#include <cereal/archives/xml.hpp>
-#include <cereal/archives/json.hpp>
-#include <cereal/archives/binary.hpp>
-#include <cereal/types/vector.hpp>
-#include <cereal/cereal.hpp> // for defer
-#include <cereal/types/memory.hpp>
-#include <cereal/types/base_class.hpp>
-#include <cereal/types/map.hpp>
+// #include <cereal/archives/xml.hpp>
+// #include <cereal/archives/json.hpp>
+// #include <cereal/archives/binary.hpp>
+// #include <cereal/types/vector.hpp>
+// #include <cereal/cereal.hpp> // for defer
+// #include <cereal/types/memory.hpp>
+// #include <cereal/types/base_class.hpp>
+// #include <cereal/types/map.hpp>
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/prettywriter.h>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <nlohmann/json.hpp>
 
-#include "nlohmann/json.hpp"
+#include "time_helper.h"
+#include "message_manager.h"
 
 #define MAX_STORED_SAVE_FILES 20               /**< Defines the maximal number of save files to be stored. */
 
@@ -49,7 +58,7 @@
 #ifdef __EMSCRIPTEN__
 extern "C" {
     extern int getLocalTilemapFile();
-    extern int saveLocalFile();
+    extern int saveJSONFile();
     extern int viewFullscreen();
 }
 #endif
@@ -69,9 +78,22 @@ enum class save_file_t {
 };
 
 struct SaveFile {
-	std::string data;
+	std::string json;
 	std::string timeinfo;
     save_file_t type;
+
+    SaveFile(std::string ts, const char* j)
+    {
+        
+
+        std::stringstream msg;
+        msg << j;
+        json = msg.str().c_str();
+        MessageManager::AddMessage(msg, message_t::INFO);
+        //d.CopyFrom(newDoc, d.GetAllocator());
+        timeinfo = ts;
+        type = save_file_t::JSON;
+    }
 };
 
 /**
@@ -82,7 +104,7 @@ class ProjectManager
 public:
     static std::string name;
     static project_status_t status;
-    static std::vector<SaveFile> SaveFiles;
+    static std::vector<std::shared_ptr<SaveFile>> SaveFiles;
 
     /**
 	 * @brief Set the project name.
@@ -95,10 +117,11 @@ public:
 
     static void SetStatus(project_status_t newStatus) { status = newStatus; };
     static project_status_t GetStatus() { return status; };
-    static std::vector<SaveFile>* GetSaveFiles() { return &SaveFiles; };
+    static std::vector<std::shared_ptr<SaveFile>> GetSaveFiles() { return SaveFiles; };
 
-    static SaveFile AddSaveFile(std::stringstream& data, save_file_t type = save_file_t::JSON);
-    static void Save();
+    static void AddSaveObject(std::string key, std::string data);
+    static void SaveCreate();
+    static void SaveWrite();
 
 private:
     ProjectManager() { };                             //!< constructor

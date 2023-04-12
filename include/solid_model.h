@@ -193,15 +193,6 @@ private:
 	MeshNew*											mesh_copy_ptr_;
 	GLboolean											mesh_reduction_is_active_;
 
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-
-	}
-
 };
-
-CEREAL_CLASS_VERSION(ModelNew, 1)
 
 #endif

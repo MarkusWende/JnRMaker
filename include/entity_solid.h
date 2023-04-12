@@ -262,18 +262,8 @@ protected:
 private:
     ModelNew	            model_;								/**< @brief Every vertex, index, face etc. is stored in the model attribute. */
 
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-		ar(cereal::base_class<SceneEntity>(this));
-		ar(CEREAL_NVP(layer_));
-		ar(CEREAL_NVP(name_));
-		ar(CEREAL_NVP(id_));
-	}
+
 
 };
-
-CEREAL_CLASS_VERSION(Solid, 1)
 
 #endif

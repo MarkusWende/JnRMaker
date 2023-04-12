@@ -310,22 +310,24 @@ static void main_loop(void* arg)
         std::stringstream msg;
         msg << "Saving..";
         MessageManager::AddMessage(msg, message_t::INFO);
+        ProjectManager::SaveCreate();
     //     // create and open a character archive for output
     //     std::ofstream ofs(ProjectManager::GetName() + ".jrm");
 
     //     // save data to archive
         // cereal::XMLOutputArchive ar(msg, cereal::XMLOutputArchive::Options(6, true, false));
-        cereal::JSONOutputArchive ar(msg);
-//         //cereal::BinaryOutputArchive ar(ofs);
-        ar( CEREAL_NVP(appGui) );
-        ar( CEREAL_NVP(appScene) );
+//         cereal::JSONOutputArchive ar(msg);
+// //         //cereal::BinaryOutputArchive ar(ofs);
+//         ar( CEREAL_NVP(appGui) );
+//         ar( CEREAL_NVP(appScene) );
+        appScene->save();
 //         //ar( cereal::make_nvp("window_with_", oldWidth), cereal::make_nvp("window_height_", oldHeight) );
 
         // long double c = pow(0.5, 1000);
         // ar ( cereal::make_nvp("a_very_small_value_", c) );
 
-        ProjectManager::AddSaveFile(msg);
-        ProjectManager::Save();
+        //ProjectManager::AddSaveFile(msg);
+        ProjectManager::SaveWrite();
         ProjectManager::SetStatus(project_status_t::IDLE);
     }
     else if (ProjectManager::GetStatus() == project_status_t::LOAD)

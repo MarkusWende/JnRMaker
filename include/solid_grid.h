@@ -53,15 +53,6 @@ private:
     GLuint height_;
     GLuint width_;
 
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-
-	}
-
 };
-
-CEREAL_CLASS_VERSION(Grid, 1)
 
 #endif

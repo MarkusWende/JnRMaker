@@ -27,7 +27,7 @@ include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_D
 # include_directories(${SOIL_INCLUDE_DIR})
 
 # Cereal
-add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
+# add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
@@ -48,8 +48,12 @@ include_directories(${SDL2_INCLUDE_DIRS})
 # include_directories(${CJSON_DIR})
 
 # json
-set(JSON_DIR ${THIRD_PARTY_DIR}/json)
-include_directories(${JSON_DIR}/single_include)
+# set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+# include_directories(${JSON_DIR}/single_include)
+
+# RapidJSON
+set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
+include_directories(${RAPIDJSON_DIR}/include)
 
 # Boost
 set(Boost_USE_STATIC_LIBS ON)
@@ -135,7 +139,7 @@ add_executable(
     ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui cereal GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
+target_link_libraries(jnrmaker app imgui GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
 
 
 # #Change this if you need to target a specific CMake version

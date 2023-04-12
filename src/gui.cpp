@@ -144,7 +144,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
             if(ImGui::MenuItem("Save"))
             {
 #ifdef __EMSCRIPTEN__
-                saveLocalFile();
+                saveJSONFile();
 #endif
             }
 			ImGui::EndMenu();

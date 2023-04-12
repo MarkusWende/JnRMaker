@@ -59,19 +59,11 @@ namespace fs = std::experimental::filesystem;
 #include <unistd.h>
 #endif
 
-#include "nlohmann/json.hpp"
-
 /**
  * @brief Gui window struct. Represents a gui window size with pixel and percentage attributes.
  */
 struct GuiWindow
 {
-    template <class Archive>
-    void save( Archive & ar, std::uint32_t const version )
-    {
-        ar( CEREAL_NVP(wPercent), CEREAL_NVP(hPercent) );
-    }
-
     GLuint w;                     /**< Width in pixel of the gui window. */
     GLuint h;                     /**< Height in pixel of the gui window. */
     GLfloat wPercent;             /**< Width in percent [0.0f .. 1.0f] of the gui window. */
@@ -80,7 +72,7 @@ struct GuiWindow
 #ifdef __EMSCRIPTEN__
 
 #else
-CEREAL_CLASS_VERSION(GuiWindow, 1)
+
 #endif
 
 enum class gui_state_t {
@@ -225,18 +217,7 @@ private:
     GLvoid fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLboolean extension_only, fs::path extension);
     GLvoid listDirectoryContent(fs::path path, bool displayLogicalDrives, bool isLogicalDrive, bool extensionOnly, fs::path extension, std::string* currentItem, bool isSelected);
 #endif
-
-    friend class cereal::access;
-    template <class Archive>
-    void serialize(Archive& ar, std::uint32_t const version) const
-    {
-        ar( CEREAL_NVP(width_), CEREAL_NVP(height_) );
-        //ar( CEREAL_NVP(active_tilemap_name_), CEREAL_NVP(active_sprite_name_));
-        //ar( CEREAL_NVP(tilemap_list_) );
-    }
     
 };
-
-CEREAL_CLASS_VERSION(Gui, 1)
 
 #endif	// GUI_H

@@ -877,15 +877,6 @@ private:
 	GLboolean					queue_is_locked_;
 	GLfloat						progress_mesh_reduction_;
 
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-
-	}
-
 };
-
-CEREAL_CLASS_VERSION(MeshNew, 1)
 
 #endif

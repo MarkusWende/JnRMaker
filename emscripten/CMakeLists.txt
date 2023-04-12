@@ -26,7 +26,7 @@ endif()
 SET(linkFlags "${linkFlags} -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
 SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2")
 SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")
-SET(linkFlags "${linkFlags} -sFETCH")
+SET(linkFlags "${linkFlags} -sFETCH -sEXPORTED_FUNCTIONS=_getJSON,_main -sEXPORTED_RUNTIME_METHODS=ccall,cwrap")
 SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy")
 SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
 
@@ -42,8 +42,8 @@ SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../..
 # include_directories(${SOIL_INCLUDE_DIR})
 
 # Cereal
-set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
-include_directories(${CEREAL_DIR}/include)
+# set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
+# include_directories(${CEREAL_DIR}/include)
 # add_subdirectory(${CEREAL_DIR} ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
@@ -85,6 +85,10 @@ include_directories(${GLM_DIR})
 # json
 set(JSON_DIR ${THIRD_PARTY_DIR}/json)
 include_directories(${JSON_DIR}/single_include)
+
+# RapidJSON
+set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
+include_directories(${RAPIDJSON_DIR}/include)
 
 # Googletest
 #add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)

@@ -77,22 +77,11 @@ public:
 
 	glm::vec3	GetCenter() { return center_; }													/**< @brief Get the center of the solid. @return glm::vec3 The center as a 3d vector. */
 
-private:
-
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-		ar(center_.x, center_.y, center_.z);
-	}
-
 protected:
 	EntityType	entity_type_;
 	//glm::vec3	position;						/**< Entity position in a cartesian coordinate system. */
 	glm::vec3   center_;							/**< @brief The center of the solid. */
 	
 };
-
-CEREAL_CLASS_VERSION(SceneEntity, 1)
 
 #endif

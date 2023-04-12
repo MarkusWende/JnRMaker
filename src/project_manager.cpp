@@ -26,13 +26,12 @@
  */
 
 #include "project_manager.h"
-#include "message_manager.h"
 #include "tilemap_manager.h"
 
 // Instantiate static messages vector
 std::string ProjectManager::name;
 project_status_t ProjectManager::status;
-std::vector<SaveFile> ProjectManager::SaveFiles;
+std::vector<std::shared_ptr<SaveFile>> ProjectManager::SaveFiles;
 
 #ifdef __EMSCRIPTEN__
 template<typename T, size_t sizeOfArray>
@@ -73,95 +72,133 @@ void openTilemapFile(std::string const& name, std::string const& type, emscripte
     MessageManager::AddMessage(msg, message_t::DEBUG);
 }
 
-emscripten::val getBytes()
+extern "C" {
+
+const char* getJSON()
 {
-    // auto text = R"(
-    // {
-    //     "hasdappy": true,
-    //     "pi": 3.141
-    // }
-    // )";
-    // create an empty structure (null)
+    auto ptrSaveFiles = ProjectManager::GetSaveFiles();
+    auto saveFileJSON = ptrSaveFiles.front()->json;
+    auto json_str = strdup(saveFileJSON.c_str());
+    return json_str;
+}
 
-
-    std::vector<SaveFile>* ptrSaveFiles;
-	ptrSaveFiles = ProjectManager::GetSaveFiles();
-    if (ptrSaveFiles->begin() == ptrSaveFiles->end())
-    {
-        std::stringstream msg;
-        msg << "No save file.";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
-
-        nlohmann::json j;
-
-        // add a number that is stored as double (note the implicit conversion of j to an object)
-        j["pi"] = 3.141;
-
-        // add a Boolean that is stored as bool
-        j["happy"] = true;
-
-        // add a string that is stored as std::string
-        j["name"] = "Niels";
-
-        // add another null object by passing nullptr
-        j["nothing"] = nullptr;
-
-        // add an object inside the object
-        j["answer"]["everything"] = 42;
-
-        // add an array that is stored as std::vector (using an initializer list)
-        j["list"] = { 1, 0, 2 };
-
-        // add another object (using an initializer list of pairs)
-        j["object"] = { {"currency", "USD"}, {"value", 42.99} };
-        const auto& tmp = j.dump(2);
-        std::basic_string<unsigned char> str(tmp.data(), std::next(tmp.data(), tmp.size()));
-
-        return emscripten::val(emscripten::typed_memory_view(str.size(), str.data()));
-    }
-
-    std::string saveFileJSON = ptrSaveFiles->front().data;
-    return emscripten::val(emscripten::typed_memory_view(saveFileJSON.size(), saveFileJSON.data()));
 }
 
 EMSCRIPTEN_BINDINGS(my_module)
 {
-    emscripten::function("getBytes", &getBytes);
     emscripten::function("openTilemapFile", &openTilemapFile);
 }
 #endif
 
-SaveFile ProjectManager::AddSaveFile(std::stringstream& data, save_file_t type)
+void ProjectManager::AddSaveObject(std::string key, std::string data)
 {
-    SaveFile newSaveFile;
-    data << "\n}";
+    //auto ptrSaveFiles = ProjectManager::GetSaveFiles();
+    //ptrSaveFiles.front()->d[key.c_str()] = data;
 
-	newSaveFile.data = data.str();
-	newSaveFile.timeinfo = TimeHelper::GetTimeinfo();
-	newSaveFile.type = type;
-
-    // std::stringstream msg;
-    // msg << data.str();
-    // MessageManager::AddMessage(msg, message_t::DEBUG);
-
-	SaveFiles.insert(SaveFiles.begin(), newSaveFile);
-
-	if (SaveFiles.size() > MAX_STORED_SAVE_FILES)
-	    SaveFiles.pop_back();
-
-	return newSaveFile;
+    //MessageManager::AddMessage(msg, message_t::INFO);
 }
 
-void ProjectManager::Save()
+void ProjectManager::SaveCreate()
 {
-    std::vector<SaveFile>* ptrSaveFiles;
-	ptrSaveFiles = ProjectManager::GetSaveFiles();
-    if (ptrSaveFiles->begin() == ptrSaveFiles->end())
+    nlohmann::json j = {
+        {"name", "John"},
+        {"age", 30},
+        {"cars", nlohmann::json::array({"Ford", "BMW", "Fiat"})}
+    };
+
+
+    rapidjson::Document d;
+
+    d.SetObject();
+    auto& allocator = d.GetAllocator();
+
+    auto gen = boost::uuids::random_generator();
+    boost::uuids::uuid uniqueID = gen();
+    rapidjson::Value id;
+    std::string idStr = to_string(uniqueID);
+    id.SetString(idStr.c_str(), idStr.size());
+    d.AddMember("uuid", id, allocator);
+
+    std::stringstream msg;
+    msg << idStr;
+    MessageManager::AddMessage(msg, message_t::INFO);
+
+    std::string timeinfo = TimeHelper::GetTimeinfo();
+    rapidjson::Value ts;
+    ts.SetString(timeinfo.c_str(), timeinfo.length());
+    d.AddMember("timestamp", ts, allocator);
+
+    rapidjson::Value user;
+    user.SetString("Testuser");
+    d.AddMember("user", user, allocator);
+
+    rapidjson::Value object;
+    object.SetObject();
+    rapidjson::Value currency;
+    currency.SetString("USD");
+    rapidjson::Value val;
+    val.SetDouble(42.99);
+    object.AddMember("currency", currency, allocator);
+    object.AddMember("value", val, allocator);
+    d.AddMember("object", object, allocator);
+
+    rapidjson::Value answer;
+    answer.SetObject();
+    rapidjson::Value everything;
+    everything.SetInt(42);
+    answer.AddMember("everything", everything, allocator);
+    d.AddMember("answer", answer, allocator);
+
+    int matrix[3][3] = {{1,2,3}, {4,5,6}, {7,8,9}};
+    rapidjson::StringBuffer matrixBuffer;
+    rapidjson::Writer<rapidjson::StringBuffer> matrixWriter(matrixBuffer);
+    matrixWriter.StartArray();
+    for (size_t i = 0; i < 3; i++)
     {
-        std::stringstream msg;
-        msg << "No save file.";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
-        return;
+        for (size_t j = 0; j < 3; j++)
+        {
+            matrixWriter.Int(matrix[i][j]);
+        }
     }
-    std::string saveFileJSON = ptrSaveFiles->back().data;
+    matrixWriter.EndArray();
+
+    rapidjson::Value tiles(matrixBuffer.GetString(), allocator);
+    d.AddMember("tiles", tiles, allocator);
+
+    // //d["object"] = { {"currency", "USD"}, {"value", 42.99} };
+    // d["answer"]["everything"] = 42;
+
+    if (!d.IsObject())
+	{
+        std::stringstream msg;
+		msg << "JSON document creation failed.";
+		MessageManager::AddMessage(msg, message_t::ERROR_T);
+		return;
+	}
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
+    d.Accept(writer);
+    SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, buffer.GetString()));
+
+    if (SaveFiles.size() > MAX_STORED_SAVE_FILES)
+    SaveFiles.pop_back();
+}
+
+void ProjectManager::SaveWrite()
+{
+	// auto ptrSaveFiles = ProjectManager::GetSaveFiles();
+    // if (ptrSaveFiles.begin() == ptrSaveFiles.end())
+    // {
+    //     std::stringstream msg;
+    //     msg << "Nothing to save..";
+    //     MessageManager::AddMessage(msg, message_t::ERROR_T);
+    //     return;
+    // }
+
+#ifdef __EMSCRIPTEN__
+    saveJSONFile();
+#endif
+
+    //SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, j));
 }

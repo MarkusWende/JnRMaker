@@ -121,6 +121,25 @@ public:
 	std::string GetActiveTilemap() { return active_tilemap_name_; };
 	std::string GetActiveSprite() { return active_sprite_name_; };
 
+	void save() const
+	{
+		// ar( CEREAL_NVP(filter_));
+		// ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
+
+		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
+		//sf::Image img;
+		//img = tex.copyToImage();
+		//const sf::Uint8* imgData = img.getPixelsPtr();
+		//ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
+		//ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
+		//ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
+
+		//ar(CEREAL_NVP(map_fg_));
+		//ar(CEREAL_NVP(map_pg_));
+		//ar(CEREAL_NVP(map_bg_));
+		ProjectManager::AddSaveObject("key", "data");
+	}
+
 	//std::map<std::string, std::unique_ptr<sf::Sprite>> 	tiles_;	/**< All solid entities are stored in this map. */
 
 private:
@@ -163,27 +182,6 @@ private:
 
 	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
 
-	friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version) const
-	{
-		ar( CEREAL_NVP(filter_));
-		ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
-
-		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
-		//sf::Image img;
-		//img = tex.copyToImage();
-		//const sf::Uint8* imgData = img.getPixelsPtr();
-		//ar(cereal::make_nvp("tex_used_tiles_width", img.getSize().x));
-		//ar(cereal::make_nvp("tex_used_tiles_height", img.getSize().y));
-		//ar.saveBinaryValue(imgData, sizeof(sf::Uint8) * img.getSize().x * img.getSize().y * 4, "tex_used_tiles");
-
-		//ar(CEREAL_NVP(map_fg_));
-		//ar(CEREAL_NVP(map_pg_));
-		//ar(CEREAL_NVP(map_bg_));
-	}
-
 };
-CEREAL_CLASS_VERSION(Scene, 1)
 
 #endif

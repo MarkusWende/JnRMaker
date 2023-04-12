@@ -26,9 +26,9 @@ include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_D
 # include_directories(${SOIL_INCLUDE_DIR})
 
 # Cereal
-set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
-include_directories(${CEREAL_DIR}/include)
-add_subdirectory(${CEREAL_DIR} ${PROJECT_BINARY_DIR}/cereal.dir)
+# set(CEREAL_DIR ${THIRD_PARTY_DIR}/cereal)
+# include_directories(${CEREAL_DIR}/include)
+# add_subdirectory(${CEREAL_DIR} ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
@@ -71,8 +71,12 @@ include_directories(${GLM_DIR})
 add_subdirectory(${GLM_DIR} ${PROJECT_BINARY_DIR}/glm.dir)
 
 # json
-set(JSON_DIR ${THIRD_PARTY_DIR}/json)
-include_directories(${JSON_DIR}/single_include)
+# set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+# include_directories(${JSON_DIR}/single_include)
+
+# RapidJSON
+set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
+include_directories(${RAPIDJSON_DIR}/include)
 
 # Copy data files
 file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
@@ -141,6 +145,6 @@ add_executable(
     ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui cereal GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES})
+target_link_libraries(jnrmaker app imgui GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES})
 
 install(TARGETS jnrmaker DESTINATION bin)

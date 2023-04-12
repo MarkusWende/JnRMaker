@@ -79,15 +79,6 @@ public:
 private:
 	using Solid::DrawWireframe;						/**< Dont use this function. Therefor its private. */
 	
-    friend class cereal::access;
-	template <class Archive>
-	void serialize(Archive& ar, std::uint32_t const version)
-	{
-		
-	}
-	
 };
-
-CEREAL_CLASS_VERSION(Line, 1)
 
 #endif	/* PRIMITIVE_LINE_H */

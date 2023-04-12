@@ -33,17 +33,19 @@ mergeInto(LibraryManager.library, {
         } finally {
             // To avoid memory leaks we need to always clear out the allocated heap data
             // This needs to happen in the finally block, otherwise thrown errors will stop code execution before this happens
-            //Module._free(buffer)
+            Module._free(contents)
+            Module._free(file)
         }
         // Do something with the file handle.
 
         return 1;
     },
-    saveLocalFile: async function() {
+    saveJSONFile: async function() {
         try {
-            var myUint8Array = Module.getBytes();
+            //var myUint8Array = Module.getJSON();
+            const rawStr = Module.ccall("getJSON", "string");
             //var blob = new Blob(myUint8Array, {type: "text/json"});
-            var string = new TextDecoder().decode(new Uint8Array(myUint8Array));
+            //var string = new TextDecoder().decode(new Uint8Array(myUint8Array));
             // create a new handle
             handle = await window.showSaveFilePicker({
                 suggestedName: 'preset.json'
@@ -52,7 +54,7 @@ mergeInto(LibraryManager.library, {
             // create a FileSystemWritableFileStream to write to
             const writableStream = await handle.createWritable();
 
-            await writableStream.write(string);
+            await writableStream.write(rawStr);
             await writableStream.close();
 
             // write our file
