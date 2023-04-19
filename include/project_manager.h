@@ -48,7 +48,6 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <nlohmann/json.hpp>
-#include <nfd.h>
 
 #include "time_helper.h"
 #include "message_manager.h"
@@ -62,6 +61,8 @@ extern "C" {
     extern int saveJSONFile();
     extern int viewFullscreen();
 }
+#else
+#include <nfd.h>
 #endif
 
 /**

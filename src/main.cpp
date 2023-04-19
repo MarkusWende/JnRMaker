@@ -249,8 +249,6 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(g_Window, g_GLContext);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    NFD_Init();
-
     // Gui
     //appGui = new Gui();
     appGui = std::make_shared<Gui>();
@@ -263,7 +261,8 @@ int main(int, char**)
     emscripten_set_main_loop_arg(main_loop, NULL, 60, true);
 #else
     //ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    NFD_Init();
+    
     // Main loop
     while (appGui->IsOpen())
     {
