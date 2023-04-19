@@ -78,6 +78,10 @@ add_subdirectory(${GLM_DIR} ${PROJECT_BINARY_DIR}/glm.dir)
 set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
 include_directories(${RAPIDJSON_DIR}/include)
 
+# Native File Dialog
+set(NFD_DIR ${THIRD_PARTY_DIR}/nfd-extended)
+add_subdirectory(${NFD_DIR})
+
 # Copy data files
 file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
 file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")
@@ -145,6 +149,6 @@ add_executable(
     ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES})
+target_link_libraries(jnrmaker app imgui nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES})
 
 install(TARGETS jnrmaker DESTINATION bin)

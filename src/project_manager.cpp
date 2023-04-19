@@ -72,6 +72,12 @@ void openTilemapFile(std::string const& name, std::string const& type, emscripte
     MessageManager::AddMessage(msg, message_t::DEBUG);
 }
 
+EMSCRIPTEN_BINDINGS(my_module)
+{
+    emscripten::function("openTilemapFile", &openTilemapFile);
+}
+#endif
+
 extern "C" {
 
 const char* getJSON()
@@ -83,12 +89,6 @@ const char* getJSON()
 }
 
 }
-
-EMSCRIPTEN_BINDINGS(my_module)
-{
-    emscripten::function("openTilemapFile", &openTilemapFile);
-}
-#endif
 
 void ProjectManager::AddSaveObject(std::string key, std::string data)
 {
@@ -198,6 +198,8 @@ void ProjectManager::SaveWrite()
 
 #ifdef __EMSCRIPTEN__
     saveJSONFile();
+#else
+
 #endif
 
     //SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, j));
