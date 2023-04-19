@@ -48,6 +48,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <nlohmann/json.hpp>
+#include <nfd.h>
 
 #include "time_helper.h"
 #include "message_manager.h"

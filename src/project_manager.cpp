@@ -199,7 +199,29 @@ void ProjectManager::SaveWrite()
 #ifdef __EMSCRIPTEN__
     saveJSONFile();
 #else
+    nfdchar_t *outPath;
+    nfdfilteritem_t filterItem[2] = { { "Source code", "c,cpp,cc" }, { "Headers", "h,hpp" } };
+    nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 2, NULL);
 
+    std::stringstream msg;
+    if (result == NFD_OKAY)
+    {
+        msg << "Success!";
+        MessageManager::AddMessage(msg, message_t::INFO);
+        msg << outPath;
+        MessageManager::AddMessage(msg, message_t::INFO);
+        NFD_FreePath(outPath);
+    }
+    else if (result == NFD_CANCEL)
+    {
+        msg << "User pressed cancel.";
+        MessageManager::AddMessage(msg, message_t::WARNING);
+    }
+    else 
+    {
+        msg << "Error: " << NFD_GetError();
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
+    }
 #endif
 
     //SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, j));

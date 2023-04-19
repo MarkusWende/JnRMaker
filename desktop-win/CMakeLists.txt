@@ -49,14 +49,21 @@ include_directories(${SDL2_INCLUDE_DIRS})
 # include_directories(${CJSON_DIR})
 
 # Boost
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_STATIC_RUNTIME ON)
+set(Boost_USE_STATIC_LIBS OFF )
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+set (Boost_DEBUG ON)
 
-find_package(Boost 1.69 COMPONENTS system filesystem)
+find_package(Boost 1.69 COMPONENTS system filesystem serialization)
 IF(Boost_FOUND)
     link_directories(${Boost_LIBRARY_DIRS})
     include_directories(${Boost_INCLUDE_DIRS})
 ENDIF(Boost_FOUND)
+
+if (WIN32)
+    add_definitions( -DBOOST_ALL_NO_LIB )
+    add_definitions( -DBOOST_ALL_DYN_LINK )
+endif()
 
 # stb
 set(STB_DIR ${THIRD_PARTY_DIR}/stb)
@@ -71,8 +78,8 @@ include_directories(${GLM_DIR})
 add_subdirectory(${GLM_DIR} ${PROJECT_BINARY_DIR}/glm.dir)
 
 # json
-# set(JSON_DIR ${THIRD_PARTY_DIR}/json)
-# include_directories(${JSON_DIR}/single_include)
+set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+include_directories(${JSON_DIR}/single_include)
 
 # RapidJSON
 set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
@@ -80,7 +87,8 @@ include_directories(${RAPIDJSON_DIR}/include)
 
 # Native File Dialog
 set(NFD_DIR ${THIRD_PARTY_DIR}/nfd-extended)
-add_subdirectory(${NFD_DIR})
+add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
+include_directories(${NFD_DIR}/src/include)
 
 # Copy data files
 file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
@@ -149,6 +157,6 @@ add_executable(
     ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES})
+target_link_libraries(jnrmaker app imgui bcrypt nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS jnrmaker DESTINATION bin)

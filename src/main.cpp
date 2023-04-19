@@ -249,6 +249,8 @@ int main(int, char**)
     ImGui_ImplSDL2_InitForOpenGL(g_Window, g_GLContext);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    NFD_Init();
+
     // Gui
     //appGui = new Gui();
     appGui = std::make_shared<Gui>();
@@ -269,6 +271,8 @@ int main(int, char**)
     }
 
     // Cleanup
+    NFD_Quit();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
