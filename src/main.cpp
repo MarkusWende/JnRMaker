@@ -155,6 +155,7 @@ int main(int, char**)
 
     if (!gGLContext)
     {
+#ifdef _WIN32
         FILE* stream;
         freopen_s(&stream, "log.txt", "w", stdout);
         if (stream)
@@ -162,6 +163,16 @@ int main(int, char**)
             fprintf(stream, "Failed to initialize WebGL context!\n");
             fclose(stream);
         }
+#endif // _WIN32
+#ifdef __linux__
+        FILE* stream;
+        stream = fopen("./log.txt", "w");
+        if (stream)
+        {
+            fprintf(stream, "Failed to initialize WebGL context!\n");
+            fclose(stream);
+        }
+#endif // __linux__
         return 1;
     }
 
