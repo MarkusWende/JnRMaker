@@ -139,7 +139,7 @@ int main(int, char**)
 
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     gWindow = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowRect.w, windowRect.h, windowFlags);
-#ifndef __EMSCRIPTEN__
+#ifdef _WIN32
     int windowBorderSizeTop, windowBorderSizeLeft, windowBorderSizeBottom, windowBorderSizeRight;
     SDL_GetWindowBordersSize(gWindow, &windowBorderSizeTop, &windowBorderSizeLeft, &windowBorderSizeBottom, &windowBorderSizeRight);
     {
