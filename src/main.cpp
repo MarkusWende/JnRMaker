@@ -139,6 +139,7 @@ int main(int, char**)
 
     SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     gWindow = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowRect.w, windowRect.h, windowFlags);
+#ifndef __EMSCRIPTEN__
     int windowBorderSizeTop, windowBorderSizeLeft, windowBorderSizeBottom, windowBorderSizeRight;
     SDL_GetWindowBordersSize(gWindow, &windowBorderSizeTop, &windowBorderSizeLeft, &windowBorderSizeBottom, &windowBorderSizeRight);
     {
@@ -150,6 +151,7 @@ int main(int, char**)
     SDL_SetWindowBordered(gWindow, SDL_FALSE);
     SDL_SetWindowPosition(gWindow, windowRect.x, screenHeight - windowRect.h);
     SDL_SetWindowSize(gWindow, windowRect.w, windowRect.h - (windowBorderSizeTop + windowBorderSizeBottom));
+#endif
 
     gGLContext = SDL_GL_CreateContext(gWindow);
 
