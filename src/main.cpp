@@ -36,8 +36,8 @@
 
 // Emscripten requires to have full control over the main loop. We're going to store our SDL book-keeping variables globally.
 // Having a single function that acts as a loop prevents us to store state in the stack of said function. So we need some location for this.
-SDL_Window*     g_Window = NULL;
-SDL_GLContext   g_GLContext = NULL;
+SDL_Window*     gWindow = NULL;
+SDL_GLContext   gGLContext = NULL;
 
 // Gui
 std::shared_ptr<Gui> appGui;
@@ -101,10 +101,10 @@ int main(int, char**)
 	}
 
     // Decide GL+GLSL versions
-    const char* glsl_version = "#version 100";
+    const char* glslVersion = "#version 100";
     #if __APPLE__
         // GL 4.1 + GLSL 410
-        glsl_version = "#version 330";
+        glslVersion = "#version 330";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); // Always required on Mac
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -113,14 +113,14 @@ int main(int, char**)
         // For the browser using Emscripten, we are going to use WebGL1 with GL ES2. See the Makefile. for requirement details.
         // It is very likely the generated file won't work in many browsers. Firefox is the only sure bet, but I have successfully
         // run this code on Chrome for Android for example.
-        glsl_version = "#version 300 es";
+        glslVersion = "#version 300 es";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     #else
         // GL 4.1 + GLSL 410
-        glsl_version = "#version 330";
+        glslVersion = "#version 330";
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -131,18 +131,48 @@ int main(int, char**)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_DisplayMode current;
-    SDL_GetCurrentDisplayMode(0, &current);
-    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    g_Window = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
-    g_GLContext = SDL_GL_CreateContext(g_Window);
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    int screenWidth = dm.w;
+    int screenHeight = dm.h;
+    SDL_Rect windowRect = {0, 0, screenWidth, screenHeight};
 
-    if (!g_GLContext)
+    SDL_WindowFlags windowFlags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    gWindow = SDL_CreateWindow("JnRMaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowRect.w, windowRect.h, windowFlags);
+    int windowBorderSizeTop, windowBorderSizeLeft, windowBorderSizeBottom, windowBorderSizeRight;
+    SDL_GetWindowBordersSize(gWindow, &windowBorderSizeTop, &windowBorderSizeLeft, &windowBorderSizeBottom, &windowBorderSizeRight);
     {
-        fprintf(stderr, "Failed to initialize WebGL context!\n");
+        std::stringstream msg;
+        msg << "top: " << windowBorderSizeTop << "\tleft: " << windowBorderSizeLeft << "\tbottom: " << windowBorderSizeBottom << "\tright: " << windowBorderSizeRight;
+        MessageManager::AddMessage(msg, message_t::WARNING);
+    }
+
+    SDL_SetWindowBordered(gWindow, SDL_FALSE);
+    SDL_SetWindowPosition(gWindow, windowRect.x, screenHeight - windowRect.h);
+    SDL_SetWindowSize(gWindow, windowRect.w, windowRect.h - (windowBorderSizeTop + windowBorderSizeBottom));
+
+    gGLContext = SDL_GL_CreateContext(gWindow);
+
+    if (!gGLContext)
+    {
+        FILE* stream;
+        freopen_s(&stream, "log.txt", "w", stdout);
+        if (stream)
+        {
+            fprintf(stream, "Failed to initialize WebGL context!\n");
+            fclose(stream);
+        }
         return 1;
     }
+
     SDL_GL_SetSwapInterval(1); // Enable vsync
+
+    // if (SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+	// {
+	// 	std::stringstream msg;
+	// 	msg << "Could not start in fullscreen mode: " << SDL_GetError();
+	// 	MessageManager::AddMessage(msg, message_t::ERROR_T);
+	// }
 
     // Initialize OpenGL loader
     // glewExperimental = GL_TRUE;
@@ -155,16 +185,20 @@ int main(int, char**)
 #ifdef _WIN32
         FILE* stream;
         freopen_s(&stream, "log.txt", "w", stdout);
-            if (stream) {
+        if (stream)
+        {
             fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
             fclose(stream);
-            }
+        }
 #endif // _WIN32
 #ifdef __linux__
         FILE* stream;
         stream = fopen("./log.txt", "w");
-        fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
-        fclose(stream);
+        if (stream)
+        {
+            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
+            fclose(stream);
+        }
 #endif // __linux__
         return 1;
     }
@@ -180,17 +214,20 @@ int main(int, char**)
 #ifdef _WIN32
             FILE* stream;
             freopen_s(&stream, "log.txt", "w", stdout);
-                if (stream)
-                {
-                    fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
-                    fclose(stream);
-                }
+            if (stream)
+            {
+                fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
+                fclose(stream);
+            }
 #endif // _WIN32
 #ifdef __linux__
             FILE* stream;
             stream = fopen("./log.txt", "w");
-            fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
-            fclose(stream);
+            if (stream)
+            {
+                fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
+                fclose(stream);
+            }
 #endif // __linux__
             return 1;
         }
@@ -246,8 +283,8 @@ int main(int, char**)
     //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForOpenGL(g_Window, g_GLContext);
-    ImGui_ImplOpenGL3_Init(glsl_version);
+    ImGui_ImplSDL2_InitForOpenGL(gWindow, gGLContext);
+    ImGui_ImplOpenGL3_Init(glslVersion);
 
     // Gui
     //appGui = new Gui();
@@ -277,8 +314,8 @@ int main(int, char**)
     ImGui::DestroyContext();
     //ImPlot::DestroyContext();
 
-    SDL_GL_DeleteContext(g_GLContext);
-    SDL_DestroyWindow(g_Window);
+    SDL_GL_DeleteContext(gGLContext);
+    SDL_DestroyWindow(gWindow);
     SDL_Quit();
 
     return 0;
@@ -304,7 +341,7 @@ static void main_loop(void* arg)
         ImGui_ImplSDL2_ProcessEvent(&event);
         if (event.type == SDL_QUIT)
             appGui->Close();
-        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(g_Window))
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(gWindow))
             appGui->Close();
     }
 
@@ -364,7 +401,7 @@ static void main_loop(void* arg)
 
     // Update and render gui
     int width, height;
-    SDL_GetWindowSize(g_Window, &width, &height);
+    SDL_GetWindowSize(gWindow, &width, &height);
     appGui->WindowUpdate(appScene, width, height);
     processEvents(appScene, appGui);
     // appGui->Render(appScene);
@@ -378,7 +415,7 @@ static void main_loop(void* arg)
 
     // Rendering
     ImGui::Render();
-    SDL_GL_MakeCurrent(g_Window, g_GLContext);
+    SDL_GL_MakeCurrent(gWindow, gGLContext);
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -399,7 +436,7 @@ static void main_loop(void* arg)
     }
 #endif
 
-    SDL_GL_SwapWindow(g_Window);
+    SDL_GL_SwapWindow(gWindow);
 }
 
 
