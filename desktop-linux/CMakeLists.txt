@@ -48,8 +48,8 @@ include_directories(${SDL2_INCLUDE_DIRS})
 # include_directories(${CJSON_DIR})
 
 # json
-# set(JSON_DIR ${THIRD_PARTY_DIR}/json)
-# include_directories(${JSON_DIR}/single_include)
+set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+include_directories(${JSON_DIR}/single_include)
 
 # RapidJSON
 set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
@@ -71,6 +71,11 @@ include_directories(${STB_DIR})
 
 # Googletest
 add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
+
+# Native File Dialog
+set(NFD_DIR ${THIRD_PARTY_DIR}/nfd-extended)
+add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
+include_directories(${NFD_DIR}/src/include)
 
 # Copy data files
 file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/data")
@@ -139,7 +144,7 @@ add_executable(
     ${MAIN_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
+target_link_libraries(jnrmaker app imgui nfd GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
 
 
 # #Change this if you need to target a specific CMake version
