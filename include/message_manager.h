@@ -40,6 +40,8 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <filesystem>
 
 #include "imgui.h"
 
@@ -75,14 +77,37 @@ class MessageManager
 {
 public:
   static std::vector<Message> messages;               /**< Contains all messages, that are shared at the moment. */
+  static bool is_new_session_;
 
   /**
 	 * @brief Add a message.
-   * @param msg Message string.
+   * @param msg Message stringstream.
    * @param type Type of the message {ERROR, WARNING, INFO}.
 	 * @return Return the message struct.
 	 */
   static Message AddMessage(std::stringstream& msg, message_t type, bool popup = 0);
+
+    /**
+	 * @brief Add a message.
+   * @param msg Message as a constant char pointer.
+   * @param type Type of the message {ERROR, WARNING, INFO}.
+	 * @return Return the message struct.
+	 */
+  static Message AddMessage(const char* msg, message_t type, bool popup = 0);
+
+  /**
+	 * @brief Write message to logfile.
+   * @param msg Message stringstream.
+	 * @return Return 0 if successful.
+	 */
+  static int Log(std::stringstream& msg);
+
+  /**
+	 * @brief Write message to logfile.
+   * @param msg Message as a const char pointer.
+	 * @return Return 0 if successful.
+	 */
+  static int Log(const char* format, ...);
 
   /**
 	 * @brief Get all messages in the message vector.
@@ -92,6 +117,6 @@ public:
 
 private:
   // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
-  MessageManager() { };                             //!< constructor
-  ~MessageManager() { };                            //!< destructor
+  MessageManager() {};                             //!< constructor
+  ~MessageManager() {};                            //!< destructor
 };

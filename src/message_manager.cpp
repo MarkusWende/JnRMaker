@@ -51,6 +51,7 @@ EMSCRIPTEN_BINDINGS(my_module) {
 
 // Instantiate static messages vector
 std::vector<Message> MessageManager::messages;
+bool MessageManager::is_new_session_;
 
 Message MessageManager::AddMessage(std::stringstream& msg, message_t type, bool popup)
 {
@@ -69,4 +70,38 @@ Message MessageManager::AddMessage(std::stringstream& msg, message_t type, bool 
 	msg.str("");
 
 	return tmpMsg;
+}
+
+Message MessageManager::AddMessage(const char *msg, message_t type, bool popup)
+{
+	std::stringstream tmpMsg;
+	tmpMsg << msg;
+	return MessageManager::AddMessage(tmpMsg, type, popup);
+}
+
+int MessageManager::Log(std::stringstream& msg)
+{
+	MessageManager::Log(msg.str().c_str());
+	return 0;
+}
+
+int MessageManager::Log(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	std::stringstream ss;
+	ss << format << "\n";
+	std::vfprintf(stdout, ss.str().c_str(), args);
+	va_end(args);
+
+	std::ofstream outfile("jnrmaker.log", std::ios_base::app);
+	if (!outfile.is_open())
+	{
+		return -1;
+	}
+	outfile.seekp(0, std::ios::beg);
+	outfile << TimeHelper::GetTimeinfo().c_str() << "\t" << ss.str();
+	outfile.close();
+
+	return 0;
 }

@@ -96,7 +96,7 @@ int main(int, char**)
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
 	{
-		printf("Error: %s\n", SDL_GetError());
+		MessageManager::Log("Error: %s\n", SDL_GetError());
 		return -1;
 	}
 
@@ -155,24 +155,7 @@ int main(int, char**)
 
     if (!gGLContext)
     {
-#ifdef _WIN32
-        FILE* stream;
-        freopen_s(&stream, "log.txt", "w", stdout);
-        if (stream)
-        {
-            fprintf(stream, "Failed to initialize WebGL context!\n");
-            fclose(stream);
-        }
-#endif // _WIN32
-#ifdef __linux__
-        FILE* stream;
-        stream = fopen("./log.txt", "w");
-        if (stream)
-        {
-            fprintf(stream, "Failed to initialize WebGL context!\n");
-            fclose(stream);
-        }
-#endif // __linux__
+        MessageManager::Log("Failed to initialize WebGL context!");
         return 1;
     }
 
@@ -193,24 +176,7 @@ int main(int, char**)
     //bool err = false;
     if (err)
     {
-#ifdef _WIN32
-        FILE* stream;
-        freopen_s(&stream, "log.txt", "w", stdout);
-        if (stream)
-        {
-            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
-            fclose(stream);
-        }
-#endif // _WIN32
-#ifdef __linux__
-        FILE* stream;
-        stream = fopen("./log.txt", "w");
-        if (stream)
-        {
-            fprintf(stream, "%s\tFailed to initialize OpenGL loader! Error: %s\n", TimeHelper::GetTimeinfo().c_str(), glewGetErrorString(err));
-            fclose(stream);
-        }
-#endif // __linux__
+        MessageManager::Log("Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
         return 1;
     }
     else
@@ -222,24 +188,7 @@ int main(int, char**)
 
         if (glslVersion == NULL)
         {
-#ifdef _WIN32
-            FILE* stream;
-            freopen_s(&stream, "log.txt", "w", stdout);
-            if (stream)
-            {
-                fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
-                fclose(stream);
-            }
-#endif // _WIN32
-#ifdef __linux__
-            FILE* stream;
-            stream = fopen("./log.txt", "w");
-            if (stream)
-            {
-                fprintf(stream, "%s\tOpenGL GLSL Version is Null.. Aborting\n", TimeHelper::GetTimeinfo().c_str());
-                fclose(stream);
-            }
-#endif // __linux__
+            MessageManager::Log("OpenGL GLSL Version is Null.. Aborting");
             return 1;
         }
         
@@ -250,13 +199,13 @@ int main(int, char**)
         glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
 
         msg << "Successful initialized OpenGL..." << std::endl;
-        msg << "\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
-        msg << "\t\t\tGL Renderer:\t\t\t\t" << renderer << std::endl;
-        msg << "\t\t\tGL Version (string):\t" << version << std::endl;
-        msg << "\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
-        msg << "\t\t\tGLSL Version\t\t\t\t" << glslVersion << std::endl;
-        msg << "\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
-        MessageManager::AddMessage(msg, message_t::DEBUG);
+        msg << "\t\t\t\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
+        msg << "\t\t\t\t\t\tGL Renderer:\t\t\t" << renderer << std::endl;
+        msg << "\t\t\t\t\t\tGL Version (string):\t" << version << std::endl;
+        msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
+        msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersion << std::endl;
+        msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
+        MessageManager::Log(msg);
     }
 
     glEnable(GL_BLEND);

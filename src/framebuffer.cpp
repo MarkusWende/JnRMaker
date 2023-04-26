@@ -87,40 +87,15 @@ void Framebuffer::Generate(GLuint width, GLuint height, GLenum type)
 	}
 #endif
 	
-#ifdef _WIN32
-	FILE* stream;
-    freopen_s(&stream, "log.txt", "a", stdout);
-	//	freopen_s(&stream, "log.txt", "a", stdout);
-	if (stream)
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			fprintf(stream, "%s\tFramebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u\n", TimeHelper::GetTimeinfo().c_str(), id_, width_, height_);
-		}
-		else
-		{
-			fprintf(stream, "%s\t[Error]: Framebuffer could not be initialized.\n", TimeHelper::GetTimeinfo().c_str());
-		}
-            	fclose(stream);
+		MessageManager::Log("Framebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u", id_, width_, height_);
 	}
-#endif // _WIN32
-#ifdef __linux__
-	FILE* stream;
-    stream = fopen("./log.txt", "a");
-	//	freopen_s(&stream, "log.txt", "a", stdout);
-	if (stream)
+	else
 	{
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-		{
-			fprintf(stream, "%s\tFramebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u\n", TimeHelper::GetTimeinfo().c_str(), id_, width_, height_);
-		}
-		else
-		{
-			fprintf(stream, "%s\t[Error]: Framebuffer could not be initialized.\n", TimeHelper::GetTimeinfo().c_str());
-		}
-            	fclose(stream);
+		MessageManager::Log("[Error]: Framebuffer could not be initialized.");
 	}
-#endif // __linux__
 
 	// Unbind texture
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
