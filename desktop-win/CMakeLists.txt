@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 3.6)
-project(JnRMaker)
+cmake_minimum_required (VERSION 3.10)
+project(JnRMaker-Win)
 
 # We are using C++ 17 and will make use of C++ exceptions.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /bigobj")
@@ -12,7 +12,19 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(THIRD_PARTY_DIR "../external")
 set(MAIN_SOURCE_DIR "../src")
 set(MAIN_INCLUDE_DIR "../include")
+set(RESOURCES_DIR "../resources")
 include_directories(${MAIN_INCLUDE_DIR})
+include_directories(${MAIN_INCLUDE_DIR}/utils)
+include_directories(${MAIN_INCLUDE_DIR}/utils/logging)
+include_directories(${MAIN_INCLUDE_DIR}/entities)
+include_directories(${MAIN_INCLUDE_DIR}/graphics)
+include_directories(${MAIN_INCLUDE_DIR}/ui)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
 
 # OpenGL
 set(OpenGL_GL_PRFERENCE "LEGACY")
@@ -93,29 +105,10 @@ include_directories(${NFD_DIR}/src/include)
 # Copy data files
 file(COPY "../resources/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/resources")
 
-add_library(
-    app
-    ${MAIN_SOURCE_DIR}/entity_world_layer.cpp
-    ${MAIN_SOURCE_DIR}/entity_solid.cpp
-    ${MAIN_SOURCE_DIR}/framebuffer.cpp
-    ${MAIN_SOURCE_DIR}/gui.cpp
-    ${MAIN_SOURCE_DIR}/message_manager.cpp
-    ${MAIN_SOURCE_DIR}/primitive_cube.cpp
-    ${MAIN_SOURCE_DIR}/primitive_line.cpp
-    ${MAIN_SOURCE_DIR}/primitive_quad.cpp
-    ${MAIN_SOURCE_DIR}/primitive.cpp
-    ${MAIN_SOURCE_DIR}/project_manager.cpp
-    ${MAIN_SOURCE_DIR}/resource_manager.cpp
-    ${MAIN_SOURCE_DIR}/scene.cpp
-    ${MAIN_SOURCE_DIR}/shader.cpp
-    ${MAIN_SOURCE_DIR}/solid_cs.cpp
-    ${MAIN_SOURCE_DIR}/solid_grid.cpp
-    ${MAIN_SOURCE_DIR}/solid_sprite.cpp
-    ${MAIN_SOURCE_DIR}/texture.cpp
-    ${MAIN_SOURCE_DIR}/tilemap.cpp
-    ${MAIN_SOURCE_DIR}/tilemap_manager.cpp
-    ${MAIN_SOURCE_DIR}/window.cpp
-)
+add_subdirectory(${MAIN_INCLUDE_DIR}/entities)
+add_subdirectory(${MAIN_INCLUDE_DIR}/graphics)
+add_subdirectory(${MAIN_INCLUDE_DIR}/ui)
+add_subdirectory(${MAIN_INCLUDE_DIR}/utils)
 
 add_library(
     imgui
@@ -153,9 +146,10 @@ add_library(
 # The 'ancmonitor' executable
 add_executable(
     jnrmaker
-    ${MAIN_SOURCE_DIR}/main.cpp
+    ${MAIN_SOURCE_DIR}/Main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui bcrypt nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES} ${Boost_LIBRARIES})
+#target_link_libraries(jnrmaker app imgui bcrypt nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(jnrmaker entities graphics ui utils imgui bcrypt nfd GLEW::GLEW glfw SDL2::SDL2main SDL2::SDL2 SDL2::SDL2_image ${OPENGL_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS jnrmaker DESTINATION bin)

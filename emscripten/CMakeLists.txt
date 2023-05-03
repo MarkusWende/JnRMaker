@@ -103,10 +103,10 @@ include_directories(${RAPIDJSON_DIR}/include)
 # Googletest
 #add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
 
-add_subdirectory(${MAIN_INCLUDE_DIR}/entities)
-add_subdirectory(${MAIN_INCLUDE_DIR}/graphics)
-add_subdirectory(${MAIN_INCLUDE_DIR}/ui)
-add_subdirectory(${MAIN_INCLUDE_DIR}/utils)
+add_subdirectory(${MAIN_SOURCE_DIR}/entities ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/entities)
+add_subdirectory(${MAIN_SOURCE_DIR}/graphics ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/graphics)
+add_subdirectory(${MAIN_SOURCE_DIR}/ui ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/ui)
+add_subdirectory(${MAIN_SOURCE_DIR}/utils ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/utils)
 
 add_library(
     imgui
@@ -130,7 +130,7 @@ add_executable(
     ${MAIN_SOURCE_DIR}/Main.cpp
 )
 
-target_link_libraries(jnrmaker entities graphics ui utils imgui)
+target_link_libraries(jnrmaker entities graphics ui utils imgui ${SDL2_LIBRARIES})
 
 #add_definitions("-s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
 #add_definitions("-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
