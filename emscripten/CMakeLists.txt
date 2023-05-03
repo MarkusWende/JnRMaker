@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 3.6)
-project(JnRMaker)
+cmake_minimum_required (VERSION 3.10)
+project(JnRMaker-Web)
 
 # We are using C++ 17 and will make use of C++ exceptions.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -Wall -Wextra -Wpedantic -pthread")
@@ -10,11 +10,21 @@ set(CMAKE_BUILD_TYPE "Release")
 set(THIRD_PARTY_DIR "../external")
 set(MAIN_SOURCE_DIR "../src")
 set(MAIN_INCLUDE_DIR "../include")
+set(RESOURCES_DIR "../resources")
 include_directories(${MAIN_INCLUDE_DIR})
+include_directories(${MAIN_INCLUDE_DIR}/utils)
+include_directories(${MAIN_INCLUDE_DIR}/utils/logging)
+include_directories(${MAIN_INCLUDE_DIR}/entities)
+include_directories(${MAIN_INCLUDE_DIR}/graphics)
+include_directories(${MAIN_INCLUDE_DIR}/ui)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+set(CMAKE_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
 
-file(GLOB libraryJsFiles templates/*.js)
+file(GLOB libraryJsFiles ${RESOURCES_DIR}/www/js/*.js)
 
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
 	SET(linkFlags "-g3 -s NO_EXIT_RUNTIME=1 -sASSERTIONS=1")
@@ -26,9 +36,9 @@ endif()
 SET(linkFlags "${linkFlags} -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
 SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2")
 SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")
-SET(linkFlags "${linkFlags} -sFETCH -sEXPORTED_FUNCTIONS=_getJSON,_main -sEXPORTED_RUNTIME_METHODS=ccall,cwrap")
+SET(linkFlags "${linkFlags} -sFETCH -sEXPORTED_FUNCTIONS=_getJSON,_main,_getLocalTilemapFile,_saveJSONFile,_viewFullscreen -sEXPORTED_RUNTIME_METHODS=ccall,cwrap")
 SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy")
-SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+SET(linkFlags "${linkFlags} --preload-file ../../resources@/resources")
 
 # # OpenGL
 # set(OpenGL_GL_PRFERENCE "LEGACY")
@@ -49,7 +59,7 @@ SET(linkFlags "${linkFlags} --preload-file ../../data@/data --preload-file ../..
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
-add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/imconfig_jnrmaker.h")
+add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/ui/ImConfigJnRMaker.h")
 
 # Implot
 # set(IMPLOT_DIR ${THIRD_PARTY_DIR}/implot)
@@ -93,33 +103,10 @@ include_directories(${RAPIDJSON_DIR}/include)
 # Googletest
 #add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
 
-# # Copy data files
-# file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
-# file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")
-
-add_library(
-    app
-    ${MAIN_SOURCE_DIR}/entity_world_layer.cpp
-    ${MAIN_SOURCE_DIR}/entity_solid.cpp
-    ${MAIN_SOURCE_DIR}/framebuffer.cpp
-    ${MAIN_SOURCE_DIR}/gui.cpp
-    ${MAIN_SOURCE_DIR}/message_manager.cpp
-    ${MAIN_SOURCE_DIR}/primitive_cube.cpp
-    ${MAIN_SOURCE_DIR}/primitive_line.cpp
-    ${MAIN_SOURCE_DIR}/primitive_quad.cpp
-    ${MAIN_SOURCE_DIR}/primitive.cpp
-    ${MAIN_SOURCE_DIR}/project_manager.cpp
-    ${MAIN_SOURCE_DIR}/resource_manager.cpp
-    ${MAIN_SOURCE_DIR}/scene.cpp
-    ${MAIN_SOURCE_DIR}/shader.cpp
-    ${MAIN_SOURCE_DIR}/solid_cs.cpp
-    ${MAIN_SOURCE_DIR}/solid_grid.cpp
-    ${MAIN_SOURCE_DIR}/solid_sprite.cpp
-    ${MAIN_SOURCE_DIR}/texture.cpp
-    ${MAIN_SOURCE_DIR}/tilemap.cpp
-    ${MAIN_SOURCE_DIR}/tilemap_manager.cpp
-    ${MAIN_SOURCE_DIR}/window.cpp
-)
+add_subdirectory(${MAIN_INCLUDE_DIR}/entities)
+add_subdirectory(${MAIN_INCLUDE_DIR}/graphics)
+add_subdirectory(${MAIN_INCLUDE_DIR}/ui)
+add_subdirectory(${MAIN_INCLUDE_DIR}/utils)
 
 add_library(
     imgui
@@ -140,10 +127,10 @@ add_library(
 # The 'jnrmaker' executable
 add_executable(
     jnrmaker
-    ${MAIN_SOURCE_DIR}/main.cpp
+    ${MAIN_SOURCE_DIR}/Main.cpp
 )
 
-target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
+target_link_libraries(jnrmaker entities graphics ui utils imgui)
 
 #add_definitions("-s EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
 #add_definitions("-s EXTRA_EXPORTED_RUNTIME_METHODS='[\"ccall\",\"cwrap\"]'")
@@ -152,6 +139,7 @@ target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 # These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
 set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "${linkFlags}")
 #set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-g -sASSERTIONS=1 -Os -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=2 -sUSE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind -sASYNCIFY --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
+
 
 message(STATUS "js libs '${libraryJsFiles}'")
 # To link .js files using the --js-library flag, use the following helper function.

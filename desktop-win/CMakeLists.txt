@@ -91,8 +91,7 @@ add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
 include_directories(${NFD_DIR}/src/include)
 
 # Copy data files
-file(COPY "../data/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/data")
-file(COPY "../src/shaders/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/src/shaders")
+file(COPY "../resources/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/resources")
 
 add_library(
     app

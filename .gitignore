@@ -27,7 +27,7 @@ x64/
 *.gch
 
 # resources
-data/
+resources/
 
 # log file
 log.txt
