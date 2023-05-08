@@ -45,7 +45,7 @@ include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_D
 # Dear ImGui
 set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
 include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
-add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/imconfig_jnrmaker.h")
+add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/ui/ImConfigJnRMaker.h")
 
 # Implot
 # set(IMPLOT_DIR ${THIRD_PARTY_DIR}/implot)
@@ -103,12 +103,12 @@ add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
 include_directories(${NFD_DIR}/src/include)
 
 # Copy data files
-file(COPY "../resources/" DESTINATION "${PROJECT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/resources")
+file(COPY "../resources/" DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/resources")
 
-add_subdirectory(${MAIN_INCLUDE_DIR}/entities)
-add_subdirectory(${MAIN_INCLUDE_DIR}/graphics)
-add_subdirectory(${MAIN_INCLUDE_DIR}/ui)
-add_subdirectory(${MAIN_INCLUDE_DIR}/utils)
+add_subdirectory(${MAIN_SOURCE_DIR}/entities ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/entities)
+add_subdirectory(${MAIN_SOURCE_DIR}/graphics ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/graphics)
+add_subdirectory(${MAIN_SOURCE_DIR}/ui ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/ui)
+add_subdirectory(${MAIN_SOURCE_DIR}/utils ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/utils)
 
 add_library(
     imgui

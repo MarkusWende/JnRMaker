@@ -64,7 +64,7 @@ MessageCallback( GLenum source,
     msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
     if (type == GL_DEBUG_TYPE_ERROR)
     {
-        MessageManager::AddMessage(msg, message_t::INFO);
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
     }
 }
 
@@ -86,7 +86,7 @@ GLenum glCheckError_(const char *file, int line)
         }
         std::stringstream msg;
         msg << error << " | " << file << " (" << line << ")";
-        MessageManager::AddMessage(msg, message_t::INFO );
+        MessageManager::AddMessage(msg, message_t::ERROR_T);
     }
     return errorCode;
 }
@@ -309,9 +309,6 @@ static void main_loop(void* arg)
 
     if (ProjectManager::GetStatus() == project_status_t::SAVE)
     {
-        std::stringstream msg;
-        msg << "Saving..";
-        MessageManager::AddMessage(msg, message_t::INFO);
         ProjectManager::SaveCreate();
     //     // create and open a character archive for output
     //     std::ofstream ofs(ProjectManager::GetName() + ".jrm");
@@ -334,9 +331,6 @@ static void main_loop(void* arg)
     }
     else if (ProjectManager::GetStatus() == project_status_t::LOAD)
     {
-        std::stringstream msg;
-        msg << "Loading..";
-        MessageManager::AddMessage(msg, message_t::INFO);
         //std::ifstream is(ProjectManager::GetName() + ".jrm");
         // cereal::XMLInputArchive ar(msg);
     //     //cereal::JSONInputArchive ar(is);
@@ -351,7 +345,6 @@ static void main_loop(void* arg)
 
     //     //window->setSize({ width, height });
 
-        MessageManager::AddMessage(msg, message_t::INFO);
 
         ProjectManager::SetStatus(project_status_t::IDLE);
     }

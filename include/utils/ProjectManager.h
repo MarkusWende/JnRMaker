@@ -91,7 +91,6 @@ struct SaveFile {
         std::stringstream msg;
         msg << j;
         json = msg.str().c_str();
-        MessageManager::AddMessage(msg, message_t::INFO);
         //d.CopyFrom(newDoc, d.GetAllocator());
         timeinfo = ts;
         type = save_file_t::JSON;
@@ -124,6 +123,7 @@ public:
     static void AddSaveObject(std::string key, std::string data);
     static void SaveCreate();
     static void SaveWrite();
+    static void OpenTilemap();
 
 private:
     ProjectManager() { };                             //!< constructor

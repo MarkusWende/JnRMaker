@@ -135,10 +135,11 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 			if (ImGui::MenuItem("Open"))
 			{
 				// Open new tile
+				ProjectManager::OpenTilemap();
 #ifdef __EMSCRIPTEN__
-                getLocalTilemapFile();
+                //getLocalTilemapFile();
 #else
-				file_browser_add_tiles_ = true;
+				//file_browser_add_tiles_ = true;
 #endif
 			}
             if(ImGui::MenuItem("Save"))

@@ -137,9 +137,9 @@ GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
 
 GLvoid WorldLayer::Delete()
 {
-    ResourceManager::GetTextureArray(name_).Delete();
-    ResourceManager::GetTexture(name_).Delete();
-    TilemapManager::Delete(name_);
+    //ResourceManager::GetTextureArray(name_).Delete();
+    //ResourceManager::GetTexture(name_).Delete();
+    //TilemapManager::Delete(name_);
     glDeleteVertexArrays(1, &quad_vao_);
     glDeleteBuffers(1, &quad_vbo_);
     glDeleteBuffers(1, &tile_trans_vbo_);
