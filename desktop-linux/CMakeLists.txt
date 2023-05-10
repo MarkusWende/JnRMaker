@@ -7,32 +7,31 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_BUILD_TYPE "Debug")
 
-set(THIRD_PARTY_DIR "../external")
-set(MAIN_SOURCE_DIR "../src")
-set(MAIN_INCLUDE_DIR "../include")
-set(RESOURCES_DIR "../resources")
-include_directories(${MAIN_INCLUDE_DIR})
-include_directories(${MAIN_INCLUDE_DIR}/utils)
-include_directories(${MAIN_INCLUDE_DIR}/utils/logging)
-include_directories(${MAIN_INCLUDE_DIR}/entities)
-include_directories(${MAIN_INCLUDE_DIR}/graphics)
-include_directories(${MAIN_INCLUDE_DIR}/ui)
+# set(THIRD_PARTY_DIR "../external")
+# set(MAIN_SOURCE_DIR "../src")
+# set(MAIN_INCLUDE_DIR "../include")
+# set(RESOURCES_DIR "../resources")
+# include_directories(${MAIN_INCLUDE_DIR})
+# include_directories(${MAIN_INCLUDE_DIR}/utils)
+# include_directories(${MAIN_INCLUDE_DIR}/utils/logging)
+# include_directories(${MAIN_INCLUDE_DIR}/entities)
+# include_directories(${MAIN_INCLUDE_DIR}/graphics)
+# include_directories(${MAIN_INCLUDE_DIR}/ui)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-set(CMAKE_BINARY_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
+# Set output directories for libraries and executables
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 
 # OpenGL
-set(OpenGL_GL_PRFERENCE "LEGACY")
-find_package(OpenGL REQUIRED)
-find_package(glfw3 3.2 REQUIRED)
-find_package(GLEW REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR})
+# set(OpenGL_GL_PRFERENCE "LEGACY")
+# find_package(OpenGL REQUIRED)
+# find_package(glfw3 3.2 REQUIRED)
+# find_package(GLEW REQUIRED)
+# include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_DIR})
 
 # # Soil
 # find_package(soil CONFIG REQUIRED)
@@ -42,76 +41,102 @@ include_directories(${OPENGL_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS} ${GLEW_INCLUDE_D
 # add_subdirectory(${THIRD_PARTY_DIR}/cereal ${PROJECT_BINARY_DIR}/cereal.dir)
 
 # Dear ImGui
-set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
-include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
-add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/imconfig_jnrmaker.h")
+# set(IMGUI_DIR ${THIRD_PARTY_DIR}/imgui)
+# include_directories(${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+# add_definitions(-DIMGUI_USER_CONFIG="${PROJECT_SOURCE_DIR}/${MAIN_INCLUDE_DIR}/ui/ImConfigJnRMaker.h")
 
 # Implot
 # set(IMPLOT_DIR ${THIRD_PARTY_DIR}/implot)
 # include_directories(${IMPLOT_DIR})
 
 # SDL2
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+# find_package(SDL2 REQUIRED)
+# find_package(SDL2_image REQUIRED)
+# include_directories(${SDL2_INCLUDE_DIRS})
 
 # cJSON
 # set(CJSON_DIR ${THIRD_PARTY_DIR}/cJSON)
 # include_directories(${CJSON_DIR})
 
 # json
-set(JSON_DIR ${THIRD_PARTY_DIR}/json)
-include_directories(${JSON_DIR}/single_include)
+# set(JSON_DIR ${THIRD_PARTY_DIR}/json)
+# include_directories(${JSON_DIR}/single_include)
 
-# RapidJSON
-set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
-include_directories(${RAPIDJSON_DIR}/include)
+# # RapidJSON
+# set(RAPIDJSON_DIR ${THIRD_PARTY_DIR}/rapidjson)
+# include_directories(${RAPIDJSON_DIR}/include)
 
-# Boost
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_STATIC_RUNTIME ON)
+# # Boost
+# set(Boost_USE_STATIC_LIBS ON)
+# set(Boost_USE_STATIC_RUNTIME ON)
 
-find_package(Boost 1.69 COMPONENTS system filesystem)
-IF(Boost_FOUND)
-    link_directories(${Boost_LIBRARY_DIRS})
-    include_directories(${Boost_INCLUDE_DIRS})
-ENDIF(Boost_FOUND)
+# find_package(Boost 1.69 COMPONENTS system filesystem)
+# IF(Boost_FOUND)
+#     link_directories(${Boost_LIBRARY_DIRS})
+#     include_directories(${Boost_INCLUDE_DIRS})
+# ENDIF(Boost_FOUND)
 
-# stb
-set(STB_DIR ${THIRD_PARTY_DIR}/stb)
-include_directories(${STB_DIR})
+# # stb
+# set(STB_DIR ${THIRD_PARTY_DIR}/stb)
+# include_directories(${STB_DIR})
 
-# Googletest
-add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
+# # Googletest
+# add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.dir)
 
-# Native File Dialog
-set(NFD_DIR ${THIRD_PARTY_DIR}/nfd-extended)
-add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
-include_directories(${NFD_DIR}/src/include)
+# # Native File Dialog
+# set(NFD_DIR ${THIRD_PARTY_DIR}/nfd-extended)
+# add_subdirectory(${NFD_DIR} ${PROJECT_BINARY_DIR}/nfd-extended.dir)
+# include_directories(${NFD_DIR}/src/include)
 
 # Copy data files
-file(COPY "../resources/" DESTINATION "${PROJECT_BINARY_DIR}/resources")
+# file(COPY "../resources/" DESTINATION "${PROJECT_BINARY_DIR}/resources")
 
-add_subdirectory(${MAIN_INCLUDE_DIR}/entities)
-add_subdirectory(${MAIN_INCLUDE_DIR}/graphics)
-add_subdirectory(${MAIN_INCLUDE_DIR}/ui)
-add_subdirectory(${MAIN_INCLUDE_DIR}/utils)
+# add_subdirectory(${MAIN_SOURCE_DIR}/entities entities)
+# add_subdirectory(${MAIN_SOURCE_DIR}/graphics graphics)
+# add_subdirectory(${MAIN_SOURCE_DIR}/ui ui)
+# add_subdirectory(${MAIN_SOURCE_DIR}/utils utils)
+add_subdirectory("../src" app)
 
-add_library(
-    imgui
-    ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
-    ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
-    ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
-    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
-    ${IMGUI_DIR}/imgui.h
-    ${IMGUI_DIR}/imconfig.h
-    ${IMGUI_DIR}/imgui_internal.h
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_demo.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-)
+# add_library(
+#     app
+#     ${MAIN_SOURCE_DIR}/entities/EntityWorldLayer.cpp
+#     ${MAIN_SOURCE_DIR}/entities/EntitySolid.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Framebuffer.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Primitive.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/PrimitiveCube.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/PrimitiveLine.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/PrimitiveQuad.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Scene.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Shader.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/SolidCS.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/SolidGrid.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/SolidSprite.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Texture.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Tilemap.cpp
+#     ${MAIN_SOURCE_DIR}/graphics/Window.cpp
+#     ${MAIN_SOURCE_DIR}/ui/Gui.cpp
+#     ${MAIN_SOURCE_DIR}/utils/logging/SDLLogger.cpp
+#     ${MAIN_SOURCE_DIR}/utils/MessageManager.cpp
+#     ${MAIN_SOURCE_DIR}/utils/ProjectManager.cpp
+#     ${MAIN_SOURCE_DIR}/utils/ResourceManager.cpp
+#     ${MAIN_SOURCE_DIR}/utils/TilemapManager.cpp
+# )
+
+# add_library(
+#     imgui
+#     ${IMGUI_DIR}/backends/imgui_impl_sdl2.h
+#     ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
+#     ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp
+#     ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+#     ${IMGUI_DIR}/imgui.h
+#     ${IMGUI_DIR}/imconfig.h
+#     ${IMGUI_DIR}/imgui_internal.h
+#     ${IMGUI_DIR}/imgui.cpp
+#     ${IMGUI_DIR}/imgui_draw.cpp
+#     ${IMGUI_DIR}/imgui_demo.cpp
+#     ${IMGUI_DIR}/imgui_tables.cpp
+#     ${IMGUI_DIR}/imgui_widgets.cpp
+# )
 
 # add_library(
 #     implot
@@ -130,14 +155,13 @@ add_library(
 #     ${CJSON_DIR}/cJSON_Utils.c
 # )
 
-# The 'ancmonitor' executable
-add_executable(
-    jnrmaker
-    ${MAIN_SOURCE_DIR}/Main.cpp
-)
+# add_executable(
+#     jnrmaker
+#     ${MAIN_SOURCE_DIR}/Main.cpp
+# )
 
-#target_link_libraries(jnrmaker app imgui nfd GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
-target_link_libraries(jnrmaker entities graphics ui utils imgui nfd GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
+# target_link_libraries(jnrmaker app imgui nfd GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
+#target_link_libraries(jnrmaker LINK_PUBLIC entities graphics ui utils imgui nfd GLEW::GLEW glfw ${SDL2_LIBRARIES} SDL2::Image ${OPENGL_LIBRARIES} -ldl stdc++fs)
 
 
 # #Change this if you need to target a specific CMake version
