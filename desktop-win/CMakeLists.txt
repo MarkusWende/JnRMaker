@@ -109,7 +109,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/archive)
 # add_subdirectory(${MAIN_SOURCE_DIR}/graphics ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/graphics)
 # add_subdirectory(${MAIN_SOURCE_DIR}/ui ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/ui)
 # add_subdirectory(${MAIN_SOURCE_DIR}/utils ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/utils)
-add_subdirectory(${MAIN_SOURCE_DIR} app)
+add_subdirectory("../src" app)
 
 # add_library(
 #     app
