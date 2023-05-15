@@ -40,7 +40,8 @@ endif ()
 if (NOT EMSCRIPTEN)
     find_package(GLEW REQUIRED)
     find_package(OpenGL REQUIRED)
-    find_package(Boost 1.69 COMPONENTS system filesystem)
+    find_package(OpenGL REQUIRED)
+    find_package(Boost 1.69 REQUIRED COMPONENTS system filesystem)
 
     if (Boost_FOUND)
         link_directories(${Boost_LIBRARY_DIRS})
@@ -55,6 +56,7 @@ add_subdirectory(${THIRD_PARTY_DIR}/googletest ${PROJECT_BINARY_DIR}/googletest.
 include_directories(${MAIN_INCLUDE_DIR})
 include_directories(${MAIN_INCLUDE_DIR}/utils)
 include_directories(${MAIN_INCLUDE_DIR}/utils/logging)
+include_directories(${MAIN_INCLUDE_DIR}/utils/manager)
 include_directories(${MAIN_INCLUDE_DIR}/entities)
 include_directories(${MAIN_INCLUDE_DIR}/graphics)
 include_directories(${MAIN_INCLUDE_DIR}/ui)
@@ -109,9 +111,10 @@ add_library(
     ${MAIN_SOURCE_DIR}/graphics/SolidSprite.cpp
     ${MAIN_SOURCE_DIR}/graphics/Texture.cpp
     ${MAIN_SOURCE_DIR}/graphics/Tilemap.cpp
-    ${MAIN_SOURCE_DIR}/graphics/Window.cpp
+    ${MAIN_SOURCE_DIR}/graphics/JNRWindow.cpp
     ${MAIN_SOURCE_DIR}/ui/Gui.cpp
-    ${MAIN_SOURCE_DIR}/utils/logging/SDLLogger.cpp
+    ${MAIN_SOURCE_DIR}/utils/logging/SimpleLogger.cpp
+    ${MAIN_SOURCE_DIR}/utils/Injector.cpp
     ${MAIN_SOURCE_DIR}/utils/MessageManager.cpp
     ${MAIN_SOURCE_DIR}/utils/ProjectManager.cpp
     ${MAIN_SOURCE_DIR}/utils/ResourceManager.cpp

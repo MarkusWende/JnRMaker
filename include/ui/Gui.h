@@ -45,6 +45,8 @@
 //#include <SFML/Graphics/Texture.hpp>
 //#include <SFML/Graphics/RenderWindow.hpp>
 
+#include "ILogger.h"
+
 
 #ifdef _WIN32
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -87,7 +89,7 @@ enum class gui_state_t {
 class Gui
 {
 public:
-    Gui();                                                      //!< constructor
+    Gui(std::shared_ptr<ILogger> logger);                    //!< constructor
     ~Gui();                                                     //!< destructor
 
     /**
@@ -173,28 +175,29 @@ public:
 #endif
 
 private:
-    GLuint                      width_;                     /**< Width of the application window. */
-    GLuint                      height_;                    /**< Height of the application window. */
-    GuiWindow                   window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
-    GuiWindow                   window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
-    GuiWindow                   window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
-    GLuint                      main_menubar_height_;       /**< Main menu bar height. */
-    //std::string                 active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
-    //std::string                 active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
-    //std::vector<std::string>    tilemap_list_;
-    gui_state_t                 state_;
+    GLuint                      			width_;                     /**< Width of the application window. */
+    GLuint                      			height_;                    /**< Height of the application window. */
+    GuiWindow                   			window_scene_;              /**< Scene window object. Holds the dimensions of this window. */
+    GuiWindow                   			window_messages_;           /**< Messages window object. Holds the dimensions of this window. */
+    GuiWindow                   			window_sidebar_right_;      /**< Sidebar window object. Holds the dimensions of this window. */
+    GLuint                      			main_menubar_height_;       /**< Main menu bar height. */
+    //std::string                 			active_tilemap_name_;      /**< Name of the tilemap which is currently displayed. */
+    //std::string                 			active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
+    //std::vector<std::string>    			tilemap_list_;
+    gui_state_t                 			state_;
 #ifdef __EMSCRIPTEN__
     bool file_browser_emscripten_open_;
 #else
-    fs::path					root_file_path_;
+    fs::path								root_file_path_;
 #endif
-    GLboolean                   file_browser_add_tiles_;
-    ImFont                      *font_default_;
-	ImFont                      *icons_13_;
-	ImFont                      *icons_40_;
+    GLboolean                   			file_browser_add_tiles_;
+    ImFont                      			*font_default_;
+	ImFont                      			*icons_13_;
+	ImFont                      			*icons_40_;
 
-    bool                        show_demo_imgui_;
-    bool                        show_backend_checker_show_;
+    bool                        			show_demo_imgui_;
+    bool                        			show_backend_checker_show_;
+	std::shared_ptr<ILogger> 				logger_;
 
     /**
 	    * @brief Initialize all gui related default attributes.

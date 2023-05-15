@@ -31,7 +31,7 @@
 
 #define DEVELOPMENT
 
-Gui::Gui()
+Gui::Gui(std::shared_ptr<ILogger> logger) : logger_(logger)
 {
 	init();
 	customGuiStyle();
