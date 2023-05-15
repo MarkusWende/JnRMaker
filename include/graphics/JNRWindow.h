@@ -30,18 +30,16 @@
 
 #pragma once
 #include <string>
+#include "MessageManager.h"
 
-#include <SDL.h>
+#include <GL/glew.h>    // Initialize with glewInit()
+
 #include <SDL2/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <SDL_opengles2.h>
 #else
 #include <SDL_opengl.h>
 #endif
-
-#include <GL/glew.h>    // Initialize with glewInit()
-
-#include "MessageManager.h"
 
 class JNRWindow
 {

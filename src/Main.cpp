@@ -13,12 +13,13 @@
 #include "Scene.h"
 #include "Events.h"
 #include "Injector.h"
-#include "JNRWindow.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/fetch.h>
 #endif
+
+#include "JNRWindow.h"
 
 void GLAPIENTRY
 MessageCallback( GLenum source,
