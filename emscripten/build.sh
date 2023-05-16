@@ -34,6 +34,7 @@ pushd build
     # We ask CMake to configure itself against the parent folder, but unlike our other platform targets, we will tell CMake to use the Emscripten CMake toolchain which knows how to perform Emscripten builds.
     echo "Emscripten CMake path: ${EMSCRIPTEN_CMAKE_PATH}"
     cmake -DCMAKE_TOOLCHAIN_FILE=${EMSCRIPTEN_CMAKE_PATH} ..
+    #cmake ..
 
     # Start the actual build.
     echo "Building project ..."

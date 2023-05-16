@@ -35,24 +35,36 @@
 #include <GL/glew.h>    // Initialize with glewInit()
 
 #include <SDL2/SDL.h>
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL_opengles2.h>
+#if defined(IMGUI_IMPL_OPENGL_ES3)
+#include <SDL_opengles3.h>
 #else
 #include <SDL_opengl.h>
 #endif
 
+#include <GLES3/gl32.h>
+
 class JNRWindow
 {
 public:
-	JNRWindow() {};
+	JNRWindow();
 	~JNRWindow() {};
 
     void InitSDL();
     void InitGLEW();
-    std::string GetGLSLVersion() { return glsl_version_; };
+    void CreateWindow();
+    void CreateContext();
+    void ConfigureOpenGL();
+
+    std::string     GetGLSLVersion() { return glsl_version_; };
+    SDL_Window*     GetWindow() { return window_; };
+    SDL_GLContext   GetContext() { return gl_context_; };
+
+    void CleanUp();
 
 private:
-std::string glsl_version_;
+    SDL_Window*     window_;
+    SDL_GLContext   gl_context_;
+    std::string glsl_version_;
 
 };
 

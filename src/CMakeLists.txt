@@ -137,10 +137,10 @@ if (EMSCRIPTEN)
     endif()
 
     # Ensure synchronous startup for this test, whose output expects it
-    SET(linkFlags "${linkFlags} -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
-    SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2")
+    SET(linkFlags "${linkFlags} -sWASM=1 -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
+    SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES3=1")
     SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")
-    SET(linkFlags "${linkFlags} -sFETCH -sEXPORTED_FUNCTIONS=_getJSON,_main,_getLocalTilemapFile,_saveJSONFile,_viewFullscreen -sEXPORTED_RUNTIME_METHODS=ccall,cwrap")
+    SET(linkFlags "${linkFlags} -sFETCH -sEXPORTED_FUNCTIONS=[\"_getJSON\",\"_main\",\"_getLocalTilemapFile\",\"_saveJSONFile\",\"_viewFullscreen\"] -sEXPORTED_RUNTIME_METHODS=ccall,cwrap")
     SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy")
     SET(linkFlags "${linkFlags} --preload-file ../../../resources@/resources")
 
