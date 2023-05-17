@@ -44,8 +44,8 @@
 #include <filesystem>
 
 #include "imgui.h"
-
 #include "TimeHelper.h"
+#include "FormatHelper.h"
 
 #define MAX_STORED_MSG 200               /**< Defines the maximal number of messages to be stored. */
 
@@ -93,7 +93,7 @@ public:
    * @param type Type of the message {ERROR, WARNING, INFO}.
 	 * @return Return the message struct.
 	 */
-  static Message AddMessage(const char* msg, message_t type, bool popup = 0);
+  static Message AddMessage(const char* format, ...);
 
   /**
 	 * @brief Write message to logfile.

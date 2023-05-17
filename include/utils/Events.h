@@ -51,6 +51,9 @@ void processEvents(std::shared_ptr<Scene> scene, std::shared_ptr<Gui> gui)
         auto y = io.MouseDelta.y;
         auto wheelY = io.MouseWheel;
         auto deltaTime = io.DeltaTime;
+
+        MessageManager::AddMessage("DeltaTime: %f", 1.0f / deltaTime);
+
         auto sceneWidthPercentage = scene->GetWidth() / ImGui::GetIO().DisplaySize.x;;
 		auto sceneHeightPercentage = scene->GetHeight() / ImGui::GetIO().DisplaySize.y;
         scene->GetCamera("SceneCamera")->SetSceneWidth(sceneWidthPercentage);

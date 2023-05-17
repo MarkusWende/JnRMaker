@@ -72,11 +72,19 @@ Message MessageManager::AddMessage(std::stringstream& msg, message_t type, bool 
 	return tmpMsg;
 }
 
-Message MessageManager::AddMessage(const char *msg, message_t type, bool popup)
+Message MessageManager::AddMessage(const char* format, ...)
 {
-	std::stringstream tmpMsg;
-	tmpMsg << msg;
-	return MessageManager::AddMessage(tmpMsg, type, popup);
+	va_list args;
+    va_start(args, format);
+
+    std::string buffer = FormatHelper::vformat(format, args);
+    int n = buffer.size();
+    va_end(args);
+
+	std::stringstream out;
+    out.write(buffer.data(), n);
+
+	return MessageManager::AddMessage(out, message_t::INFO, false);
 }
 
 int MessageManager::Log(std::stringstream& msg)
