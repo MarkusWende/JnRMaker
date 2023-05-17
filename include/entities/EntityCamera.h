@@ -232,24 +232,24 @@ public:
 		// The velocity of dragging the camera depends on the zoom level and the time the hardware needs for one main loop
 		if ((glm::abs(xoffset) < 400) && (glm::abs(yoffset) < 400))
 		{
-			float velocity = DRAG_SPEED * deltaTime * zoom_;
-			distance_ = glm::length(center_ - position_);
+			// The velocity of dragging the camera depends on the time the hardware needs for one main loop
+			auto velocity = DRAG_SPEED * deltaTime * zoom_;
+			distance_ = glm::length(position_ - center_);
 
 			// Update the position of the camera
 			position_ += right_ * xoffset * velocity / scene_width_percent_;
 			position_ -= up_ * yoffset * velocity / scene_height_percent_;
 
 			// Update the center of the camera
-			//updateCameraCenter();
 			center_ = position_ + distance_ * front_;
 			center_.z = 0.0f;
 			position_ = center_ - distance_ * front_;
 		}
 		else
 		{
-				std::stringstream msg;
-					msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
-					MessageManager::AddMessage(msg, message_t::ERROR_T);
+			std::stringstream msg;
+			msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
+			MessageManager::AddMessage(msg, message_t::ERROR_T);
 		}
 	}
 

@@ -47,11 +47,14 @@ void processEvents(std::shared_ptr<Scene> scene, std::shared_ptr<Gui> gui)
 
     if (scene->IsMouseOverScene())
     {
-        float x = io.MouseDelta.x;
-        float y = io.MouseDelta.y;
-        float wheelY = io.MouseWheel;
-
-        float deltaTime = io.DeltaTime;
+        auto x = io.MouseDelta.x;
+        auto y = io.MouseDelta.y;
+        auto wheelY = io.MouseWheel;
+        auto deltaTime = io.DeltaTime;
+        auto sceneWidthPercentage = scene->GetWidth() / ImGui::GetIO().DisplaySize.x;;
+		auto sceneHeightPercentage = scene->GetHeight() / ImGui::GetIO().DisplaySize.y;
+        scene->GetCamera("SceneCamera")->SetSceneWidth(sceneWidthPercentage);
+        scene->GetCamera("SceneCamera")->SetSceneHeight(sceneHeightPercentage);
 
         scene->SetMousePosition(glm::vec2(io.MousePos.x, io.MousePos.y));
         
