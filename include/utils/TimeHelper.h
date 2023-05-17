@@ -13,9 +13,11 @@
  ****************************************************************************/
 
 /**
- * @file time_helper.hpp
- * @author Kirsch Audio GmbH
+ * @file TimeHelper.h
  * @brief Time helper namespace.
+ * 
+ * @author Markus Wende
+ * https://github.com/MarkusWende
  */
 
 

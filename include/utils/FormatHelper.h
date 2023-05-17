@@ -14,8 +14,10 @@
 
 /**
  * @file FormatHelper.h
- * @author Markus Wende
  * @brief Format helper namespace.
+ * 
+ * @author Markus Wende
+ * https://github.com/MarkusWende
  */
 
 

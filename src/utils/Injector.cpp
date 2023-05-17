@@ -4,7 +4,7 @@ std::shared_ptr<ILogger> Injector::GetLogger()
 {
     if (!logger_)
     {
-        logger_ = std::make_shared<SimpleLogger>();
+        logger_ = std::make_shared<UILogger>();
     }
     return logger_;
 }

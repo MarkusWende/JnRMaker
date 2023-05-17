@@ -553,50 +553,54 @@ void Gui::DrawTabMessages()
 		ImGui::SetCursorPos(ImVec2(5.f, 30.f));
 		ImGui::BeginChild("##MessageList", ImVec2(0, (float)window_messages_.h - 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-		std::vector<Message>* ptrMessages;
-		ptrMessages = MessageManager::GetMessages();
-		if (ptrMessages->size() > 0)
-		{
-			ImGuiListClipper clipper;
-        	clipper.Begin((int)ptrMessages->size());
-			while (clipper.Step())
+		std::shared_ptr<std::vector<LogMessage>> ptrMessages;
+		auto uiLogger = std::dynamic_pointer_cast<UILogger>(logger_);
+		if (uiLogger)
+		{	
+    		auto logs = uiLogger->GetLogs();
+			if (logs->size() > 0)
 			{
-				for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+				ImGuiListClipper clipper;
+				clipper.Begin((int)logs->size());
+				while (clipper.Step())
 				{
-#ifndef DEVELOPMENT
-                	if (ptrMessages->at(it).type == message_t::DEBUG)
-                    	continue;
-#endif 
-					ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
-					ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", ptrMessages->at(it).timeinfo.c_str());
-					ImGui::SameLine(0, 2);
-					ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
+					for (auto it = clipper.DisplayStart; it != clipper.DisplayEnd; it++)
+					{
+	#ifndef DEVELOPMENT
+						if (logs->at(it).type == log_t::DEBUG)
+							continue;
+	#endif 
+						ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + wrap_width);
+						ImGui::TextColored(ImVec4(1, 1, 1, 1), "%s", logs->at(it).timeinfo.c_str());
+						ImGui::SameLine(0, 2);
+						ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-					ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
+						ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
 
-					ImGui::SameLine(0, 5);
-					if (ptrMessages->at(it).type == message_t::ERROR_T)
-					{
-						msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
-						ImGui::TextColored(msgSymbolColor, "[ Error ]  %s", ptrMessages->at(it).msg.c_str());
-					}
-					else if (ptrMessages->at(it).type == message_t::INFO)
-					{
-						msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
-						ImGui::TextColored(msgSymbolColor, "[ Info  ]  %s", ptrMessages->at(it).msg.c_str());
-					}
-					else if (ptrMessages->at(it).type == message_t::WARNING)
-					{
-						msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
-						ImGui::TextColored(msgSymbolColor, "[Warning]  %s", ptrMessages->at(it).msg.c_str());
-					}
-					else if (ptrMessages->at(it).type == message_t::DEBUG)
-					{
-						ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
-					}
-					else if (ptrMessages->at(it).type == message_t::DEBUG_WS)
-					{
-						ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", ptrMessages->at(it).msg.c_str());
+						ImGui::SameLine(0, 5);
+						if (logs->at(it).type == log_t::ERROR_T)
+						{
+							msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
+							ImGui::TextColored(msgSymbolColor, "[ Error ]  %s", logs->at(it).msg.c_str());
+						}
+						else if (logs->at(it).type == log_t::INFO)
+						{
+							msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
+							ImGui::TextColored(msgSymbolColor, "[ Info  ]  %s", logs->at(it).msg.c_str());
+						}
+						else if (logs->at(it).type == log_t::WARNING)
+						{
+							msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
+							ImGui::TextColored(msgSymbolColor, "[Warning]  %s", logs->at(it).msg.c_str());
+						}
+						else if (logs->at(it).type == log_t::DEBUG)
+						{
+							ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", logs->at(it).msg.c_str());
+						}
+						else if (logs->at(it).type == log_t::DEBUG_WS)
+						{
+							ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", logs->at(it).msg.c_str());
+						}
 					}
 				}
 			}
@@ -869,6 +873,7 @@ void Gui::ShowBackendCheckerWindow()
 // PRIVATE
 GLvoid Gui::init()
 {
+	logger_->Log("Initializing Gui...");
 	window_scene_.wPercent = 0.85f;
 	window_scene_.hPercent = 0.75f;
 

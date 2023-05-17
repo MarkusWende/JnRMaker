@@ -1,6 +1,6 @@
 #include <memory>
 #include <iostream>
-#include "SimpleLogger.h"
+#include "UILogger.h"
 #include "SimpleResourceManager.h"
 
 class Injector {

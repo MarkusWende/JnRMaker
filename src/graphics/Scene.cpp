@@ -28,7 +28,7 @@
 
 #include "Scene.h"
 
-Scene::Scene(GLuint width, GLuint height)
+Scene::Scene(std::shared_ptr<ILogger> logger, GLuint width, GLuint height)
 {
     width_ = width;
     height_ = height;

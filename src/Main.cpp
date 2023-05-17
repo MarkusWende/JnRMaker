@@ -41,6 +41,12 @@ static void main_loop(void*);
 
 int main(int, char**)
 {
+    MainLoopData data;
+    Injector injector;
+    auto logger = injector.GetLogger();
+    auto resourceManager = injector.GetResourceManager();
+    logger->Log("This is a test... %d", 42);
+
 #ifdef __EMSCRIPTEN_PTHREADS__
     {
         std::stringstream msg;
@@ -49,7 +55,6 @@ int main(int, char**)
     }
 #endif
 
-    MainLoopData data;
     //data.Window = appWindow.GetWindow();
     //data.GLContext = appWindow.GetGLContext();
 
@@ -86,15 +91,11 @@ int main(int, char**)
     // Gui
     //appGui = new Gui();
     //appGui = std::make_shared<Gui>();
-    
-    Injector injector;
-    auto logger = injector.GetLogger();
-    auto resourceManager = injector.GetResourceManager();
     //auto appGui = injector.Create<Gui>(logger);
     data.Gui = injector.Create<Gui>(logger);
 
     // Scene
-    data.Scene = std::make_shared<Scene>(1280, 720);
+    data.Scene = injector.Create<Scene>(logger, 1280, 720);
     data.Scene.get()->GetWidth();
 
 #ifdef __EMSCRIPTEN__

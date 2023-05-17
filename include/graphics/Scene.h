@@ -45,6 +45,7 @@
 #include "SolidGrid.h"
 #include "SolidCS.h"
 #include "SolidSprite.h"
+#include "ILogger.h"
 
 #ifdef _WIN32
 #include <filesystem>
@@ -68,7 +69,7 @@ namespace fs = std::experimental::filesystem;
 class Scene
 {
 public:
-	Scene(GLuint width, GLuint height);														//!< constructor
+	Scene(std::shared_ptr<ILogger> logger, GLuint width, GLuint height);														//!< constructor
 	~Scene();																				//!< destructor
 
 	/**

@@ -36,7 +36,6 @@
 #include "MessageManager.h"
 #include "TilemapManager.h"
 #include "Scene.h"
-
 #include "imgui.h"
 //#include "imgui/imgui-SFML.h"
 
@@ -44,8 +43,7 @@
 //#include <SFML/Graphics/Sprite.hpp>
 //#include <SFML/Graphics/Texture.hpp>
 //#include <SFML/Graphics/RenderWindow.hpp>
-
-#include "ILogger.h"
+#include "UILogger.h"
 
 
 #ifdef _WIN32

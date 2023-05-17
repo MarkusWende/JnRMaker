@@ -31,10 +31,32 @@
 #include <vector>
 #include <iostream>
 
+/**
+ * @brief Enumeration for log types.
+ */
+enum class log_t
+{
+    ERROR_T = 0,                          /**< Error message. */
+    WARNING = 1,                          /**< Warning message. */
+    INFO = 2,                             /**< Info message. */
+    DEBUG = 3,                            /**< Debug message. */
+    DEBUG_WS = 4,                         /**< Websocket debug message. */
+};
+
+/**
+ * @brief Struct for representing a log message.
+ */
+struct LogMessage
+{
+    std::string msg;                    /**< The actual message. */
+    std::string timeinfo;               /**< Timestamp. */
+    log_t type;                         /**< Message type. */
+    bool popup;                         /**< Show a popup window */
+};
+
 class ILogger
 {
 public:
     virtual ~ILogger() {}
-    virtual void Log(const std::string& message) = 0;
-    virtual void Print() const = 0;
+    virtual LogMessage Log(const char* format, ...) = 0;
 };

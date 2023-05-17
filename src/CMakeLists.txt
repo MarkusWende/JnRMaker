@@ -113,7 +113,7 @@ add_library(
     ${MAIN_SOURCE_DIR}/graphics/Tilemap.cpp
     ${MAIN_SOURCE_DIR}/graphics/JNRWindow.cpp
     ${MAIN_SOURCE_DIR}/ui/Gui.cpp
-    ${MAIN_SOURCE_DIR}/utils/logging/SimpleLogger.cpp
+    ${MAIN_SOURCE_DIR}/utils/logging/UILogger.cpp
     ${MAIN_SOURCE_DIR}/utils/Injector.cpp
     ${MAIN_SOURCE_DIR}/utils/MessageManager.cpp
     ${MAIN_SOURCE_DIR}/utils/ProjectManager.cpp

@@ -18,7 +18,7 @@
  */
 
 /**
- * @file events.h
+ * @file Events.h
  * @brief This file contains functions that handle events like keyboard and mouse inputs.
  *
  * @author Markus Wende
@@ -51,14 +51,11 @@ void processEvents(std::shared_ptr<Scene> scene, std::shared_ptr<Gui> gui)
         auto y = io.MouseDelta.y;
         auto wheelY = io.MouseWheel;
         auto deltaTime = io.DeltaTime;
-
-        MessageManager::AddMessage("DeltaTime: %f", 1.0f / deltaTime);
-
         auto sceneWidthPercentage = scene->GetWidth() / ImGui::GetIO().DisplaySize.x;;
 		auto sceneHeightPercentage = scene->GetHeight() / ImGui::GetIO().DisplaySize.y;
+
         scene->GetCamera("SceneCamera")->SetSceneWidth(sceneWidthPercentage);
         scene->GetCamera("SceneCamera")->SetSceneHeight(sceneHeightPercentage);
-
         scene->SetMousePosition(glm::vec2(io.MousePos.x, io.MousePos.y));
         
         // Mouse dragging
