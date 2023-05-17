@@ -55,8 +55,8 @@ int main(int, char**)
 
     auto appWindow = JNRWindow();
     appWindow.InitSDL();
-    appWindow.CreateWindow();
-    appWindow.CreateContext();
+    appWindow.CreateSDLWindow();
+    appWindow.CreateSDLContext();
     appWindow.InitGLEW();
     appWindow.ConfigureOpenGL();
 

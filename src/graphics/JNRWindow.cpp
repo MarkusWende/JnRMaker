@@ -92,7 +92,6 @@ JNRWindow::InitSDL()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_GL_SetSwapInterval(1); // Enable vsync
 }
 
 void
@@ -140,6 +139,7 @@ JNRWindow::InitGLEW()
 void
 JNRWindow::ConfigureOpenGL()
 {
+    SDL_GL_SetSwapInterval(1); // Enable vsync
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
@@ -154,7 +154,7 @@ JNRWindow::ConfigureOpenGL()
 }
 
 void
-JNRWindow::CreateWindow()
+JNRWindow::CreateSDLWindow()
 {
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
@@ -183,7 +183,7 @@ JNRWindow::CreateWindow()
 }
 
 void
-JNRWindow::CreateContext()
+JNRWindow::CreateSDLContext()
 {
     gl_context_ = SDL_GL_CreateContext(window_);
     //std::shared_ptr<SDL_GLContext> contextSharedPtr(new SDL_GLContext(contextPtr), SDL_GL_DeleteContext);

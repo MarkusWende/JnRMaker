@@ -41,8 +41,6 @@
 #include <SDL_opengl.h>
 #endif
 
-#include <GLES3/gl32.h>
-
 class JNRWindow
 {
 public:
@@ -51,8 +49,8 @@ public:
 
     void InitSDL();
     void InitGLEW();
-    void CreateWindow();
-    void CreateContext();
+    void CreateSDLWindow();
+    void CreateSDLContext();
     void ConfigureOpenGL();
 
     std::string     GetGLSLVersion() { return glsl_version_; };
