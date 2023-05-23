@@ -31,6 +31,7 @@
 #pragma once
 #include <string>
 #include "MessageManager.h"
+#include "UILogger.h"
 
 #include <GL/glew.h>    // Initialize with glewInit()
 
@@ -44,7 +45,7 @@
 class JNRWindow
 {
 public:
-	JNRWindow();
+	JNRWindow(std::shared_ptr<ILogger> logger);
 	~JNRWindow() {};
 
     void InitSDL();
@@ -63,6 +64,7 @@ private:
     SDL_Window*     window_;
     SDL_GLContext   gl_context_;
     std::string glsl_version_;
+    std::shared_ptr<ILogger> 				logger_;
 
 };
 

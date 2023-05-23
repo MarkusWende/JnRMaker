@@ -58,5 +58,6 @@ class ILogger
 {
 public:
     virtual ~ILogger() {}
+    virtual LogMessage Log(log_t type, const char* format, ...) = 0;
     virtual LogMessage Log(const char* format, ...) = 0;
 };

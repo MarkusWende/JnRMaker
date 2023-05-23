@@ -9,18 +9,20 @@ MessageCallback( GLenum source,
                  const GLchar* message,
                  const void* userParam )
 {
-    (void)userParam;
+    //(void)userParam;
+    auto logger = *static_cast<std::shared_ptr<ILogger>*>(const_cast<void*>(userParam));
     (void)length;
     (void)id;
     std::stringstream msg;
     msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
     if (type == GL_DEBUG_TYPE_ERROR)
     {
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        logger->Log(log_t::ERROR_T, "%s", msg.str().c_str());
     }
 }
 
-GLenum glCheckError_(const char *file, int line)
+GLenum
+glCheckError_(const char *file, int line)
 {
     GLenum errorCode;
     while ((errorCode = glGetError()) != GL_NO_ERROR)
@@ -38,13 +40,13 @@ GLenum glCheckError_(const char *file, int line)
         }
         std::stringstream msg;
         msg << error << " | " << file << " (" << line << ")";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //logger->Log(log_t::ERROR_T, "%s", msg.str().c_str());
     }
     return errorCode;
 }
 #define glCheckError() glCheckError_(__FILE__, __LINE__)
 
-JNRWindow::JNRWindow()
+JNRWindow::JNRWindow(std::shared_ptr<ILogger> logger) : logger_(logger)
 {
     window_ = NULL;
     gl_context_ = NULL;
@@ -55,7 +57,7 @@ JNRWindow::InitSDL()
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
 	{
-		MessageManager::Log("Error: %s\n", SDL_GetError());
+		logger_->Log(log_t::ERROR_T, "Error: %s\n", SDL_GetError());
 		return;
 	}
 
@@ -100,10 +102,12 @@ JNRWindow::InitGLEW()
     bool err = glewInit() != GLEW_OK;
     std::stringstream msg;
 
+    //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
+
     //bool err = false;
     if (err)
     {
-        MessageManager::Log("Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
+        logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
         return;
     }
     else
@@ -132,7 +136,7 @@ JNRWindow::InitGLEW()
         msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
         msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersionNumber << std::endl;
         msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
-        MessageManager::Log(msg);
+        logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
     }
 }
 
@@ -148,7 +152,7 @@ JNRWindow::ConfigureOpenGL()
     if (GLEW_ARB_debug_output)
     {
         glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback( MessageCallback, 0 );
+        glDebugMessageCallback( MessageCallback, 0);
     }
 #endif // !__EMSCRIPTEN__
 }

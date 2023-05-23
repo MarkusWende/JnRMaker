@@ -57,13 +57,12 @@ int main(int, char**)
 
     //data.Window = appWindow.GetWindow();
     //data.GLContext = appWindow.GetGLContext();
-
-    auto appWindow = JNRWindow();
-    appWindow.InitSDL();
-    appWindow.CreateSDLWindow();
-    appWindow.CreateSDLContext();
-    appWindow.InitGLEW();
-    appWindow.ConfigureOpenGL();
+    auto appWindow = injector.Create<JNRWindow>(logger);
+    appWindow->InitSDL();
+    appWindow->CreateSDLWindow();
+    appWindow->CreateSDLContext();
+    appWindow->InitGLEW();
+    appWindow->ConfigureOpenGL();
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -85,8 +84,8 @@ int main(int, char**)
     //ImGui::StyleColorsClassic();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForOpenGL(appWindow.GetWindow(), appWindow.GetContext());
-    ImGui_ImplOpenGL3_Init(appWindow.GetGLSLVersion().c_str());
+    ImGui_ImplSDL2_InitForOpenGL(appWindow->GetWindow(), appWindow->GetContext());
+    ImGui_ImplOpenGL3_Init(appWindow->GetGLSLVersion().c_str());
 
     // Gui
     //appGui = new Gui();
@@ -121,7 +120,7 @@ int main(int, char**)
     ImGui::DestroyContext();
     //ImPlot::DestroyContext();
 
-    appWindow.CleanUp();
+    appWindow->CleanUp();
 
     return 0;
 }

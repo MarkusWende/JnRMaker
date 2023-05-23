@@ -9,6 +9,7 @@
 
 class UILogger : public ILogger {
 public:
+    LogMessage Log(log_t type, const char* format, ...) override;
     LogMessage Log(const char* format, ...) override;
     std::shared_ptr<std::vector<LogMessage>> GetLogs() const { return std::make_shared<std::vector<LogMessage>>(logs_); };
 private:
