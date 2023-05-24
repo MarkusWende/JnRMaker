@@ -31,9 +31,9 @@
 
 #define DEVELOPMENT
 
-Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<IResourceManager> graphicsManager)
+Gui::Gui(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager)
 {
-	ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
+	ui_logger_ = std::dynamic_pointer_cast<UILogger>(uiLogger);
 	graphics_manager_ = std::dynamic_pointer_cast<GraphicsManager>(graphicsManager);
 	init();
 	customGuiStyle();

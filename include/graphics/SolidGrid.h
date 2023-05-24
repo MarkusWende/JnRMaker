@@ -33,7 +33,7 @@ class Grid : public Solid
 {
 public:
     Grid(std::string meshName = "Grid", GLboolean smooth = false, GLuint width = 1, GLuint height = 1);		/**< Constructor. Smooth shading by default. */
-    ~Grid() {}														    /**< Destructor. */
+    //~Grid() override {}														    /**< Destructor. */
 
     GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 

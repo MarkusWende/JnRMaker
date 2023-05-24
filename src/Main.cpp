@@ -78,7 +78,7 @@ int main(int, char**)
     data.gui = injector.Create<Gui>(logger, graphicsManager);
 
     // Scene
-    data.scene = injector.Create<Scene>(logger, 1280, 720);
+    data.scene = injector.Create<Scene>(logger, graphicsManager, 1280, 720);
     data.scene.get()->GetWidth();
 
 #ifdef __EMSCRIPTEN__

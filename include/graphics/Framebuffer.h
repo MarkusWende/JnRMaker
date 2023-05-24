@@ -81,10 +81,10 @@ private:
 	GLuint height_;									/**< Height in pixels of the texture and framebuffer. */
 	GLuint internal_format_;						/**< Format of the texture. */
 	GLuint image_format_;							/**< Format of loaded image. */
-	GLuint wrap_s_;									/**< Wrapping mode on S axis. */
-	GLuint wrap_t_;									/**< Wrapping mode on T axis. */
+	//GLuint wrap_s_;									/**< Wrapping mode on S axis. */
+	//GLuint wrap_t_;									/**< Wrapping mode on T axis. */
 	GLuint filter_min_;								/**< Filtering mode if texture pixels < screen pixels. */
-	GLuint filter_max_;								/**< Filtering mode if texture pixels > screen pixels. */
+	//GLuint filter_max_;								/**< Filtering mode if texture pixels > screen pixels. */
 	GLuint rbo_;
 	GLenum tex_type_;
 };

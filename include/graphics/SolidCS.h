@@ -39,7 +39,7 @@ class CoordinateSystem : public Solid
 {
 public:
     CoordinateSystem(glm::vec3 offset = glm::vec3(0));				                                /**< Todo: */
-	~CoordinateSystem() { };														/**< Destructor. */
+	//~CoordinateSystem() { };														/**< Destructor. */
 
 	/**
 	 * @brief Todo:

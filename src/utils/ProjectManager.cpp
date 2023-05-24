@@ -104,6 +104,8 @@ const char* getJSON()
 
 void ProjectManager::AddSaveObject(std::string key, std::string data)
 {
+    (void)key;
+    (void)data;
     //auto ptrSaveFiles = ProjectManager::GetSaveFiles();
     //ptrSaveFiles.front()->d[key.c_str()] = data;
 

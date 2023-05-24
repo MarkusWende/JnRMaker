@@ -57,6 +57,7 @@ public:
 	 * @return Void.
 	 */
 	virtual GLvoid Draw();
+	virtual GLvoid Draw(glm::mat4 projection, glm::mat4 view);
 
 	/**
 	 * @brief Draw the vertex array object in wireframes.

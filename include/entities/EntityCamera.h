@@ -96,9 +96,7 @@ public:
 	/**
 	 * @brief Destructor for Camera.
 	 */
-	~Camera()
-	{
-	}
+	//~Camera(){}
 
 	// Getters
 	glm::mat4	GetViewMatrix() { return glm::lookAt(position_, position_ + front_, up_); }		/**< @brief Get the view matrix. @return A 4x4 float matrix. */
@@ -399,7 +397,7 @@ private:
 		//glm::vec3 RayDir = glm::normalize(front_);
 
 		// Origin and normal of the XZ plane
-		glm::vec3 PlaneOrigin(0, 0, 0);
+		// glm::vec3 PlaneOrigin(0, 0, 0);
 		glm::vec3 PlaneNormal(0, 1, 0);
 
 		// If the camera position is below 0 on the y axis, the XZ plane normal is swaped

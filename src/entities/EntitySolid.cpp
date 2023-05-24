@@ -68,6 +68,11 @@ GLvoid Solid::Draw()
 	model_.Draw();
 }
 
+GLvoid Solid::Draw(glm::mat4 projection, glm::mat4 view)
+{
+	model_.Draw();
+}
+
 GLvoid Solid::DrawWireframe()
 {
 	model_.DrawWireframe();

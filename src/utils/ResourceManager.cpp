@@ -432,16 +432,18 @@ Shader ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLch
     catch (...)
     {
         FILE *stream;
-#ifdef _WIN32
+#if _WIN32
         freopen_s(&stream, "log.txt", "w", stdout);
         fprintf(stream, "\tFailed to read shader files\n");
         fclose(stream);
-#endif // _WIN32
-#ifdef __linux__
+#elif __linux__
         stream = fopen("./log.txt", "w");
         fprintf(stream, "\tFailed to read shader files\n");
         fclose(stream);
-#endif // __linux__
+#else
+        (void)stream;
+#endif
+        delete stream;
     }
     const GLchar *vShaderCode = vertexCode.c_str();
     const GLchar *fShaderCode = fragmentCode.c_str();

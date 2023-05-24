@@ -45,7 +45,8 @@
 #include "SolidGrid.h"
 #include "SolidCS.h"
 #include "SolidSprite.h"
-#include "ILogger.h"
+#include "UILogger.h"
+#include "GraphicsManager.h"
 
 #ifdef _WIN32
 #include <filesystem>
@@ -69,7 +70,7 @@ namespace fs = std::experimental::filesystem;
 class Scene
 {
 public:
-	Scene(std::shared_ptr<ILogger> logger, GLuint width, GLuint height);														//!< constructor
+	Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager, GLuint width, GLuint height);														//!< constructor
 	~Scene();																				//!< destructor
 
 	/**
@@ -182,6 +183,8 @@ private:
 	GLuint											current_tile_id_;
 
 	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
+	std::shared_ptr<UILogger> 				ui_logger_;
+	std::shared_ptr<GraphicsManager>		graphics_manager_;
 
 };
 

@@ -33,7 +33,7 @@ class Cube : public Primitive
 {
 public:
 	Cube(std::string meshName = "Cube", GLboolean smooth=false);		/**< Constructor. Smooth shading by default. */
-    ~Cube() {}														/**< Destructor. */
+    //~Cube() {}														/**< Destructor. */
 
 	/**
 	 * @brief Set the position of one of the four vertical cube edges by id.

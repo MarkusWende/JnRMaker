@@ -28,8 +28,11 @@
 
 #include "Scene.h"
 
-Scene::Scene(std::shared_ptr<ILogger> logger, GLuint width, GLuint height)
+Scene::Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager, GLuint width, GLuint height)
 {
+    ui_logger_ = std::dynamic_pointer_cast<UILogger>(uiLogger);
+	graphics_manager_ = std::dynamic_pointer_cast<GraphicsManager>(graphicsManager);
+
     width_ = width;
     height_ = height;
 
@@ -168,6 +171,9 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
 
 GLvoid Scene::ResizeLevel(GLuint width, GLuint height)
 {
+    (void)width;
+    (void)height;
+
     if (map_is_null_)
     {
         std::stringstream msg;
@@ -353,19 +359,19 @@ GLvoid Scene::Render()
         //glm::vec4 col = { 1.0f, 0.2f, 0.2f, 1.0f };
         //int cubePosX = (int)mouse_ray_start_.x;
         //int cubePosY = (int)mouse_ray_start_.y;
-        /* glm::mat4 model = glm::mat4(1.0f);
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(5.0f, 5.0f, 0.5f));
-        //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f)); // a smaller cube
-        ResourceManager::GetShader("tile").Use();
-        ResourceManager::GetShader("tile").SetMatrix4("projection", projection);
-        ResourceManager::GetShader("tile").SetMatrix4("view", view);
-        ResourceManager::GetShader("tile").SetMatrix4("model", model);
-        ResourceManager::GetShader("tile").SetFloat("aLayer", 1.0f);
-        glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("default").ID);
-        e_solids_["TestQuad"]->Draw();
- */
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::mat4(1.0f);
+        // model = glm::translate(model, glm::vec3(5.0f, 5.0f, 0.5f));
+        // //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        // model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f)); // a smaller cube
+        // ResourceManager::GetShader("tile").Use();
+        // ResourceManager::GetShader("tile").SetMatrix4("projection", projection);
+        // ResourceManager::GetShader("tile").SetMatrix4("view", view);
+        // ResourceManager::GetShader("tile").SetMatrix4("model", model);
+        // ResourceManager::GetShader("tile").SetFloat("aLayer", 1.0f);
+        // glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("default").ID);
+        //e_solids_["TestQuad"]->Draw();
+
         
         
         //glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -484,7 +490,7 @@ GLvoid Scene::Render()
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        */
+         */
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

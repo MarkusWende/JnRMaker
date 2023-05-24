@@ -26,7 +26,7 @@
 
 
 Framebuffer::Framebuffer()
-	: tex_id_(0), width_(0), height_(0), internal_format_(GL_RGB), image_format_(GL_RGB), wrap_s_(GL_REPEAT), wrap_t_(GL_REPEAT), filter_min_(GL_NEAREST), filter_max_(GL_NEAREST)
+	: tex_id_(0), width_(0), height_(0), internal_format_(GL_RGB), image_format_(GL_RGB), filter_min_(GL_NEAREST)
 {
 	glGenFramebuffers(1, &id_);
 }

@@ -40,9 +40,9 @@ class Sprite : public Solid
 {
 public:
     Sprite(std::string meshName = "Sprite", GLboolean smooth = false, GLuint width = 16, GLuint height = 16);		/**< Constructor. Smooth shading by default. */
-    ~Sprite() {}														    /**< Destructor. */
+    //~Sprite() override {}														    /**< Destructor. */
 
-    GLvoid Draw(glm::mat4 projection, glm::mat4 view);
+    GLvoid Draw(glm::mat4 projection, glm::mat4 view) override;
 
     GLvoid AssignTextureID(GLuint texID) { texture_id_ = texID; };
 

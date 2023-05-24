@@ -79,13 +79,12 @@ JNRWindow::InitGlew()
 
     //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
 
-    //bool err = false;
-    // if (err)
-    // {
-    //     logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
-    //     return;
-    // }
-    // else
+    if (err)
+    {
+        logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
+        return;
+    }
+    else
     {
         const GLubyte* renderer = glGetString(GL_RENDERER);
         const GLubyte* vendor = glGetString(GL_VENDOR);

@@ -44,6 +44,9 @@ void Shader::Compile(const GLchar* vertexSource, const GLchar* fragmentSource, c
 		checkCompileErrors(gShader, "GEOMETRY");
 		glAttachShader(this->ID, gShader);
 	}
+#else
+	(void)geometrySource;
+	(void)gShader;
 #endif // !__EMSCRIPTEN__
 	glLinkProgram(this->ID);
 	checkCompileErrors(this->ID, "PROGRAM");
