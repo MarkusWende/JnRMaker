@@ -1,9 +1,6 @@
 //#define IMGUI_USER_CONFIG "config.h"
 
 //#include "config.h"
-#include "imgui.h"
-#include "imgui_impl_sdl2.h"
-#include "imgui_impl_opengl3.h"
 #include <stdio.h>
 
 #include "Gui.h"
@@ -20,6 +17,37 @@
 #endif
 
 #include "JNRWindow.h"
+
+
+void GLAPIENTRY
+glMessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+    //(void)userParam;
+    //auto logger = static_cast<std::vector<LogMessage*>>(userParam);
+    //auto logs = static_cast<std::vector<LogMessage>*>(const_cast<void*>(userParam));
+    auto logger = *static_cast<std::shared_ptr<UILogger>*>(const_cast<void*>(userParam));
+    (void)length;
+    (void)id;
+    std::stringstream msg;
+    msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
+	LogMessage tmpMsg;
+	tmpMsg.msg = msg.str();
+	tmpMsg.timeinfo = TimeHelper::GetTimeinfo();
+	tmpMsg.popup = false;
+	tmpMsg.type = log_t::INFO;
+
+    if (type == GL_DEBUG_TYPE_ERROR)
+		tmpMsg.type = log_t::ERROR_T;
+
+	//logs->insert(logs->begin(), tmpMsg);
+    logger->Log("Blub");
+}
 
 // Emscripten requires to have full control over the main loop. We're going to store our SDL book-keeping variables globally.
 // Having a single function that acts as a loop prevents us to store state in the stack of said function. So we need some location for this.
@@ -97,6 +125,26 @@ int main(int, char**)
     data.Scene = injector.Create<Scene>(logger, 1280, 720);
     data.Scene.get()->GetWidth();
 
+
+    PFNGLDEBUGMESSAGECALLBACKARBPROC glDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKARBPROC)SDL_GL_GetProcAddress("glDebugMessageCallbackARB");
+    if (glDebugMessageCallback)
+    {
+        // Function pointer is valid, proceed to set the callback
+        logger->Log("glDebugMessageCallback available.");
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback( glMessageCallback, &logger);
+    }
+    else
+    {
+        logger->Log("glDebugMessageCallback not available.");
+    }
+
+    GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+    const char* shaderSource = "#version 330 core\n"
+                            "invalid_shader_code"; // Intentional syntax error
+    glShaderSource(shader, 1, &shaderSource, nullptr);
+    glCompileShader(shader);
+
 #ifdef __EMSCRIPTEN__
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
     emscripten_set_main_loop_arg(main_loop, &data, 60, true);
@@ -128,9 +176,9 @@ int main(int, char**)
 static void main_loop(void* arg)
 {
     // Cast the argument back to its original type
-    MainLoopData* data = static_cast<MainLoopData*>(arg);
-    SDL_Window* currWindow = SDL_GL_GetCurrentWindow();
-    SDL_GLContext currGLContext = SDL_GL_GetCurrentContext();
+    auto data = static_cast<MainLoopData*>(arg);
+    auto currWindow = SDL_GL_GetCurrentWindow();
+    auto currGLContext = SDL_GL_GetCurrentContext();
 
     ImGuiIO& io = ImGui::GetIO();
     IM_UNUSED(arg); // We can pass this argument as the second parameter of emscripten_set_main_loop_arg(), but we don't use that.

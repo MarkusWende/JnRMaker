@@ -53,45 +53,45 @@ JNRWindow::InitSDL()
 void
 JNRWindow::InitGLEW()
 {
-    bool err = glewInit() != GLEW_OK;
-    std::stringstream msg;
+    // bool err = glewInit() != GLEW_OK;
+    // std::stringstream msg;
 
-    //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
+    // //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
 
-    //bool err = false;
-    if (err)
-    {
-        logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
-        return;
-    }
-    else
-    {
-        const GLubyte* renderer = glGetString(GL_RENDERER);
-        const GLubyte* vendor = glGetString(GL_VENDOR);
-        const GLubyte* version = glGetString(GL_VERSION);
-        const GLubyte* glslVersionNumber = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    // //bool err = false;
+    // if (err)
+    // {
+    //     logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
+    //     return;
+    // }
+    // else
+    // {
+    //     const GLubyte* renderer = glGetString(GL_RENDERER);
+    //     const GLubyte* vendor = glGetString(GL_VENDOR);
+    //     const GLubyte* version = glGetString(GL_VERSION);
+    //     const GLubyte* glslVersionNumber = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-        if (glslVersionNumber == NULL)
-        {
-            //MessageManager::Log("OpenGL GLSL Version is Null.. Aborting");
-            return;
-        }
+    //     if (glslVersionNumber == NULL)
+    //     {
+    //         //MessageManager::Log("OpenGL GLSL Version is Null.. Aborting");
+    //         return;
+    //     }
         
 
-        GLint major, minor, depthBufferBits;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
-        glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
+    //     GLint major, minor, depthBufferBits;
+    //     glGetIntegerv(GL_MAJOR_VERSION, &major);
+    //     glGetIntegerv(GL_MINOR_VERSION, &minor);
+    //     glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
 
-        msg << "Successful initialized OpenGL..." << std::endl;
-        msg << "\t\t\t\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
-        msg << "\t\t\t\t\t\tGL Renderer:\t\t\t" << renderer << std::endl;
-        msg << "\t\t\t\t\t\tGL Version (string):\t" << version << std::endl;
-        msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
-        msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersionNumber << std::endl;
-        msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
-        logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
-    }
+    //     msg << "Successful initialized OpenGL..." << std::endl;
+    //     msg << "\t\t\t\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
+    //     msg << "\t\t\t\t\t\tGL Renderer:\t\t\t" << renderer << std::endl;
+    //     msg << "\t\t\t\t\t\tGL Version (string):\t" << version << std::endl;
+    //     msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
+    //     msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersionNumber << std::endl;
+    //     msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
+    //     logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
+    // }
 }
 
 void
