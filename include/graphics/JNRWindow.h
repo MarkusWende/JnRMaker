@@ -29,9 +29,22 @@
 #define JNRWINDOW_H
 
 #pragma once
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 #include <string>
 #include "MessageManager.h"
 #include "UILogger.h"
+
+//#include <GL/glew.h>    // Initialize with glewInit()
+
+#include <SDL2/SDL.h>
+#if defined(IMGUI_IMPL_OPENGL_ES3)
+#include <SDL2/SDL_opengles3.h>
+#else
+#include <SDL2/SDL_opengl.h>
+#endif
 
 class JNRWindow
 {
@@ -40,7 +53,6 @@ public:
 	~JNRWindow() {};
 
     void InitSDL();
-    void InitGLEW();
     void CreateSDLWindow();
     void CreateSDLContext();
     void ConfigureOpenGL();

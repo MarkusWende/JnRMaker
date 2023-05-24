@@ -18,16 +18,6 @@
 
 #include "JNRWindow.h"
 
-// Emscripten requires to have full control over the main loop. We're going to store our SDL book-keeping variables globally.
-// Having a single function that acts as a loop prevents us to store state in the stack of said function. So we need some location for this.
-// SDL_Window*     sdlWindow = NULL;
-// SDL_GLContext   sdlGLContext = NULL;
-
-// Gui
-//std::shared_ptr<Scene> appScene;
-//Gui* appGui;
-//Scene* appScene;
-
 struct MainLoopData {
     std::shared_ptr<Gui> Gui;
     std::shared_ptr<Scene> Scene;
@@ -41,15 +31,10 @@ int main(int, char**)
     MainLoopData data;
     Injector injector;
     auto logger = injector.GetLogger();
-    auto resourceManager = injector.GetResourceManager();
-    logger->Log("This is a test... %d", 42);
+    auto graphicsManager = injector.GetGraphicsManager();
 
 #ifdef __EMSCRIPTEN_PTHREADS__
-    {
-        std::stringstream msg;
-        msg << "__EMSCRIPTEN_PTHREADS__ is enabled.";
-        MessageManager::AddMessage(msg, message_t::DEBUG);
-    }
+    logger->Log(log_t::DEBUG, "__EMSCRIPTEN_PTHREADS__ is enabled.");
 #endif
 
     //data.Window = appWindow.GetWindow();
@@ -58,7 +43,6 @@ int main(int, char**)
     appWindow->InitSDL();
     appWindow->CreateSDLWindow();
     appWindow->CreateSDLContext();
-    appWindow->InitGLEW();
     appWindow->ConfigureOpenGL();
 
     // Setup Dear ImGui context
@@ -74,7 +58,9 @@ int main(int, char**)
 
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
     // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-    io.IniFilename = NULL;
+#ifdef __EMSCRIPTEN__
+    io.IniFilename = nullptr;
+#endif // __EMSCRIPTEN__
 
     // Setup Dear ImGui style
     //ImGui::StyleColorsDark();
@@ -88,7 +74,7 @@ int main(int, char**)
     //appGui = new Gui();
     //appGui = std::make_shared<Gui>();
     //auto appGui = injector.Create<Gui>(logger);
-    data.Gui = injector.Create<Gui>(logger);
+    data.Gui = injector.Create<Gui>(logger, graphicsManager);
 
     // Scene
     data.Scene = injector.Create<Scene>(logger, 1280, 720);

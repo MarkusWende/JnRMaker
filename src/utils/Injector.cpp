@@ -9,11 +9,11 @@ std::shared_ptr<ILogger> Injector::GetLogger()
     return logger_;
 }
 
-std::shared_ptr<IResourceManager> Injector::GetResourceManager()
+std::shared_ptr<IResourceManager> Injector::GetGraphicsManager()
 {
-    if (!resource_manager_)
+    if (!graphics_manager_)
     {
-        resource_manager_ = std::make_shared<SimpleResourceManager>();
+        graphics_manager_ = std::make_shared<GraphicsManager>();
     }
-    return resource_manager_;
+    return graphics_manager_;
 }

@@ -31,8 +31,10 @@
 
 #define DEVELOPMENT
 
-Gui::Gui(std::shared_ptr<ILogger> logger) : logger_(logger)
+Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<IResourceManager> graphicsManager)
 {
+	ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
+	graphics_manager_ = std::dynamic_pointer_cast<GraphicsManager>(graphicsManager);
 	init();
 	customGuiStyle();
 
@@ -553,11 +555,9 @@ void Gui::DrawTabMessages()
 		ImGui::SetCursorPos(ImVec2(5.f, 30.f));
 		ImGui::BeginChild("##MessageList", ImVec2(0, (float)window_messages_.h - 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-		std::shared_ptr<std::vector<LogMessage>> ptrMessages;
-		auto uiLogger = std::dynamic_pointer_cast<UILogger>(logger_);
-		if (uiLogger)
+		if (ui_logger_)
 		{	
-    		auto logs = uiLogger->GetLogs();
+    		auto logs = ui_logger_->GetLogs();
 			if (logs->size() > 0)
 			{
 				ImGuiListClipper clipper;
@@ -873,7 +873,7 @@ void Gui::ShowBackendCheckerWindow()
 // PRIVATE
 GLvoid Gui::init()
 {
-	logger_->Log("Initializing Gui...");
+	ui_logger_->Log(log_t::DEBUG, "Initializing Gui");
 	window_scene_.wPercent = 0.85f;
 	window_scene_.hPercent = 0.75f;
 
