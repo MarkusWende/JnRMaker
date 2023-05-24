@@ -1,51 +1,5 @@
 #include "JNRWindow.h"
 
-void GLAPIENTRY
-MessageCallback( GLenum source,
-                 GLenum type,
-                 GLuint id,
-                 GLenum severity,
-                 GLsizei length,
-                 const GLchar* message,
-                 const void* userParam )
-{
-    //(void)userParam;
-    auto logger = *static_cast<std::shared_ptr<ILogger>*>(const_cast<void*>(userParam));
-    (void)length;
-    (void)id;
-    std::stringstream msg;
-    msg << source << "\tOpenGL: " << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
-    if (type == GL_DEBUG_TYPE_ERROR)
-    {
-        logger->Log(log_t::ERROR_T, "%s", msg.str().c_str());
-    }
-}
-
-GLenum
-glCheckError_(const char *file, int line)
-{
-    GLenum errorCode;
-    while ((errorCode = glGetError()) != GL_NO_ERROR)
-    {
-        std::string error;
-        switch (errorCode)
-        {
-            case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-            case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-            case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-            case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-            case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-            case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
-        }
-        std::stringstream msg;
-        msg << error << " | " << file << " (" << line << ")";
-        //logger->Log(log_t::ERROR_T, "%s", msg.str().c_str());
-    }
-    return errorCode;
-}
-#define glCheckError() glCheckError_(__FILE__, __LINE__)
-
 JNRWindow::JNRWindow(std::shared_ptr<ILogger> logger) : logger_(logger)
 {
     window_ = NULL;
@@ -147,14 +101,6 @@ JNRWindow::ConfigureOpenGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
-
-#ifndef __EMSCRIPTEN__
-    if (GLEW_ARB_debug_output)
-    {
-        glEnable(GL_DEBUG_OUTPUT);
-        glDebugMessageCallback( MessageCallback, 0);
-    }
-#endif // !__EMSCRIPTEN__
 }
 
 void
@@ -192,7 +138,6 @@ JNRWindow::CreateSDLContext()
     gl_context_ = SDL_GL_CreateContext(window_);
     //std::shared_ptr<SDL_GLContext> contextSharedPtr(new SDL_GLContext(contextPtr), SDL_GL_DeleteContext);
 	//gl_context_ = contextSharedPtr;
-
 
     if (!gl_context_)
     {

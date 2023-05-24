@@ -35,6 +35,7 @@ void Shader::Compile(const GLchar* vertexSource, const GLchar* fragmentSource, c
 	this->ID = glCreateProgram();
 	glAttachShader(this->ID, sVertex);
 	glAttachShader(this->ID, sFragment);
+#ifndef __EMSCRIPTEN__
 	gShader = glCreateShader(GL_GEOMETRY_SHADER);
 	if (geometrySource != nullptr)
 	{
@@ -43,12 +44,15 @@ void Shader::Compile(const GLchar* vertexSource, const GLchar* fragmentSource, c
 		checkCompileErrors(gShader, "GEOMETRY");
 		glAttachShader(this->ID, gShader);
 	}
+#endif // !__EMSCRIPTEN__
 	glLinkProgram(this->ID);
 	checkCompileErrors(this->ID, "PROGRAM");
 	// Delete the shaders as they're linked into our program now and no longer necessery
 	glDeleteShader(sVertex);
 	glDeleteShader(sFragment);
+#ifndef __EMSCRIPTEN__
 	glDeleteShader(gShader);
+#endif // !__EMSCRIPTEN__
 }
 
 void Shader::SetFloat(const GLchar* name, GLfloat value, GLboolean useShader)
