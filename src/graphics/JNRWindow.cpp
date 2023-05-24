@@ -13,7 +13,7 @@ glMessageCallback( GLenum source,
     auto logger = *static_cast<std::shared_ptr<ILogger>*>(const_cast<void*>(userParam));
     std::stringstream msg;
     msg << source << "\tOpenGL: " << " id = " << id << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
-	auto logType = log_t::INFO;
+	auto logType = log_t::DEBUG;
 
     if (type == GL_DEBUG_TYPE_ERROR)
 		logType = log_t::ERROR_T;
@@ -80,12 +80,12 @@ JNRWindow::InitGlew()
     //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
 
     //bool err = false;
-    if (err)
-    {
-        logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
-        return;
-    }
-    else
+    // if (err)
+    // {
+    //     logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
+    //     return;
+    // }
+    // else
     {
         const GLubyte* renderer = glGetString(GL_RENDERER);
         const GLubyte* vendor = glGetString(GL_VENDOR);

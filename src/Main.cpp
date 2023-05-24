@@ -19,8 +19,8 @@
 #include "JNRWindow.h"
 
 struct MainLoopData {
-    std::shared_ptr<Gui> Gui;
-    std::shared_ptr<Scene> Scene;
+    std::shared_ptr<Gui> gui;
+    std::shared_ptr<Scene> scene;
 };
 
 // For clarity, our main loop code is declared at the end.
@@ -75,11 +75,11 @@ int main(int, char**)
     //appGui = new Gui();
     //appGui = std::make_shared<Gui>();
     //auto appGui = injector.Create<Gui>(logger);
-    data.Gui = injector.Create<Gui>(logger, graphicsManager);
+    data.gui = injector.Create<Gui>(logger, graphicsManager);
 
     // Scene
-    data.Scene = injector.Create<Scene>(logger, 1280, 720);
-    data.Scene.get()->GetWidth();
+    data.scene = injector.Create<Scene>(logger, 1280, 720);
+    data.scene.get()->GetWidth();
 
 #ifdef __EMSCRIPTEN__
     // This function call won't return, and will engage in an infinite loop, processing events from the browser, and dispatching them.
@@ -89,7 +89,7 @@ int main(int, char**)
     NFD_Init();
     
     // Main loop
-    while (data.Gui->IsOpen())
+    while (data.gui->IsOpen())
     {
         main_loop(&data);
     }
@@ -132,16 +132,16 @@ static void main_loop(void* arg)
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
         if (event.type == SDL_QUIT)
-            data->Gui->Close();
+            data->gui->Close();
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(currWindow))
-            data->Gui->Close();
+            data->gui->Close();
     }
 
     if (ProjectManager::GetStatus() == project_status_t::SAVE)
     {
         ProjectManager::SaveCreate();
 
-        data->Scene->save();
+        data->scene->save();
 
         ProjectManager::SaveWrite();
         ProjectManager::SetStatus(project_status_t::IDLE);
@@ -159,13 +159,13 @@ static void main_loop(void* arg)
     // Update and render gui
     int width, height;
     SDL_GetWindowSize(currWindow, &width, &height);
-    data->Gui->WindowUpdate(data->Scene, width, height);
-    processEvents(data->Scene, data->Gui);
+    data->gui->WindowUpdate(data->scene, width, height);
+    processEvents(data->scene, data->gui);
     // appGui->Render(appScene);
-    data->Gui->Draw(data->Scene);
+    data->gui->Draw(data->scene);
     //appGui->ShowBackendCheckerWindow();
 
-    data->Scene->Render();
+    data->scene->Render();
 
     //ImGui::ShowDemoWindow();
     //ImPlot::ShowDemoWindow();

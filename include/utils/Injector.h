@@ -9,7 +9,7 @@ public:
         std::shared_ptr<T> Create(Args&&... args)
         {
             return std::make_shared<T>(std::forward<Args>(args)...);
-        };
+        }
 
     std::shared_ptr<ILogger>            GetLogger();
     std::shared_ptr<IResourceManager>   GetGraphicsManager();

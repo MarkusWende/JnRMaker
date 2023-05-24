@@ -39,11 +39,11 @@
 
 #include <GL/glew.h>    // Initialize with glewInit()
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES3)
-#include <SDL2/SDL_opengles3.h>
+#include <SDL_opengles3.h>
 #else
-#include <SDL2/SDL_opengl.h>
+#include <SDL_opengl.h>
 #endif
 
 class JNRWindow
