@@ -37,7 +37,7 @@
 #include "MessageManager.h"
 #include "UILogger.h"
 
-//#include <GL/glew.h>    // Initialize with glewInit()
+#include <GL/glew.h>    // Initialize with glewInit()
 
 #include <SDL2/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES3)
@@ -53,6 +53,7 @@ public:
 	~JNRWindow() {};
 
     void InitSDL();
+    void InitGlew();
     void CreateSDLWindow();
     void CreateSDLContext();
     void ConfigureOpenGL();

@@ -43,6 +43,7 @@ int main(int, char**)
     appWindow->InitSDL();
     appWindow->CreateSDLWindow();
     appWindow->CreateSDLContext();
+    appWindow->InitGlew();
     appWindow->ConfigureOpenGL();
 
     // Setup Dear ImGui context
