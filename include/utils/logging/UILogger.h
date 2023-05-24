@@ -11,7 +11,7 @@
 
 #include <GL/glew.h>    // Initialize with glewInit()
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES3)
 #include <SDL_opengles3.h>
 #else

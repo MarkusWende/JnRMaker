@@ -1,5 +1,26 @@
 #include "JNRWindow.h"
 
+void GLAPIENTRY
+glMessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+    (void)length;
+    auto logger = *static_cast<std::shared_ptr<ILogger>*>(const_cast<void*>(userParam));
+    std::stringstream msg;
+    msg << source << "\tOpenGL: " << " id = " << id << " type = 0x" << type << ", severity = 0x" << severity << ", message = " << message;
+	auto logType = log_t::INFO;
+
+    if (type == GL_DEBUG_TYPE_ERROR)
+		logType = log_t::ERROR_T;
+
+    logger.get()->Log(logType, "%s", msg.str().c_str());
+}
+
 JNRWindow::JNRWindow(std::shared_ptr<ILogger> logger) : logger_(logger)
 {
     window_ = NULL;
@@ -53,45 +74,45 @@ JNRWindow::InitSDL()
 void
 JNRWindow::InitGLEW()
 {
-    // bool err = glewInit() != GLEW_OK;
-    // std::stringstream msg;
+    bool err = glewInit() != GLEW_OK;
+    std::stringstream msg;
 
-    // //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
+    //logger_->Log(log_t::DEBUG, "%s", glGetString(GL_EXTENSIONS));
 
-    // //bool err = false;
-    // if (err)
-    // {
-    //     logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
-    //     return;
-    // }
-    // else
-    // {
-    //     const GLubyte* renderer = glGetString(GL_RENDERER);
-    //     const GLubyte* vendor = glGetString(GL_VENDOR);
-    //     const GLubyte* version = glGetString(GL_VERSION);
-    //     const GLubyte* glslVersionNumber = glGetString(GL_SHADING_LANGUAGE_VERSION);
+    //bool err = false;
+    if (err)
+    {
+        logger_->Log(log_t::ERROR_T, "Failed to initialize OpenGL loader! Error: %s", glewGetErrorString(err));
+        return;
+    }
+    else
+    {
+        const GLubyte* renderer = glGetString(GL_RENDERER);
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        const GLubyte* version = glGetString(GL_VERSION);
+        const GLubyte* glslVersionNumber = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-    //     if (glslVersionNumber == NULL)
-    //     {
-    //         //MessageManager::Log("OpenGL GLSL Version is Null.. Aborting");
-    //         return;
-    //     }
+        if (glslVersionNumber == NULL)
+        {
+            //MessageManager::Log("OpenGL GLSL Version is Null.. Aborting");
+            return;
+        }
         
 
-    //     GLint major, minor, depthBufferBits;
-    //     glGetIntegerv(GL_MAJOR_VERSION, &major);
-    //     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    //     glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
+        GLint major, minor, depthBufferBits;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        glGetIntegerv(GL_DEPTH_BITS, &depthBufferBits );
 
-    //     msg << "Successful initialized OpenGL..." << std::endl;
-    //     msg << "\t\t\t\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
-    //     msg << "\t\t\t\t\t\tGL Renderer:\t\t\t" << renderer << std::endl;
-    //     msg << "\t\t\t\t\t\tGL Version (string):\t" << version << std::endl;
-    //     msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
-    //     msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersionNumber << std::endl;
-    //     msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
-    //     logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
-    // }
+        msg << "Successful initialized OpenGL..." << std::endl;
+        msg << "\t\t\t\t\t\tGL Vendor:\t\t\t\t" << vendor << std::endl;
+        msg << "\t\t\t\t\t\tGL Renderer:\t\t\t" << renderer << std::endl;
+        msg << "\t\t\t\t\t\tGL Version (string):\t" << version << std::endl;
+        msg << "\t\t\t\t\t\tGL Version (integer):\t" << major << "." << minor << std::endl;
+        msg << "\t\t\t\t\t\tGLSL Version\t\t\t" << glslVersionNumber << std::endl;
+        msg << "\t\t\t\t\t\tDepth Buffer bits:\t\t" << depthBufferBits;
+        logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
+    }
 }
 
 void
@@ -101,6 +122,34 @@ JNRWindow::ConfigureOpenGL()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_MULTISAMPLE); // Enabled by default on some drivers, but not all so always enable to make sure
+
+    PFNGLDEBUGMESSAGECALLBACKARBPROC glDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKARBPROC)SDL_GL_GetProcAddress("glDebugMessageCallbackARB");
+    if (glDebugMessageCallback)
+    {
+        // Function pointer is valid, proceed to set the callback
+        logger_->Log("glDebugMessageCallback available.");
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback( glMessageCallback, &logger_);
+    }
+    else
+    {
+        logger_->Log("glDebugMessageCallback not available.");
+    }
+
+    GLuint shader = glCreateShader(GL_VERTEX_SHADER);
+    const char* shaderSource = "#version 330 core\n"
+                            "invalid_shader_code"; // Intentional syntax error
+    glShaderSource(shader, 1, &shaderSource, nullptr);
+    glCompileShader(shader);
+
+    glDebugMessageInsert(
+        GL_DEBUG_SOURCE_APPLICATION,
+        GL_DEBUG_TYPE_OTHER,
+        1234, // Example message ID
+        GL_DEBUG_SEVERITY_HIGH,
+        -1, // Message length (-1 for null-terminated string)
+        "This is a test debug message"
+    );
 }
 
 void
