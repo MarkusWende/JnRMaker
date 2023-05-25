@@ -32,7 +32,7 @@
 #include <map>
 #include <memory>
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "EntityCamera.h"
 #include "EntitySolid.h"
 #include "EntityObject.h"
@@ -46,7 +46,7 @@
 #include "SolidCS.h"
 #include "SolidSprite.h"
 #include "UILogger.h"
-#include "GraphicsManager.h"
+#include "ShaderManager.h"
 
 #ifdef _WIN32
 #include <filesystem>
@@ -70,7 +70,7 @@ namespace fs = std::experimental::filesystem;
 class Scene
 {
 public:
-	Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager, GLuint width, GLuint height);														//!< constructor
+	Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources, GLuint width, GLuint height);														//!< constructor
 	~Scene();																				//!< destructor
 
 	/**
@@ -128,7 +128,7 @@ public:
 		// ar( CEREAL_NVP(filter_));
 		// ar( CEREAL_NVP(map_width_), CEREAL_NVP(map_height_) );
 
-		//sf::Texture tex = ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
+		//sf::Texture tex = ResourceManagerOld::GetRenderTexture("tex_used_tiles")->getTexture();
 		//sf::Image img;
 		//img = tex.copyToImage();
 		//const sf::Uint8* imgData = img.getPixelsPtr();
@@ -184,7 +184,7 @@ private:
 
 	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
 	std::shared_ptr<UILogger> 				ui_logger_;
-	std::shared_ptr<GraphicsManager>		graphics_manager_;
+	std::shared_ptr<ShaderManager>		graphics_manager_;
 
 };
 

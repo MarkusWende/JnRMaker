@@ -1,8 +1,8 @@
 #include <string>
 
-class IResourceManager {
+class IManager {
 public:
-    virtual ~IResourceManager() {}
+    virtual ~IManager() {}
     virtual void Load(const std::string& name) = 0;
     virtual void Unload(const std::string& name) = 0;
 };

@@ -23,7 +23,7 @@
 #define PRIMITIVE_CUBE_H
 
 #include "Primitive.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 
 /**
  * @brief The Primitive Cube class represents a cube.

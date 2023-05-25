@@ -36,7 +36,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 //#include "EntitySolid.h"
 //#include "SolidSprite.h"
 
@@ -73,7 +73,7 @@ public:
     glm::vec2 GetSpriteSize() { return { sprite_size_.x, sprite_size_ .y}; };
     glm::vec2 GetSpriteScale() { return {sprite_scale_.x, sprite_scale_.y}; };
     //TextureArray GetTexArray() { return tilemap_tex_array_; };
-    TextureArray GetTexArray() { return ResourceManager::GetTextureArray(name_); };
+    TextureArray GetTexArray() { return ResourceManagerOld::GetTextureArray(name_); };
 
     /**
 	 * @brief Get the number of rows of the tilemap.
@@ -90,7 +90,7 @@ public:
     GLvoid AddTile(const std::string key, GLuint texID);
 
     //Texture2D* GetTile(std::string key) { return tilemap_textures_.find(key)->second.get(); };
-    Texture2D GetTile(std::string key) { return ResourceManager::GetTexture(key); };
+    Texture2D GetTile(std::string key) { return ResourceManagerOld::GetTexture(key); };
 
     GLuint GetTileID(std::string key);
 

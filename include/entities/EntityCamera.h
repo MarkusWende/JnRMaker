@@ -44,7 +44,7 @@
 //#include <SFML/Graphics/RenderTexture.hpp>
 
 #include "MessageManager.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "Entity.h"
 #include "PrimitiveCube.h"
 
@@ -328,17 +328,17 @@ public:
 	*/
 	GLvoid DrawCenter(glm::mat4 projection, glm::mat4 view)
 	{
-		ResourceManager::GetShader("solid").Use();
-		ResourceManager::GetShader("solid").SetMatrix4("projection", projection);
-		ResourceManager::GetShader("solid").SetMatrix4("view", view);
-		ResourceManager::GetShader("solid").SetVector3f("color", 1.0f, 1.0f, 1.0f);
-		ResourceManager::GetShader("solid").SetFloat("alpha", 1.0f);
+		ResourceManagerOld::GetShader("solid").Use();
+		ResourceManagerOld::GetShader("solid").SetMatrix4("projection", projection);
+		ResourceManagerOld::GetShader("solid").SetMatrix4("view", view);
+		ResourceManagerOld::GetShader("solid").SetVector3f("color", 1.0f, 1.0f, 1.0f);
+		ResourceManagerOld::GetShader("solid").SetFloat("alpha", 1.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, center_);
 		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, focus_model_->GetScale());
-		ResourceManager::GetShader("solid").SetMatrix4("model", model);
+		ResourceManagerOld::GetShader("solid").SetMatrix4("model", model);
 		focus_model_->Draw();
 	}
 
@@ -478,7 +478,7 @@ public:
     {
         ratio_ *= 1.0f + zoom * 0.1f;
 
-        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        sf::RenderTexture* renderTex = ResourceManagerOld::GetRenderTexture("viewport");
         const sf::Vector2f beforeCoord { renderTex->mapPixelToCoords(pixel) };
         view_.zoom(1.0f + zoom * 0.1f);
         set();
@@ -498,7 +498,7 @@ public:
     {
         width_ = width;
         height_ = height;
-        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        sf::RenderTexture* renderTex = ResourceManagerOld::GetRenderTexture("viewport");
         sf::FloatRect visibleArea(0, 0, width_, height_);
         sf::View newView(visibleArea);
         newView.zoom(ratio_);
@@ -531,7 +531,7 @@ public:
 private:
     GLvoid set()
     {
-        sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("viewport");
+        sf::RenderTexture* renderTex = ResourceManagerOld::GetRenderTexture("viewport");
         renderTex->setView(view_);
     }
 

@@ -18,7 +18,7 @@
  */
 
 /**
- * @file ResourceManager.h
+ * @file ResourceManagerOldOld.h
  * @brief This file contains the singleton resource manager class.
  *
  * @author Markus Wende
@@ -50,7 +50,7 @@
 /**
  * @brief The sindgleton resource manager class manages all resources like, textures, audio etc that are accessed across the application.
  */
-class ResourceManager
+class ResourceManagerOld
 {
 public:
   static std::map<std::string, Texture2D>		Textures;							/**< Texture vector. Stores every texture used in the application. */
@@ -168,8 +168,8 @@ public:
 
 private:
   // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
-  ResourceManager() { }
-  ~ResourceManager() { }
+  ResourceManagerOld() { }
+  ~ResourceManagerOld() { }
 
   /**
      * @brief Loads (and generates) a texture from file.

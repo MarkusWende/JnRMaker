@@ -31,7 +31,7 @@
 
 #include <iostream>
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "ProjectManager.h"
 #include "MessageManager.h"
 #include "TilemapManager.h"
@@ -44,7 +44,7 @@
 //#include <SFML/Graphics/Texture.hpp>
 //#include <SFML/Graphics/RenderWindow.hpp>
 #include "UILogger.h"
-#include "GraphicsManager.h"
+#include "ShaderManager.h"
 
 #ifdef _WIN32
 #define __STDC_WANT_LIB_EXT1__ 1
@@ -87,7 +87,7 @@ enum class gui_state_t {
 class Gui
 {
 public:
-    Gui(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager);                    //!< constructor
+    Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources);                    //!< constructor
     ~Gui();                                                     //!< destructor
 
     /**
@@ -197,7 +197,7 @@ private:
     bool                        			show_backend_checker_show_;
 
 	std::shared_ptr<UILogger> 				ui_logger_;
-	std::shared_ptr<GraphicsManager>		graphics_manager_;
+	std::shared_ptr<IManager>				shader_manager_;
 
     /**
 	    * @brief Initialize all gui related default attributes.

@@ -5,7 +5,7 @@
 
 #include "Gui.h"
 #include "ProjectManager.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "MessageManager.h"
 #include "Scene.h"
 #include "Events.h"
@@ -31,7 +31,7 @@ int main(int, char**)
     MainLoopData data;
     Injector injector;
     auto logger = injector.GetLogger();
-    auto graphicsManager = injector.GetGraphicsManager();
+    auto graphicsManager = injector.GetShaderManager();
 
 #ifdef __EMSCRIPTEN_PTHREADS__
     logger->Log(log_t::DEBUG, "__EMSCRIPTEN_PTHREADS__ is enabled.");

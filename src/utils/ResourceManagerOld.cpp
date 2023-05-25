@@ -25,70 +25,70 @@
  * https://github.com/MarkusWende
  */
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "MessageManager.h"
 
 #include "stb_image.h"
 
-std::map<std::string, Texture2D> ResourceManager::Textures;
-std::map<std::string, TextureArray> ResourceManager::TextureArrays;
-// std::map<std::string, TextureAtlas> ResourceManager::TextureAtlases;
-// std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManager::RenderTextures;
-std::map<std::string, Framebuffer> ResourceManager::Framebuffers;
-std::map<std::string, Shader> ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManagerOld::Textures;
+std::map<std::string, TextureArray> ResourceManagerOld::TextureArrays;
+// std::map<std::string, TextureAtlas> ResourceManagerOld::TextureAtlases;
+// std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManagerOld::RenderTextures;
+std::map<std::string, Framebuffer> ResourceManagerOld::Framebuffers;
+std::map<std::string, Shader> ResourceManagerOld::Shaders;
 
-Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
+Shader ResourceManagerOld::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
     return Shaders[name];
 }
 
-Shader ResourceManager::GetShader(std::string name)
+Shader ResourceManagerOld::GetShader(std::string name)
 {
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
+Texture2D ResourceManagerOld::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
 }
 
-Texture2D ResourceManager::CreateTexture(unsigned char *data, GLuint width, GLuint height, GLboolean alpha, std::string name)
+Texture2D ResourceManagerOld::CreateTexture(unsigned char *data, GLuint width, GLuint height, GLboolean alpha, std::string name)
 {
     Textures[name] = createTextureFromData(data, width, height, alpha);
     return Textures[name];
 }
 
-Texture2D ResourceManager::CreateTexture(const unsigned char *data, int size, std::string name)
+Texture2D ResourceManagerOld::CreateTexture(const unsigned char *data, int size, std::string name)
 {
     Textures[name] = createTextureFromData(data, size);
     return Textures[name];
 }
 
-TextureArray ResourceManager::CreateTextureArray(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+TextureArray ResourceManagerOld::CreateTextureArray(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
 {
     Textures[name] = createTextureFromData(data, width, height, alpha);
     TextureArrays[name] = createTextureArrayFromData(data, width, height, spriteSizeX, spriteSizeY, alpha, name);
     return TextureArrays[name];
 }
 
-/* TextureArray ResourceManager::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+/* TextureArray ResourceManagerOld::CreateTextureArrayEmpty(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlases[name] = createTextureAtlasEmpty(alpha, spriteSize, spriteScale);
     return TextureAtlases[name];
 }
-TextureAtlas ResourceManager::CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
+TextureAtlas ResourceManagerOld::CreateTextureAtlasFromFile(std::string name, GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
 {
     TextureAtlases[name] = createTextureAtlasFromFile(alpha, spriteSize, spriteScale, file);
     return TextureAtlases[name];
 }
-TextureAtlas ResourceManager::GetTextureAtlas(std::string name)
+TextureAtlas ResourceManagerOld::GetTextureAtlas(std::string name)
 {
     return TextureAtlases[name];
 } */
 
-// GLvoid ResourceManager::CreateRenderTexture(GLuint width, GLuint height, std::string name)
+// GLvoid ResourceManagerOld::CreateRenderTexture(GLuint width, GLuint height, std::string name)
 //{
 /*
 RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
@@ -102,7 +102,7 @@ if(!rTexture->create(width, height))
 */
 //}
 /*
-GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::string name)
+GLvoid ResourceManagerOld::ResizeRenderTexture(GLuint width, GLuint height, std::string name)
 {
   RenderTextures.erase(name);
   RenderTextures.insert(std::make_pair(name, std::unique_ptr<sf::RenderTexture>(new sf::RenderTexture)));
@@ -114,7 +114,7 @@ GLvoid ResourceManager::ResizeRenderTexture(GLuint width, GLuint height, std::st
       MessageManager::AddMessage(msg, message_t::ERROR_T);
   }
 }
-GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name)
+GLvoid ResourceManagerOld::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuint height, std::string name)
 {
     ResizeRenderTexture(width, height, name);
     sf::Texture tex;
@@ -126,55 +126,55 @@ GLvoid ResourceManager::UpdateRenderTexture(sf::Uint8* data, GLuint width, GLuin
     spr.setTexture(tex);
     RenderTextures[name]->draw(spr);
 }
-sf::Texture* ResourceManager::GetTexture(std::string name)
+sf::Texture* ResourceManagerOld::GetTexture(std::string name)
 {
     return &Textures[name];
 }
-sf::RenderTexture* ResourceManager::GetRenderTexture(std::string name)
+sf::RenderTexture* ResourceManagerOld::GetRenderTexture(std::string name)
 {
     return RenderTextures.find(name)->second.get();
 }
 */
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture2D ResourceManagerOld::GetTexture(std::string name)
 {
     return Textures[name];
 }
 
-TextureArray ResourceManager::GetTextureArray(std::string name)
+TextureArray ResourceManagerOld::GetTextureArray(std::string name)
 {
     return TextureArrays[name];
 }
 
-const std::map<std::string, Texture2D> &ResourceManager::GetTextureMap()
+const std::map<std::string, Texture2D> &ResourceManagerOld::GetTextureMap()
 {
     const std::map<std::string, Texture2D> &ptr = Textures;
     return ptr;
 }
 
-Framebuffer ResourceManager::CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type)
+Framebuffer ResourceManagerOld::CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type)
 {
     Framebuffers[name] = generateFramebuffer(width, height, type);
     return Framebuffers[name];
 }
 
-// void ResourceManager::DeleteFramebuffer(std::string name)
+// void ResourceManagerOld::DeleteFramebuffer(std::string name)
 // {
 //     //glDeleteBuffers(1, &Framebuffers[name].GetID());
 // }
 
-Framebuffer ResourceManager::GetFramebuffer(std::string name)
+Framebuffer ResourceManagerOld::GetFramebuffer(std::string name)
 {
     return Framebuffers[name];
 }
 
-Framebuffer ResourceManager::ResizeFramebuffer(std::string name, GLuint width, GLuint height)
+Framebuffer ResourceManagerOld::ResizeFramebuffer(std::string name, GLuint width, GLuint height)
 {
     Framebuffers[name].Resize(width, height);
 
     return Framebuffers[name];
 }
 
-std::string ResourceManager::GetNameHash(std::string tilesetName, std::string tileName)
+std::string ResourceManagerOld::GetNameHash(std::string tilesetName, std::string tileName)
 {
     std::stringstream hash;
     std::hash<std::string> hash_fn;
@@ -183,14 +183,14 @@ std::string ResourceManager::GetNameHash(std::string tilesetName, std::string ti
     return hash.str();
 }
 
-GLvoid ResourceManager::DeleteTextureArray(std::string name)
+GLvoid ResourceManagerOld::DeleteTextureArray(std::string name)
 {
     TextureArrays[name].Delete();
 }
 
 // PRIVATE:
 ////////////////////////////////////////////////////////////////////////////
-Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
+Texture2D ResourceManagerOld::loadTextureFromFile(const GLchar *file, GLboolean alpha)
 {
     // Create Texture object
     Texture2D texture;
@@ -228,7 +228,7 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alp
     return texture;
 }
 
-Texture2D ResourceManager::createTextureFromData(unsigned char *data, GLuint width, GLuint height, GLboolean alpha)
+Texture2D ResourceManagerOld::createTextureFromData(unsigned char *data, GLuint width, GLuint height, GLboolean alpha)
 {
     Texture2D texture;
     if (alpha)
@@ -247,7 +247,7 @@ Texture2D ResourceManager::createTextureFromData(unsigned char *data, GLuint wid
     return texture;
 }
 
-Texture2D ResourceManager::createTextureFromData(const unsigned char *data, int size)
+Texture2D ResourceManagerOld::createTextureFromData(const unsigned char *data, int size)
 {
     Texture2D texture;
     texture.Internal_Format = GL_RGBA;
@@ -296,7 +296,7 @@ Texture2D ResourceManager::createTextureFromData(const unsigned char *data, int 
     return texture;
 }
 
-TextureArray ResourceManager::createTextureArrayFromData(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
+TextureArray ResourceManagerOld::createTextureArrayFromData(unsigned char *data, GLuint width, GLuint height, GLuint spriteSizeX, GLuint spriteSizeY, GLboolean alpha, std::string name)
 {
     TextureArray texArray;
     int channels = 0;
@@ -340,7 +340,7 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char *data, GL
     return texArray;
 }
 
-/* TextureAtlas ResourceManager::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
+/* TextureAtlas ResourceManagerOld::createTextureAtlasEmpty(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale)
 {
     TextureAtlas texture;
     if (alpha)
@@ -358,7 +358,7 @@ TextureArray ResourceManager::createTextureArrayFromData(unsigned char *data, GL
     //SOIL_free_image_data(image);
     return texture;
 }
-TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
+TextureAtlas ResourceManagerOld::createTextureAtlasFromFile(GLboolean alpha, glm::vec2 spriteSize, glm::vec2 spriteScale, const GLchar* file)
 {
     TextureAtlas texture;
     if (alpha)
@@ -387,7 +387,7 @@ TextureAtlas ResourceManager::createTextureAtlasFromFile(GLboolean alpha, glm::v
     return texture;
 } */
 
-Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height, GLenum type)
+Framebuffer ResourceManagerOld::generateFramebuffer(GLuint width, GLuint height, GLenum type)
 {
     // create framebuffer object
     Framebuffer fb;
@@ -398,7 +398,7 @@ Framebuffer ResourceManager::generateFramebuffer(GLuint width, GLuint height, GL
     return fb;
 }
 
-Shader ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile)
+Shader ResourceManagerOld::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile)
 {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexCode;

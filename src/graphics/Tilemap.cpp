@@ -31,7 +31,7 @@
 
 Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, const unsigned char *data, int size)
 {
-    //ResourceManager::LoadTexture(file.c_str(), GL_TRUE, name);
+    //ResourceManagerOld::LoadTexture(file.c_str(), GL_TRUE, name);
     name_ = name;
     num_cols_ = 0;
     num_rows_ = 0;
@@ -77,7 +77,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
         msg << "Width: " << width << "\tHeight: " << height;
         MessageManager::AddMessage(msg, message_t::DEBUG);
 
-        ResourceManager::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
+        ResourceManagerOld::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
 
         num_rows_ = (GLuint)height / (GLuint)sprite_size_.y;
         num_cols_ = (GLuint)width / (GLuint)sprite_size_.x;
@@ -93,7 +93,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
                 
                 std::stringstream key;
                 key << "r" << i << "c" << j;
-                std::string hashKey = ResourceManager::GetNameHash(name_, key.str());
+                std::string hashKey = ResourceManagerOld::GetNameHash(name_, key.str());
                 tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
                 // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
                 // tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
@@ -108,7 +108,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
 
 Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, std::string file)
 {
-    //ResourceManager::LoadTexture(file.c_str(), GL_TRUE, name);
+    //ResourceManagerOld::LoadTexture(file.c_str(), GL_TRUE, name);
     name_ = name;
     num_cols_ = 0;
     num_rows_ = 0;
@@ -143,7 +143,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
             MessageManager::AddMessage(msg, message_t::ERROR_T);
         }
 
-        ResourceManager::CreateTextureArray(image, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
+        ResourceManagerOld::CreateTextureArray(image, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
 
         num_rows_ = (GLuint)height / (GLuint)sprite_size_.y;
         num_cols_ = (GLuint)width / (GLuint)sprite_size_.x;
@@ -159,7 +159,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
                 
                 std::stringstream key;
                 key << "r" << i << "c" << j;
-                std::string hashKey = ResourceManager::GetNameHash(name_, key.str());
+                std::string hashKey = ResourceManagerOld::GetNameHash(name_, key.str());
                 tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
                 // tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
                 // tilemap_textures_.find(hashKey)->second->Generate(sprite_size_.x, sprite_size_.y, pixels);
@@ -183,8 +183,8 @@ Tilemap::Tilemap ()
     num_cols_ = 0;
     num_rows_ = 0;
     tilemap_id_max_ = 0;
-    //ResourceManager::CreateTextureAtlasEmpty(name_, GL_TRUE, sprite_size_, sprite_scale_);
-    //ResourceManager::CreateFramebuffer("default", 0, 0);
+    //ResourceManagerOld::CreateTextureAtlasEmpty(name_, GL_TRUE, sprite_size_, sprite_scale_);
+    //ResourceManagerOld::CreateFramebuffer("default", 0, 0);
 }
 
 
@@ -213,7 +213,7 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
 
         // std::stringstream key;
         // key << "r" << num_rows_ << "c" << num_cols_;
-        // std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+        // std::string hashKey = ResourceManagerOld::getNameHash(name_, key.str());
         tilemap_ids_.insert(std::make_pair(tilemap_id_max_, spriteName));
         tilemap_id_max_++;
 
@@ -238,10 +238,10 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
                 
             // std::stringstream key;
             // key << "r" << 0 << "c" << ix;
-            // std::string hashKey = ResourceManager::getNameHash(name_, key.str());
+            // std::string hashKey = ResourceManagerOld::getNameHash(name_, key.str());
 
             GLuint currentTileID = 0;
-            currentTileID = ResourceManager::GetTexture(hash).ID;
+            currentTileID = ResourceManagerOld::GetTexture(hash).ID;
             glBindTexture(GL_TEXTURE_2D, currentTileID);
 
             GLuint fboCurrentTile;
@@ -275,13 +275,13 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
                     );
         }
 
-        ResourceManager::CreateTextureArray(dataNewTexArray.data(), (GLuint)sprite_size_.x * num_cols_, (GLuint)sprite_size_.y, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
+        ResourceManagerOld::CreateTextureArray(dataNewTexArray.data(), (GLuint)sprite_size_.x * num_cols_, (GLuint)sprite_size_.y, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
         
         //unsigned char* data = (unsigned char*)malloc(sprite_size_.x * sprite_size_.y * 4);
 
         /* std::stringstream key;
         key << "r" << 0 << "c" << tilemapSize;
-        std::string hashKey = ResourceManager::getNameHash(name_, key.str()); */
+        std::string hashKey = ResourceManagerOld::getNameHash(name_, key.str()); */
 
 
 
@@ -402,12 +402,12 @@ std::vector<std::string> Tilemap::GetHashs()
 
 GLvoid Tilemap::Delete()
 {
-    ResourceManager::DeleteTextureArray(name_);
+    ResourceManagerOld::DeleteTextureArray(name_);
 }
 
 // GLvoid Tilemap::loadTilemapFromTexture()
 // {
-//     Texture2D tex = ResourceManager::GetTexture(name_);
+//     Texture2D tex = ResourceManagerOld::GetTexture(name_);
 
 //     num_rows_ = tex.Height / sprite_size_.y;
 //     num_cols_ = tex.Width / sprite_size_.x;
@@ -438,7 +438,7 @@ GLvoid Tilemap::Delete()
 //             glDeleteFramebuffers(1, &fbo);
 //             // std::stringstream newName;
 //             // newName << name_ << "_r" << j << "c" << i;
-//             // ResourceManager::CreateTexture(pixels, sprite_size_.x, sprite_size_.y, GL_TRUE, newName.str());
+//             // ResourceManagerOld::CreateTexture(pixels, sprite_size_.x, sprite_size_.y, GL_TRUE, newName.str());
 //             glBindTexture(GL_TEXTURE_2D, 0);
 
 // #ifdef __EMSCRIPTEN__
@@ -478,8 +478,8 @@ GLvoid Tilemap::Delete()
 
 //             std::stringstream key;
 //             key << "r" << j << "c" << i;
-//             std::string hashKey = ResourceManager::getNameHash(name_, key.str());
-//             ResourceManager::CreateTexture(pixels, sprite_size_.x, sprite_size_.y, GL_TRUE, hashKey.c_str());
+//             std::string hashKey = ResourceManagerOld::getNameHash(name_, key.str());
+//             ResourceManagerOld::CreateTexture(pixels, sprite_size_.x, sprite_size_.y, GL_TRUE, hashKey.c_str());
             
 //             tilemap_ids_.insert(std::make_pair(tilemap_id_max_, hashKey));
 //             tilemap_textures_.insert(std::make_pair(hashKey, new Texture2D()));
@@ -614,7 +614,7 @@ GLvoid Tilemap::Delete()
 
 //     std::stringstream newName;
 //     newName << name_ << "_data_" << sprite_size_.x * tilemap_textures_.size() << "x" << sprite_size_.y;
-//     ResourceManager::CreateTexture(data.data(), sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, GL_TRUE, newName.str());
+//     ResourceManagerOld::CreateTexture(data.data(), sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, GL_TRUE, newName.str());
 
 //     /* int counter = 0;
 //     for (size_t i = 0; i < data.size();)
@@ -663,6 +663,6 @@ GLvoid Tilemap::Delete()
 //     glDeleteFramebuffers(1, &fbo);
 //     newName.str("");
 //     newName << name_ << "_" << tilemap_tex_array_.Width << "x" << tilemap_tex_array_.Height;
-//     ResourceManager::CreateTexture(pixels, sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, GL_TRUE, newName.str());
+//     ResourceManagerOld::CreateTexture(pixels, sprite_size_.x * tilemap_textures_.size(), sprite_size_.y, GL_TRUE, newName.str());
 //     glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 // }

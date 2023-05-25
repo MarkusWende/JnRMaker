@@ -36,7 +36,7 @@
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/intersect.hpp>
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "MessageManager.h"
 #include "ProjectManager.h"
 

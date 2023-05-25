@@ -28,10 +28,10 @@
 
 #include "Scene.h"
 
-Scene::Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager, GLuint width, GLuint height)
+Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources, GLuint width, GLuint height)
 {
-    ui_logger_ = std::dynamic_pointer_cast<UILogger>(uiLogger);
-	graphics_manager_ = std::dynamic_pointer_cast<GraphicsManager>(graphicsManager);
+    ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
+	graphics_manager_ = std::dynamic_pointer_cast<ShaderManager>(resources);
 
     width_ = width;
     height_ = height;
@@ -57,25 +57,25 @@ Scene::Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager
     //std::cout << fs::current_path().parent_path().string().c_str();
 
 #ifdef __EMSCRIPTEN__
-    ResourceManager::LoadShader("resources/shaders/es/line.vert", "resources/shaders/es/line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("resources/shaders/es/level_layer.vert", "resources/shaders/es/level_layer.frag",  nullptr, "llayer");
-    ResourceManager::LoadShader("resources/shaders/es/scene.vert", "resources/shaders/es/scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("resources/shaders/es/solid.vert", "resources/shaders/es/solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("resources/shaders/es/sprite.vert", "resources/shaders/es/sprite.frag", nullptr, "sprite");
+    ResourceManagerOld::LoadShader("resources/shaders/es/line.vert", "resources/shaders/es/line.frag",  nullptr, "line");
+    ResourceManagerOld::LoadShader("resources/shaders/es/level_layer.vert", "resources/shaders/es/level_layer.frag",  nullptr, "llayer");
+    ResourceManagerOld::LoadShader("resources/shaders/es/scene.vert", "resources/shaders/es/scene.frag", nullptr, "scene");
+    ResourceManagerOld::LoadShader("resources/shaders/es/solid.vert", "resources/shaders/es/solid.frag", nullptr, "solid");
+    ResourceManagerOld::LoadShader("resources/shaders/es/sprite.vert", "resources/shaders/es/sprite.frag", nullptr, "sprite");
 #else
-    ResourceManager::LoadShader("resources/shaders/scene.vert", "resources/shaders/scene.frag", nullptr, "scene");
-    ResourceManager::LoadShader("resources/shaders/solid.vert", "resources/shaders/solid.frag", nullptr, "solid");
-    ResourceManager::LoadShader("resources/shaders/sprite.vert", "resources/shaders/sprite.frag", nullptr, "sprite");
-    ResourceManager::LoadShader("resources/shaders/line.vert", "resources/shaders/line.frag",  nullptr, "line");
-    ResourceManager::LoadShader("resources/shaders/level_layer.vert", "resources/shaders/level_layer.frag",  nullptr, "llayer");
-    //ResourceManager::LoadShader("resources/shaders/tile.vert", "resources/shaders/tile.frag", nullptr, "tile");
+    ResourceManagerOld::LoadShader("resources/shaders/scene.vert", "resources/shaders/scene.frag", nullptr, "scene");
+    ResourceManagerOld::LoadShader("resources/shaders/solid.vert", "resources/shaders/solid.frag", nullptr, "solid");
+    ResourceManagerOld::LoadShader("resources/shaders/sprite.vert", "resources/shaders/sprite.frag", nullptr, "sprite");
+    ResourceManagerOld::LoadShader("resources/shaders/line.vert", "resources/shaders/line.frag",  nullptr, "line");
+    ResourceManagerOld::LoadShader("resources/shaders/level_layer.vert", "resources/shaders/level_layer.frag",  nullptr, "llayer");
+    //ResourceManagerOld::LoadShader("resources/shaders/tile.vert", "resources/shaders/tile.frag", nullptr, "tile");
 #endif
     // Testing
     TilemapManager::Add("resources/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "resources/assets/tiles/game-tiles_cut.png");
 
 
-    //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
-    //ResourceManager::CreateRenderTexture(width_, height_, "minimap");
+    //ResourceManagerOld::CreateRenderTexture(width_, height_, "viewport");
+    //ResourceManagerOld::CreateRenderTexture(width_, height_, "minimap");
     filter_.insert(std::make_pair("asdasd", new SceneEntity()));
 
     e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
@@ -87,11 +87,11 @@ Scene::Scene(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager
     //e_cameras_["SceneCamera"]->SetState(CameraState::ORTHOGRAPHIC);
 
     // Create framebuffers
-    //ResourceManager::CreateRenderTexture(width_, height_, "viewport");
+    //ResourceManagerOld::CreateRenderTexture(width_, height_, "viewport");
     //generateGrid();
-    ResourceManager::CreateFramebuffer("scene", width_, height_, GL_TEXTURE_2D);
-    //ResourceManager::CreateFramebuffer("minimap", width_, height_);
-    ResourceManager::CreateFramebuffer("imguiScene", width_, height_, GL_TEXTURE_2D);
+    ResourceManagerOld::CreateFramebuffer("scene", width_, height_, GL_TEXTURE_2D);
+    //ResourceManagerOld::CreateFramebuffer("minimap", width_, height_);
+    ResourceManagerOld::CreateFramebuffer("imguiScene", width_, height_, GL_TEXTURE_2D);
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
        // positions   // texCoords
@@ -148,8 +148,8 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
     // std::stringstream fileDefaultBorder;
     // fileDefaultEmpty << "resources/assets/sprites/" << keyEmpty.str().c_str() << ".png";
     // fileDefaultBorder << "resources/assets/sprites/" << keyBorder.str().c_str() << ".png";
-    // ResourceManager::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
-    // ResourceManager::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
+    // ResourceManagerOld::LoadTexture(fileDefaultEmpty.str().c_str(), GL_TRUE, keyEmpty.str().c_str());
+    // ResourceManagerOld::LoadTexture(fileDefaultBorder.str().c_str(), GL_TRUE, keyBorder.str().c_str());
 
     // Create level
     if (!e_level_layers_.empty())
@@ -162,8 +162,8 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
     // Create default brush
     e_sprites_.clear();
     e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, (GLuint)spriteSize.x, (GLuint)spriteSize.y)));
-    std::string keyBorderHash = ResourceManager::GetNameHash("Tiles", "r0c1");
-    e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(keyBorderHash.c_str()).ID);
+    std::string keyBorderHash = ResourceManagerOld::GetNameHash("Tiles", "r0c1");
+    e_sprites_.find("brush")->second->AssignTextureID(ResourceManagerOld::GetTexture(keyBorderHash.c_str()).ID);
     active_sprite_name_ = keyBorderHash.c_str();
 
     map_is_null_ = false;
@@ -189,14 +189,14 @@ GLvoid Scene::ResizeLevel(GLuint width, GLuint height)
 
 GLvoid Scene::Update(GLuint width, GLuint height)
 {
-    //ResourceManager::ResizeRenderTexture(width_, height_, "viewport");
+    //ResourceManagerOld::ResizeRenderTexture(width_, height_, "viewport");
     if ((width_ != width) || (height_ != height))
     {
         width_ = width;
         height_ = height;
 
-        ResourceManager::ResizeFramebuffer("scene", width_, height_);
-        ResourceManager::ResizeFramebuffer("imguiScene", width_, height_);
+        ResourceManagerOld::ResizeFramebuffer("scene", width_, height_);
+        ResourceManagerOld::ResizeFramebuffer("imguiScene", width_, height_);
 
     }
 
@@ -207,7 +207,7 @@ GLvoid Scene::Update(GLuint width, GLuint height)
 GLvoid Scene::Render()
 {
     // Render everything to the scene framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, ResourceManager::GetFramebuffer("scene").GetID());
+    glBindFramebuffer(GL_FRAMEBUFFER, ResourceManagerOld::GetFramebuffer("scene").GetID());
     glViewport(0, 0, width_, height_); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +279,7 @@ GLvoid Scene::Render()
     // Sprite tools
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Brush
-    //std::string brushKey = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_);
+    //std::string brushKey = ResourceManagerOld::getNameHash(active_tilemap_name_, active_sprite_name_);
 
     //Tilemap* tilemap = TilemapManager::GetTilemap(active_tilemap_name_);
 
@@ -326,26 +326,26 @@ GLvoid Scene::Render()
             e_cameras_["SceneCamera"]->DrawCenter(projection, view);
         }
         
-        /* ResourceManager::GetShader("floor").Use();
-        ResourceManager::GetShader("floor").SetMatrix4("projection", projection);
-        ResourceManager::GetShader("floor").SetMatrix4("view", view);
+        /* ResourceManagerOld::GetShader("floor").Use();
+        ResourceManagerOld::GetShader("floor").SetMatrix4("projection", projection);
+        ResourceManagerOld::GetShader("floor").SetMatrix4("view", view);
 
-        ResourceManager::GetShader("floor").SetVector3f("dirLight.direction", -0.3f, -1.0f, -0.1f);
-        ResourceManager::GetShader("floor").SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
-        ResourceManager::GetShader("floor").SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-        ResourceManager::GetShader("floor").SetVector3f("color", 0.5f, 0.5f, 0.5f);
-        ResourceManager::GetShader("floor").SetFloat("alpha", 1.0f); */
+        ResourceManagerOld::GetShader("floor").SetVector3f("dirLight.direction", -0.3f, -1.0f, -0.1f);
+        ResourceManagerOld::GetShader("floor").SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
+        ResourceManagerOld::GetShader("floor").SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        ResourceManagerOld::GetShader("floor").SetVector3f("color", 0.5f, 0.5f, 0.5f);
+        ResourceManagerOld::GetShader("floor").SetFloat("alpha", 1.0f); */
 
         //model = glm::translate(model, glm::vec3(0.0, 0.1f, 0.0));
         //model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f)); // a smaller cube
-        //ResourceManager::GetShader("floor").SetMatrix4("model", model);
+        //ResourceManagerOld::GetShader("floor").SetMatrix4("model", model);
 
         //glm::vec3 pos(0.0f);
         //glm::vec3 norm(0.0f);
         //if (glm::intersectRaySphere(mouseRayEnd, glm::normalize(mouseRayStart - mouseRayEnd), glm::vec3(1.0f, 0.1f, 0.0f), 1.0f / M.MapModel.GetDistance(), pos, norm))
         //if (cube->Intersection(mouseRayEnd, glm::normalize(mouseRayStart - mouseRayEnd)))
         {
-            //	ResourceManager::GetShader("floor").SetVector3f("color", 0.0, 1.0, 0.0);
+            //	ResourceManagerOld::GetShader("floor").SetVector3f("color", 0.0, 1.0, 0.0);
         }
         //glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f);
         //if (M.MapModel.Intersection(mouseRayEnd, glm::normalize(mouseRayStart - mouseRayEnd), offset))
@@ -364,12 +364,12 @@ GLvoid Scene::Render()
         // model = glm::translate(model, glm::vec3(5.0f, 5.0f, 0.5f));
         // //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         // model = glm::scale(model, glm::vec3(5.0f, 5.0f, 5.0f)); // a smaller cube
-        // ResourceManager::GetShader("tile").Use();
-        // ResourceManager::GetShader("tile").SetMatrix4("projection", projection);
-        // ResourceManager::GetShader("tile").SetMatrix4("view", view);
-        // ResourceManager::GetShader("tile").SetMatrix4("model", model);
-        // ResourceManager::GetShader("tile").SetFloat("aLayer", 1.0f);
-        // glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManager::GetTextureAtlas("default").ID);
+        // ResourceManagerOld::GetShader("tile").Use();
+        // ResourceManagerOld::GetShader("tile").SetMatrix4("projection", projection);
+        // ResourceManagerOld::GetShader("tile").SetMatrix4("view", view);
+        // ResourceManagerOld::GetShader("tile").SetMatrix4("model", model);
+        // ResourceManagerOld::GetShader("tile").SetFloat("aLayer", 1.0f);
+        // glBindTexture(GL_TEXTURE_2D_ARRAY, ResourceManagerOld::GetTextureAtlas("default").ID);
         //e_solids_["TestQuad"]->Draw();
 
         
@@ -381,9 +381,9 @@ GLvoid Scene::Render()
         //model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
         //model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         //model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f)); // a smaller cube
-        //ResourceManager::GetShader("floor").SetMatrix4("model", model);
+        //ResourceManagerOld::GetShader("floor").SetMatrix4("model", model);
         //entities_solids_["TestCube2"]->DrawWireframe();
-        //cube->DrawWithLines(ResourceManager::GetShader("floor"), col);
+        //cube->DrawWithLines(ResourceManagerOld::GetShader("floor"), col);
 
         //entities_solids_["test"]->Draw();
         //model = glm::mat4(1.0f);
@@ -499,8 +499,8 @@ GLvoid Scene::Render()
     /*
     if (false)
     {
-        sf::RenderTexture* texViewport = ResourceManager::GetRenderTexture("viewport");
-        sf::RenderTexture* texMinimap = ResourceManager::GetRenderTexture("minimap");
+        sf::RenderTexture* texViewport = ResourceManagerOld::GetRenderTexture("viewport");
+        sf::RenderTexture* texMinimap = ResourceManagerOld::GetRenderTexture("minimap");
         texViewport->clear(sf::Color::Black);
         texMinimap->clear(sf::Color::Black);
 
@@ -542,14 +542,14 @@ GLvoid Scene::Render()
                 {
                     idSolid = e_solids_.size() + 1;
                     e_solids_.insert(std::make_pair(hashSolid, new Solid(idSolid, hashSolid, active_layer_)));
-                    sf::RenderTexture* renderTex = ResourceManager::GetRenderTexture("tex_used_tiles");
+                    sf::RenderTexture* renderTex = ResourceManagerOld::GetRenderTexture("tex_used_tiles");
                     sf::Texture tex = renderTex->getTexture();
                     sf::Sprite sprTexOld;
                     sprTexOld.setOrigin(0, 32);
                     sprTexOld.setScale(1.0f, -1.0f);
                     sprTexOld.setTexture(tex);
-                    ResourceManager::ResizeRenderTexture((idSolid) * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_used_tiles");
-                    sf::RenderTexture* newRenderTex = ResourceManager::GetRenderTexture("tex_used_tiles");
+                    ResourceManagerOld::ResizeRenderTexture((idSolid) * (sprSize.x * sprScale.x), (sprSize.y * sprScale.y), "tex_used_tiles");
+                    sf::RenderTexture* newRenderTex = ResourceManagerOld::GetRenderTexture("tex_used_tiles");
                     //newRenderTex->clear(sf::Color::Black);
                     newRenderTex->draw(sprTexOld);
                     newRenderTex->draw(*spr);
@@ -589,7 +589,7 @@ GLvoid Scene::Render()
         sf::RenderStates states;
         states.transform = sf::Transform::Identity;
         states.blendMode = sf::BlendAlpha;
-        states.texture = &ResourceManager::GetRenderTexture("tex_used_tiles")->getTexture();
+        states.texture = &ResourceManagerOld::GetRenderTexture("tex_used_tiles")->getTexture();
         texViewport->draw(map_bg_vao_, states);
         texViewport->draw(map_pg_vao_, states);
         texViewport->draw(map_fg_vao_, states);
@@ -609,16 +609,16 @@ GLvoid Scene::Render()
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Render to our imgui framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, ResourceManager::GetFramebuffer("imguiScene").GetID());
+    glBindFramebuffer(GL_FRAMEBUFFER, ResourceManagerOld::GetFramebuffer("imguiScene").GetID());
     glViewport(0, 0, width_, height_); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 
     //glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
     //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-    ResourceManager::GetShader("scene").Use();
+    ResourceManagerOld::GetShader("scene").Use();
     glBindVertexArray(vao_);
-    glBindTexture(GL_TEXTURE_2D, ResourceManager::GetFramebuffer("scene").GetTextureID());
+    glBindTexture(GL_TEXTURE_2D, ResourceManagerOld::GetFramebuffer("scene").GetTextureID());
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -630,7 +630,7 @@ GLvoid Scene::PlaceTile()
     {
         if (active_layer_ != layer_t::FORE)
         {
-            /* std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_); */
+            /* std::string key = ResourceManagerOld::getNameHash(active_tilemap_name_, active_sprite_name_); */
             /* std::stringstream msg;
             msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO); */
@@ -648,16 +648,16 @@ GLvoid Scene::RemoveTile()
     {
         if (active_layer_ != layer_t::FORE)
         {
-            /* std::string key = ResourceManager::getNameHash(active_tilemap_name_, active_sprite_name_); */
+            /* std::string key = ResourceManagerOld::getNameHash(active_tilemap_name_, active_sprite_name_); */
             /* std::stringstream msg;
             msg << "key: " << active_sprite_name_;
             MessageManager::AddMessage(msg, message_t::INFO); */
             std::string currentActiveSprite = active_sprite_name_;
-            std::string keyEmptyHash = ResourceManager::GetNameHash("Tiles", "r0c0");
-            e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(keyEmptyHash.c_str()).ID);
+            std::string keyEmptyHash = ResourceManagerOld::GetNameHash("Tiles", "r0c0");
+            e_sprites_.find("brush")->second->AssignTextureID(ResourceManagerOld::GetTexture(keyEmptyHash.c_str()).ID);
             active_sprite_name_ = keyEmptyHash.c_str();
             e_level_layers_["Tiles"]->AddSprite(current_tile_id_, active_sprite_name_.c_str(), e_sprites_["brush"]->GetTextureID());
-            e_sprites_.find("brush")->second->AssignTextureID(ResourceManager::GetTexture(currentActiveSprite.c_str()).ID);
+            e_sprites_.find("brush")->second->AssignTextureID(ResourceManagerOld::GetTexture(currentActiveSprite.c_str()).ID);
             active_sprite_name_ = currentActiveSprite.c_str();
             //TilemapManager::GetTilemap("Testing")->AddTile(active_sprite_name_.c_str(), e_sprites_["brush"]->GetTexture()->ID);
         }

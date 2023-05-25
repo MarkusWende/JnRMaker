@@ -23,7 +23,7 @@
 #define PRIMITIVE_QUAD_H
 
 #include "Primitive.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 
 /**
  * @brief The Primitive Quad class represents a quad.

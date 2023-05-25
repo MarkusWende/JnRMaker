@@ -51,14 +51,14 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
     // keyEmptyFile << "default_empty_" << spriteSize.x << "x" << spriteSize.y;
     // std::stringstream keyEmptyPath;
     // keyEmptyPath << "resources/assets/sprites/" << keyEmptyFile.str().c_str() << ".png";
-    // hash_map_empty_key_ = ResourceManager::getNameHash(name, "r0c0");
+    // hash_map_empty_key_ = ResourceManagerOld::getNameHash(name, "r0c0");
 
     std::stringstream keyBorderFile;
     keyBorderFile << "default_" << spriteSize.x << "x" << spriteSize.y;
     std::stringstream keyBorderPath;
     keyBorderPath << "resources/assets/tiles/" << keyBorderFile.str().c_str() << ".png";
     //tile_hash_id_map_.insert(std::make_pair("border", 0.0f));
-    hash_map_border_key_ = ResourceManager::GetNameHash(name, "r0c1");
+    hash_map_border_key_ = ResourceManagerOld::GetNameHash(name, "r0c1");
 
     hash_map_.resize((size_t)height_ + 2 * (size_t)border_size_, std::vector<std::string>((size_t)width_ + 2 * (size_t)border_size_, ""));
 
@@ -70,15 +70,15 @@ WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 
 
     //TilemapManager::AddTilemap(name_, tile_size_, tile_scale_, emptyTile, 1024);
     //auto tiles = TilemapManager::GetTilemap(name_);
-    //ResourceManager::CreateTexture(emptyTile.data(), sizeof(emptyTile.data()), "border");
-    //tiles->AddTile("border", ResourceManager::GetTexture("border").ID);
+    //ResourceManagerOld::CreateTexture(emptyTile.data(), sizeof(emptyTile.data()), "border");
+    //tiles->AddTile("border", ResourceManagerOld::GetTexture("border").ID);
     TilemapManager::Add(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
-    // ResourceManager::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
-    // GLuint texID = ResourceManager::GetTexture(hash_map_border_key_.c_str()).ID;
+    // ResourceManagerOld::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
+    // GLuint texID = ResourceManagerOld::GetTexture(hash_map_border_key_.c_str()).ID;
     // TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
     //tilemap_ = std::make_unique<Tilemap>(name_, tile_size_, tile_scale_, fileDefaultBorder.str().c_str());
 
-    // ResourceManager::LoadTexture("resources/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
+    // ResourceManagerOld::LoadTexture("resources/assets/sprites/keen4_sprite_flame_0.png", GL_TRUE, "testing123");
     
     init();
 }
@@ -117,16 +117,16 @@ GLvoid WorldLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 
 GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
 {
-    ResourceManager::GetShader("llayer").Use();
-    ResourceManager::GetShader("llayer").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    ResourceManager::GetShader("llayer").SetMatrix4("view", view);
+    ResourceManagerOld::GetShader("llayer").Use();
+    ResourceManagerOld::GetShader("llayer").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+    ResourceManagerOld::GetShader("llayer").SetMatrix4("view", view);
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     //model = glm::translate(model, center_);
-    ResourceManager::GetShader("llayer").SetMatrix4("model", model);
+    ResourceManagerOld::GetShader("llayer").SetMatrix4("model", model);
     //tilemap_->GetTexArray().Bind();
     //TilemapManager::GetTilemap(name_)->GetTexArray().Bind();
-    ResourceManager::GetTextureArray(name_).Bind();
-    //ResourceManager::GetTextureAtlas(name_).Bind();
+    ResourceManagerOld::GetTextureArray(name_).Bind();
+    //ResourceManagerOld::GetTextureAtlas(name_).Bind();
     glBindVertexArray(quad_vao_);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 6, (width_ + 2 * border_size_) * (height_+   2 * border_size_));
 
@@ -137,8 +137,8 @@ GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
 
 GLvoid WorldLayer::Delete()
 {
-    //ResourceManager::GetTextureArray(name_).Delete();
-    //ResourceManager::GetTexture(name_).Delete();
+    //ResourceManagerOld::GetTextureArray(name_).Delete();
+    //ResourceManagerOld::GetTexture(name_).Delete();
     //TilemapManager::Delete(name_);
     glDeleteVertexArrays(1, &quad_vao_);
     glDeleteBuffers(1, &quad_vbo_);
@@ -216,7 +216,7 @@ GLvoid WorldLayer::init()
 
 GLvoid WorldLayer::draw_border()
 {
-    //ResourceManager::
+    //ResourceManagerOld::
     //tile_size_
     // std::stringstream key = "border";
     // draw left and right border

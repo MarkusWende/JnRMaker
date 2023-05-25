@@ -35,7 +35,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "Tilemap.h"
 
 //#include <SFML/Graphics/Image.hpp>

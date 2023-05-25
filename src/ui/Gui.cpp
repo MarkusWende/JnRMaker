@@ -31,10 +31,10 @@
 
 #define DEVELOPMENT
 
-Gui::Gui(std::shared_ptr<ILogger> uiLogger, std::shared_ptr<IResourceManager> graphicsManager)
+Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources)
 {
-	ui_logger_ = std::dynamic_pointer_cast<UILogger>(uiLogger);
-	graphics_manager_ = std::dynamic_pointer_cast<GraphicsManager>(graphicsManager);
+	ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
+	shader_manager_ = std::dynamic_pointer_cast<ShaderManager>(resources);
 	init();
 	customGuiStyle();
 
@@ -251,16 +251,16 @@ GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 				GLfloat xOff = 3;
 
 				/*
-				sf::RenderTexture* tex = ResourceManager::GetRenderTexture("viewport");
+				sf::RenderTexture* tex = ResourceManagerOld::GetRenderTexture("viewport");
 				ImGui::Image(tex->getTexture(),
 					sf::Vector2f(scene->GetWidth(), scene->GetHeight()),
 					sf::FloatRect(0, (float)scene->GetHeight(), (float)scene->GetWidth(), -(float)scene->GetHeight()),
 					sf::Color(255, 255, 255, 255),
 					sf::Color(0, 255, 0, 255));
 					*/
-				GLuint64 fbID = ResourceManager::GetFramebuffer("scene").GetTextureID();
+				GLuint64 fbID = ResourceManagerOld::GetFramebuffer("scene").GetTextureID();
 				ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
-				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManager::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
+				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManagerOld::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
 				ImVec2 mousePos = ImGui::GetMousePos();
 				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
 				{
@@ -291,7 +291,7 @@ GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 			{
 				ImGui::Separator();
 				double cummSize = 0.0;
-				for (const auto& [key, value] : ResourceManager::GetTextureMap())
+				for (const auto& [key, value] : ResourceManagerOld::GetTextureMap())
 				{
 					GLuint64 texID = (GLuint64)value.ID;
 					double size = (double)(value.Width * value.Height * 4) / 1024.0;
@@ -364,7 +364,7 @@ GLvoid Gui::DrawWindowSettings(std::shared_ptr<Scene> scene)
 	// 	ImGui::Text("Minimap");
 	// 	ImGui::Text("width: %f -- height: %f", mapSize.x, mapSize.y);
 
-	// 	//sf::RenderTexture* tex = ResourceManager::GetRenderTexture("minimap");
+	// 	//sf::RenderTexture* tex = ResourceManagerOld::GetRenderTexture("minimap");
 	// 	ImGui::SetCursorPos(ImVec2(0.f, 18.f));
 	// 	/*
 	// 	ImGui::Image(tex->getTexture(),
@@ -1186,7 +1186,7 @@ GLvoid Gui::fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLb
 			{
 				//active_tilemap_name_ = str;
 				//tilemap_list_.push_back(str);
-				//ResourceManager::LoadTexture(str.c_str(), GL_TRUE, str);
+				//ResourceManagerOld::LoadTexture(str.c_str(), GL_TRUE, str);
 				// TODO: find or ask for sprite size and scale
 				TilemapManager::Add(str, { 16, 16 }, { 1.0f, 1.0f }, str);
 				scene->SetActiveTilemap(str);

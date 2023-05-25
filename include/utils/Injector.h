@@ -1,7 +1,7 @@
 #include <memory>
 #include <iostream>
 #include "UILogger.h"
-#include "GraphicsManager.h"
+#include "ShaderManager.h"
 
 class Injector {
 public:
@@ -12,10 +12,12 @@ public:
         }
 
     std::shared_ptr<ILogger>            GetLogger();
-    std::shared_ptr<IResourceManager>   GetGraphicsManager();
+    std::shared_ptr<IManager>           GetShaderManager();
+    //std::shared_ptr<IManager>           GetResources();
 
 private:
     std::shared_ptr<ILogger> logger_;
-    std::shared_ptr<IResourceManager> graphics_manager_;
-    std::shared_ptr<IResourceManager> audio_manager_;
+    std::shared_ptr<IManager> shader_manager_;
+    //std::shared_ptr<IManager<Audio>> audio_manager_;
+    //std::shared_ptr<ResourceManagerOld> ResourceManagerOld_;
 };

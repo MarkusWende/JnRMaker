@@ -43,20 +43,20 @@ Grid::Grid(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
 
 GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 {
-	ResourceManager::GetShader("line").Use();
-	ResourceManager::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	ResourceManager::GetShader("line").SetMatrix4("view", view);
+	ResourceManagerOld::GetShader("line").Use();
+	ResourceManagerOld::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	ResourceManagerOld::GetShader("line").SetMatrix4("view", view);
 	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	model = glm::translate(model, center_);
 	model = glm::rotate(model, glm::radians(roll_), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(yaw_), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(pitch_), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, scale_);
-	ResourceManager::GetShader("line").SetMatrix4("model", model);
-	ResourceManager::GetShader("line").SetVector2f("u_resolution", glm::vec2(1, 1));
+	ResourceManagerOld::GetShader("line").SetMatrix4("model", model);
+	ResourceManagerOld::GetShader("line").SetVector2f("u_resolution", glm::vec2(1, 1));
 	// positive axis
-	ResourceManager::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManager::GetShader("line").SetFloat("u_gapSize", 0.0f);
+	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
+	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 0.0f);
 #ifndef __EMSCRIPTEN__
 	glEnable(GL_LINE_SMOOTH);
 #endif
@@ -65,7 +65,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
-		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
+		ResourceManagerOld::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_h_[key.str()]->Draw();
 		i = i + 1.0f;
 	}
@@ -74,7 +74,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
-		ResourceManager::GetShader("line").SetVector4f("color", { color_, alpha_ });
+		ResourceManagerOld::GetShader("line").SetVector4f("color", { color_, alpha_ });
 		axis_v_[key.str()]->Draw();
 		i = i + 1.0f;
 	}

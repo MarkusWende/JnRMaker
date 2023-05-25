@@ -16,7 +16,7 @@
 #include <glm/gtx/intersect.hpp>
 
 #include "MessageManager.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 #include "TimeHelper.h"
 
 struct VertexNew {

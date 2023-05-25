@@ -26,7 +26,7 @@
  */
 
 #include "SolidCS.h"
-#include "ResourceManager.h"
+#include "ResourceManagerOld.h"
 
 
   // PUBLIC:
@@ -65,36 +65,36 @@ CoordinateSystem::CoordinateSystem(glm::vec3 offset) : Solid()
 
 GLvoid CoordinateSystem::Draw(glm::mat4 projection, glm::mat4 view)
 {
-	ResourceManager::GetShader("line").Use();
-	ResourceManager::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	ResourceManager::GetShader("line").SetMatrix4("view", view);
+	ResourceManagerOld::GetShader("line").Use();
+	ResourceManagerOld::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	ResourceManagerOld::GetShader("line").SetMatrix4("view", view);
 	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	model = glm::translate(model, center_);
 	model = glm::rotate(model, roll_, glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, yaw_, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, pitch_, glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, scale_);
-	ResourceManager::GetShader("line").SetMatrix4("model", model);
-	ResourceManager::GetShader("line").SetVector2f("u_resolution", glm::vec2(resolution_.x, resolution_.y));
+	ResourceManagerOld::GetShader("line").SetMatrix4("model", model);
+	ResourceManagerOld::GetShader("line").SetVector2f("u_resolution", glm::vec2(resolution_.x, resolution_.y));
 	// positive axis
-	ResourceManager::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManager::GetShader("line").SetFloat("u_gapSize", 0.0f);
+	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
+	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 0.0f);
 	glLineWidth(2.0f);
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["X"]->GetColor(), axis_["X"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["X"]->GetColor(), axis_["X"]->GetAlpha() });
 	axis_["X"]->Draw();
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["Y"]->GetColor(), axis_["Y"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["Y"]->GetColor(), axis_["Y"]->GetAlpha() });
 	axis_["Y"]->Draw();
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["Z"]->GetColor(), axis_["Z"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["Z"]->GetColor(), axis_["Z"]->GetAlpha() });
 	axis_["Z"]->Draw();
 	// negative axis
 	/*
-	ResourceManager::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManager::GetShader("line").SetFloat("u_gapSize", 10.0f);
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["nX"]->GetColor(), axis_["nX"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
+	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 10.0f);
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nX"]->GetColor(), axis_["nX"]->GetAlpha() });
 	axis_["nX"]->Draw();
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["nY"]->GetColor(), axis_["nY"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nY"]->GetColor(), axis_["nY"]->GetAlpha() });
 	axis_["nY"]->Draw();
-	ResourceManager::GetShader("line").SetVector4f("color", { axis_["nZ"]->GetColor(), axis_["nZ"]->GetAlpha() });
+	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nZ"]->GetColor(), axis_["nZ"]->GetAlpha() });
 	axis_["nZ"]->Draw();
 	*/
 	glLineWidth(1.0f);
