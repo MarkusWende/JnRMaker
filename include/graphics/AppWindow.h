@@ -18,7 +18,7 @@
  */
 
 /**
- * @file JNRWindow.h
+ * @file AppWindow.h
  * @brief This file contains the window class.
  *
  * @author Markus Wende
@@ -29,141 +29,48 @@
 #define APPWINDOW_H
 
 #pragma once
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <memory>
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
 
-#ifdef __EMSCRIPTEN__
-    
+#include <string>
+#include "MessageManager.h"
+#include "UILogger.h"
+
+#include <GL/glew.h>    // Initialize with glewInit()
+
+#include <SDL.h>
+#if defined(IMGUI_IMPL_OPENGL_ES3)
+#include <SDL_opengles3.h>
 #else
-    #include <SDL2/SDL_image.h>
+#include <SDL_opengl.h>
 #endif
 
-// #include <GLFW/glfw3.h>
-// #include <iostream>
-
-// #include "../include/ResourceManager.h"
-
-#include "MessageManager.h"
-
-class AppWindow {
+class AppWindow
+{
 public:
-	AppWindow() {};
+	AppWindow(std::shared_ptr<ILogger> logger);
 	~AppWindow() {};
 
-	/**
-	* @brief Calls necessary functions before using SDL
-	* @return Return whether process was successful
-	*/
-	int SetupSDL();
+    void InitSDL();
+    void InitGlew();
+    void CreateSDLWindow();
+    void CreateSDLContext();
+    void ConfigureOpenGL();
 
-	/**
-	* @brief Calls necessary functions to clean up before shutting down the program
-	* @return Void.
-	*/
-	void CleanUp();
+    std::string     GetGLSLVersion() { return glsl_version_; };
+    SDL_Window*     GetWindow() { return window_; };
+    SDL_GLContext   GetContext() { return gl_context_; };
 
-	/**
-	* @brief Loads and displays the loading window
-	* @return Void.
-	*/
-	void ShowLoadingWindow();
-
-	/**
-	* @brief Creates new SDL window
-	* @param width Width of the new window
-	* @param height Height of the new window
-	* @param name Name displayed in the top bar of the new window.
-	* @return Void.
-	*/
-	void CreateNewWindow(int width, int height, const char* name);
-
-	/**
-	* @brief Gets current width of the window.
-	* @return Returns the current width of the window.
-	*/
-	int GetWidth();
-
-	/**
-	* @brief Sets the width of the window.
-	* @param width New width of the window.
-	* @return Void
-	*/
-	void SetWidth(int width);
-
-	/**
-	* @brief Gets current height of the window.
-	* @return Returns the current height of the window.
-	*/
-	int GetHeight();
-
-	/**
-	* @brief Sets the height of the window.
-	* @param height New height of the window.
-	* @return Void.
-	*/
-	void SetHeight(int height);
-
-	/**
-	* @brief Sets the size of the window.
-	* @param width New width of the window.
-	* @param height New height of the window.
-	* @return Void.
-	*/
-	void SetSize(int width, int height);
-
-	/**
-	* @brief Gets the current name displayed in the topbar of the window.
-	* @return Returns the name of the window.
-	*/
-	const char* GetName();
-
-	/**
-	* @brief Sets the name displayed in the topbar of the window.
-	* @param name New name of the window.
-	* @return Void.
-	*/
-	void SetName(const char* name);
-
-	/**
-	* @brief Gets the SDL_Window object.
-	* @return Returns the SDL_Window object.
-	*/
-	std::shared_ptr<SDL_Window> GetWindow();
-
-	/**
-	* @brief Gets the SDL_Window object.
-	* @return Returns the SDL_Window object.
-	*/
-	std::shared_ptr<SDL_GLContext> GetGLContext();
-
-	/**
-	* @brief Gets the GLSL-Version.
-	* @return Returns the GLSL-Version.
-	*/
-	const char* GetGLSLVersion();
+    void CleanUp();
 
 private:
-	/**
-	* @brief SDL_Window object
-	*/
-	std::shared_ptr<SDL_Window> window_;
+    SDL_Window*     window_;
+    SDL_GLContext   gl_context_;
+    std::string glsl_version_;
+    std::shared_ptr<ILogger> 				logger_;
 
-	/**
-	* @brief SDL Display Mode
-	*/
-	SDL_DisplayMode display_mode_;
-
-	/**
-	* @brief SDL GLContext
-	*/
-	std::shared_ptr<SDL_GLContext> gl_context_;
-
-	/**
-	* @brief GLSL-Version
-	*/
-	std::string glsl_version_;
 };
 
-#endif    // JNRWINDOW_H
+#endif    // APPWINDOW_H
 

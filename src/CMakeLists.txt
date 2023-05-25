@@ -111,7 +111,7 @@ add_library(
     ${MAIN_SOURCE_DIR}/graphics/SolidSprite.cpp
     ${MAIN_SOURCE_DIR}/graphics/Texture.cpp
     ${MAIN_SOURCE_DIR}/graphics/Tilemap.cpp
-    ${MAIN_SOURCE_DIR}/graphics/JNRWindow.cpp
+    ${MAIN_SOURCE_DIR}/graphics/AppWindow.cpp
     ${MAIN_SOURCE_DIR}/ui/Gui.cpp
     ${MAIN_SOURCE_DIR}/utils/logging/UILogger.cpp
     ${MAIN_SOURCE_DIR}/utils/manager/GraphicsManager.cpp

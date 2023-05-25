@@ -16,7 +16,7 @@
 #include <emscripten/fetch.h>
 #endif
 
-#include "JNRWindow.h"
+#include "AppWindow.h"
 
 struct MainLoopData {
     std::shared_ptr<Gui> gui;
@@ -39,7 +39,7 @@ int main(int, char**)
 
     //data.Window = appWindow.GetWindow();
     //data.GLContext = appWindow.GetGLContext();
-    auto appWindow = injector.Create<JNRWindow>(logger);
+    auto appWindow = injector.Create<AppWindow>(logger);
     appWindow->InitSDL();
     appWindow->CreateSDLWindow();
     appWindow->CreateSDLContext();
