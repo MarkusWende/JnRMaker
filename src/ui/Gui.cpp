@@ -31,10 +31,10 @@
 
 #define DEVELOPMENT
 
-Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources)
+Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources)
 {
 	ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
-	shader_manager_ = std::dynamic_pointer_cast<ShaderManager>(resources);
+	resources_ = std::dynamic_pointer_cast<Resources>(resources);
 	init();
 	customGuiStyle();
 

@@ -7,9 +7,9 @@ std::shared_ptr<ILogger> Injector::GetLogger()
     return logger_;
 }
 
-std::shared_ptr<IManager> Injector::GetShaderManager()
+std::shared_ptr<Resources> Injector::GetResources()
 {
-    if (!shader_manager_)
-        shader_manager_ = std::make_shared<ShaderManager>(GetLogger());
-    return shader_manager_;
+    if (!resources_)
+        resources_ = std::make_shared<Resources>(GetLogger());
+    return resources_;
 }

@@ -46,7 +46,7 @@
 #include "SolidCS.h"
 #include "SolidSprite.h"
 #include "UILogger.h"
-#include "ShaderManager.h"
+#include "Resources.h"
 
 #ifdef _WIN32
 #include <filesystem>
@@ -70,7 +70,7 @@ namespace fs = std::experimental::filesystem;
 class Scene
 {
 public:
-	Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<IManager> resources, GLuint width, GLuint height);														//!< constructor
+	Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, GLuint width, GLuint height);														//!< constructor
 	~Scene();																				//!< destructor
 
 	/**
@@ -183,8 +183,8 @@ private:
 	GLuint											current_tile_id_;
 
 	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
-	std::shared_ptr<UILogger> 				ui_logger_;
-	std::shared_ptr<ShaderManager>		graphics_manager_;
+	std::shared_ptr<UILogger> 			ui_logger_;
+	std::shared_ptr<Resources>			resources_;
 
 };
 

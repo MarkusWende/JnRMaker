@@ -12,7 +12,9 @@
 class ShaderManager : public IManager {
 public:
     ShaderManager(std::shared_ptr<ILogger> logger);
-    void Load(const std::string& name) override;
+    void Load(const std::string& name);
+    void Load(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+    void Load(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile, const std::string& geometryShaderFile);
     void Unload(const std::string& name) override;
 
 private:
