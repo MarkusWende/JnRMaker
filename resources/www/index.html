@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"/>
+    <title>JnRMaker</title>
+    <style>
+        body {
+          margin: 0;
+          background-color: rgb(0, 0, 0);
+          min-height: 100vh;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+        .emscripten {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            margin: 0px;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: block;
+            image-rendering: optimizeSpeed;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -o-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            -ms-interpolation-mode: nearest-neighbor;
+        }
+        .container {
+          background: #fafafa;
+          height: 10px;
+          width: 50%;
+          margin: 0 auto;
+          border-radius: 4px;
+        }
+        .text {
+          color: #f0f0f0;
+          margin: 2em auto;
+          text-align: center;
+        }
+        .bar-container {
+          background: #f0f0f0;
+          height: 10px;
+          width: 100%;
+          border-radius: 4px;
+        }
+        .bar {
+          background: #9df200;  /* fallback for old browsers */
+          background: -webkit-linear-gradient(to left, #05e649, #01aff3);  /* Chrome 10-25, Safari 5.1-6 */
+          background: linear-gradient(to left, #05e649, #01aff3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+          height: 10px;
+          width: 0%;
+          border-radius: 4px;
+          transition: width 400ms;
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Text -->
+    <div class="text" id="text">0%</div>
+    <!-- End Of Text -->
+
+    <!-- Container -->
+    <div class="container">
+        <div class="bar-container">
+          <div class="bar" id="bar"></div>
+        </div>
+    <div>
+    <!-- End Of Container -->
+    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>1
+    <script type='text/javascript'>
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+            return function(text) {
+                text = Array.prototype.slice.call(arguments).join(' ');
+                console.log(text + Module.lerp(1, 2, 0.5));
+            };
+        })(),
+        printErr: function(text) {
+            text = Array.prototype.slice.call(arguments).join(' ');
+            console.error(text);
+        },
+        canvas: (function() {
+            var canvas = document.getElementById('canvas');
+            canvas.addEventListener("webglcontextlost", function(e) { alert('FIXME: WebGL context lost, please reload the page'); e.preventDefault(); }, false);
+            return canvas;
+        })(),
+        setStatus: function(text) {
+            console.log("status: " + text);
+            const textArr = text.split(" ");
+            var downloadProgressString = textArr[textArr.length - 1];
+            const downloadProgArr = downloadProgressString.split("/");
+            var currFilesDownloaded = downloadProgArr[0];
+            var totalFilesDownloaded = downloadProgArr[downloadProgArr.length - 1];
+            var percentage = parseFloat(currFilesDownloaded.substring(1)) / parseFloat(totalFilesDownloaded.slice(0, -1));
+            // var elem = document.getElementById("myBar");
+            var bar = document.getElementById('bar');
+            var txt = document.getElementById('text');
+            // elem.style.width = percentage * 100.0 + "%";
+            bar.style.width  = percentage * 100.0 + "%";
+            txt.innerHTML = downloadProgressString;
+        },
+        monitorRunDependencies: function(left) {
+            // no run dependencies to log
+        }
+      };
+      window.onerror = function() {
+        console.log("onerror: " + event);
+      };
+      // Event listener for the 
+      // 'beforeunload' event
+      window.addEventListener('beforeunload', function (e) {
+        // Cancel the event and
+        // show alert that the unsaved
+        // changes would be lost
+        e.preventDefault();
+        e.returnValue = '';
+      });
+    </script>
+    <script async src=jnrmaker.js></script>
+  </body>
+</html>

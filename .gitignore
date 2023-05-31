@@ -27,7 +27,9 @@ x64/
 *.gch
 
 # resources
-resources/
+resources/assets
+resources/fonts
+resources/icons
 
 # log file
 log.txt
