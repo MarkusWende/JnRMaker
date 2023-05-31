@@ -167,10 +167,6 @@ public:
 
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
-#ifdef __EMSCRIPTEN__
-    bool ESFileBrowserState() { return file_browser_emscripten_open_; };
-    void SetESFileBrowserState(bool status) { file_browser_emscripten_open_ = status; };
-#endif
 
 private:
     GLuint                      			width_;                     /**< Width of the application window. */
@@ -183,12 +179,7 @@ private:
     //std::string                 			active_sprite_name_;       /**< Name (key) of the sprite which is currently selected. */
     //std::vector<std::string>    			tilemap_list_;
     gui_state_t                 			state_;
-#ifdef __EMSCRIPTEN__
-    bool file_browser_emscripten_open_;
-#else
-    fs::path								root_file_path_;
-#endif
-    GLboolean                   			file_browser_add_tiles_;
+
     ImFont                      			*font_default_;
 	ImFont                      			*icons_13_;
 	ImFont                      			*icons_40_;

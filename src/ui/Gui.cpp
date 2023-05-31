@@ -95,15 +95,6 @@ GLvoid Gui::WindowUpdate(std::shared_ptr<Scene> scene)
 
 void Gui::Draw(std::shared_ptr<Scene> scene)
 {
-	if (file_browser_add_tiles_)
-	{
-#ifdef __EMSCRIPTEN__
-    	fileBrowserAddTile();
-#else
-    	fileBrowserAddTile(scene, root_file_path_, true, ".png");
-#endif
-	}
-
 	DrawMenuMain(scene);
 	DrawWindowView(scene);
 	DrawWindowExplorer(scene);
@@ -142,11 +133,12 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 			{
 				ProjectManager::SetStatus(project_status_t::LOAD);
 			}
+#ifndef __EMSCRIPTEN__
 			if (ImGui::MenuItem("Quit"))
 			{
 				state_ = gui_state_t::GUI_CLOSE;
 			}
-
+#endif // !__EMSCRIPTEN__
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Tiles"))
@@ -279,7 +271,7 @@ GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 				ImGui::GetWindowDrawList()->AddImage((ImTextureID)fbID, ImVec2(xOff, yOff), ImVec2(scene->GetWidth() + xOff, scene->GetHeight() + yOff));
 				//ImGui::GetWindowDrawList()->AddImage((ImTextureID)ResourceManagerOld::GetFramebuffer("imguiScene").GetTextureID(), ImVec2(0, 0), ImVec2(scene->GetWidth(), scene->GetHeight()));
 				ImVec2 mousePos = ImGui::GetMousePos();
-				if ((mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff)) && !file_browser_add_tiles_)
+				if (mousePos.x > xOff && mousePos.x < (scene->GetWidth() + xOff))
 				{
 					if (mousePos.y > yOff && mousePos.y < (scene->GetHeight() + yOff))
 					{
@@ -911,23 +903,8 @@ GLvoid Gui::init()
 
 	state_ = gui_state_t::GUI_ACTIVE;
 
-	file_browser_add_tiles_ = false;
-#ifdef __EMSCRIPTEN__
-	file_browser_emscripten_open_ = false;
-#endif
-
 	show_demo_imgui_ = false;
     show_backend_checker_show_ = false;
-#ifdef _WIN32
-	TCHAR path[256];
-	GetCurrentDirectory(256, path);
-	root_file_path_ = path;
-#elif __linux__
-    root_file_path_ = fs::current_path();
-#elif __EMSCRIPTEN__
-
-#endif
-
 }
 
 void Gui::drawBackendCheckerWindow()
@@ -1088,307 +1065,3 @@ GLvoid Gui::customGuiStyle()
 	style->Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
 	style->Colors[ImGuiCol_Separator] = ImVec4(0.4f, 0.4f, 0.4f, 1.00f);
 }
-
-#ifdef __EMSCRIPTEN__
-GLvoid Gui::fileBrowserAddTile()
-{
-	file_browser_emscripten_open_ = true;
-}
-
-GLvoid Gui::listDirectoryContent()
-{
-}
-#else
-GLvoid Gui::fileBrowserAddTile(std::shared_ptr<Scene> scene, fs::path& path, GLboolean extensionOnly, fs::path extension)
-{
-	//prepare for file browser popup
-	ImGui::SetNextWindowSize(ImVec2(800, 580));
-	ImGui::SetNextWindowPos(ImVec2(100, 100), 1);
-
-	static bool displayLogicalDrives = false;
-	bool isLogicalDrive = false;
-	static std::string currentItem = ""; //current selection in the current directory
-	static char newPath[250] = ""; //path which can be inserted via an ImGui::InputText
-	if (!strcmp(newPath, ""))
-	{
-#if defined(_WIN32)
-		strcpy_s(newPath, path.string().c_str());
-#else
-		std::strcpy(newPath, path.string().c_str());
-#endif
-	}
-
-
-	ImGui::OpenPopup("File Browser");
-	if (ImGui::BeginPopupModal("File Browser", nullptr, 0))
-	{
-		try
-		{
-			if (fs::exists(path))
-			{
-				ImGui::PushItemWidth(645);
-				//Path as InputText
-				ImGui::InputText("##Current", newPath, 300);
-				ImGui::PopItemWidth();
-
-				bool isSelected = (currentItem.compare((path.parent_path()).string()));
-
-				ImGui::SameLine();
-				//Button to navigate to parent directory
-				if (ImGui::Button("Up", ImVec2(120, 0)))
-				{
-					currentItem = fs::canonical(path).string();
-					if (currentItem == fs::canonical(fs::canonical(currentItem).parent_path()).string())
-					{
-						displayLogicalDrives = true;
-					}
-
-					currentItem = fs::canonical(path.parent_path()).string();
-				}
-
-				//ImGui::Separator();
-
-				//List of files in the current directory
-
-				listDirectoryContent(path, displayLogicalDrives, isLogicalDrive, extensionOnly, extension, &currentItem, isSelected);
-
-				
-				if (displayLogicalDrives)
-				{
-#if defined(_WIN32)
-					strcpy_s(newPath, "~\\");
-#else
-					strcpy(newPath, "~\\");
-#endif
-				}
-				ImGui::TextWrapped(currentItem.c_str());
-			}
-		}
-		catch (...)
-		{
-			path = fs::current_path();
-#if defined(_WIN32)
-			strcpy_s(newPath, "~\\");
-#else
-			strcpy(newPath, "~\\");
-#endif
-			displayLogicalDrives = true;
-
-			ImGui::OpenPopup("##FilesystemError");
-		}
-
-		ImGui::SetNextWindowSize(ImVec2(180, 86));
-		if (ImGui::BeginPopupModal("##FilesystemError", nullptr, 0))
-		{
-			ImGui::TextWrapped("Cannot open that directory.");
-			if (ImGui::Button("Ok", ImVec2(120, 0)))
-			{
-				currentItem = "";
-#if defined(_WIN32)
-				strcpy_s(newPath, "");
-#else
-				strcpy(newPath, "");
-#endif
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndPopup();
-		}
-
-		//Button for loading selected item
-		if (ImGui::Button("Ok", ImVec2(120, 0)))
-		{
-
-			std::string str = &currentItem[0u];
-
-			if (str == "")
-			{
-				ImGui::OpenPopup("##NoFileselected");
-			}
-			else
-			{
-				//active_tilemap_name_ = str;
-				//tilemap_list_.push_back(str);
-				//ResourceManagerOld::LoadTexture(str.c_str(), GL_TRUE, str);
-				// TODO: find or ask for sprite size and scale
-				TilemapManager::Add(str, { 16, 16 }, { 1.0f, 1.0f }, str);
-				scene->SetActiveTilemap(str);
-				file_browser_add_tiles_ = false;
-				ImGui::CloseCurrentPopup();
-			}
-			currentItem = "";
-#if defined(_WIN32)
-			strcpy_s(newPath, "");
-#else
-			strcpy(newPath, "");
-#endif
-		}
-
-		//PopUp if no file was selected
-		ImGui::SetNextWindowSize(ImVec2(180, 86));
-		if (ImGui::BeginPopupModal("##NoFileselected", nullptr, 0))
-		{
-			ImGui::TextWrapped("No File selected.");
-			if (ImGui::Button("Ok", ImVec2(120, 0)))
-			{
-				currentItem = "";
-#if defined(_WIN32)
-				strcpy_s(newPath, "~\\");
-#else
-				strcpy(newPath, "");
-#endif
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndPopup();
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("Cancel", ImVec2(120, 0)))
-		{
-			ImGui::CloseCurrentPopup();
-			file_browser_add_tiles_ = false;
-		}
-
-		ImGui::SetItemDefaultFocus();
-		ImGui::EndPopup();
-	}
-
-	//reset if navigated to a new directory
-	if (isLogicalDrive || fs::is_directory(currentItem))
-	{
-		path = currentItem;
-		currentItem = "";
-#if defined(_WIN32)
-		strcpy_s(newPath, "");
-#else
-		strcpy(newPath, "");
-#endif
-	}
-	else {
-		//if valid path was inserted into InputText navigate to that directory
-		try
-		{
-			if (fs::exists(newPath) && strcmp(newPath, path.string().c_str()))
-			{
-				path = newPath;
-			}
-		}
-		catch (...)
-		{
-			// TODO: Catch error
-		}
-	}
-}
-
-
-GLvoid
-Gui::listDirectoryContent(
-	fs::path path,
-	bool displayLogicalDrives,
-	bool isLogicalDrive,
-	bool extensionOnly,
-	fs::path extension,
-	std::string* currentItem,
-	bool isSelected)
-{
-#ifndef _WIN32
-	(void)isLogicalDrive;
-#endif
-
-	ImGui::BeginChild("##ListOfFiles", ImVec2(0, 460.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-	if (displayLogicalDrives == false)
-	{
-		for (const auto& entry : fs::directory_iterator(path))
-		{
-			std::string entryString = (fs::path(entry).filename()).string();
-			//std::string entryExtension = fs::path(entry).extension().string();
-			isSelected = (currentItem->compare(entryString));
-			//current_item = fs::path(entry).string();
-
-
-			if (fs::path(entry).extension() == ".sys") {}	//exclude .sys-Files which can be problematic if acessed
-			else {
-				if (fs::is_directory(entry))
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.3f, 0.8f));
-
-				if (extensionOnly)
-				{
-					if (fs::path(entry).extension() == extension || fs::is_directory(fs::status(entry)))
-					{
-						if (ImGui::Selectable(entryString.c_str(), !isSelected, ImGuiSelectableFlags_DontClosePopups))
-						{
-							try {
-								*currentItem = fs::canonical(entry).string();
-							}
-							catch (int e) {
-								std::stringstream msg;
-								msg << "Exception occurred. Exception Nr. " << e << std::endl;
-								MessageManager::AddMessage(msg, message_t::ERROR_T);
-							}
-						}
-					}
-				}
-				else
-				{
-					if (ImGui::Selectable(entryString.c_str(), !isSelected, ImGuiSelectableFlags_DontClosePopups))
-					{
-						try {
-							*currentItem = fs::canonical(entry).string();
-						}
-						catch (int e) {
-							std::stringstream msg;
-							msg << "Exception occurred. Exception Nr. " << e << std::endl;
-							MessageManager::AddMessage(msg, message_t::ERROR_T);
-						}
-					}
-				}
-
-				if (fs::is_directory(entry))
-					ImGui::PopStyleColor();
-				//if (is_selected)
-				//	ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-			}
-		}
-	}
-	else
-	{
-#ifdef _WIN32
-		WCHAR szDrive[] = L"A:\\";
-		DWORD uDriveMask = GetLogicalDrives();
-		if (uDriveMask == 0) {
-			std::stringstream msg;
-			msg << "GetLogicalDrives failed!" << std::endl;
-			MessageManager::AddMessage(msg, message_t::ERROR_T);
-		}
-		else
-		{
-			while (uDriveMask)
-			{
-				if (uDriveMask & 1)
-				{
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.8f, 0.6f, 0.3f, 0.8f));
-					std::string name = (const char*)szDrive;
-					name += ":\\";
-					if (ImGui::Selectable(name.c_str(), !isSelected, ImGuiSelectableFlags_DontClosePopups)) {
-						try {
-							*currentItem = fs::path(name).string();
-							isLogicalDrive = true;
-							displayLogicalDrives = false;
-						}
-						catch (int e) {
-							std::stringstream msg;
-							msg << "Exception occurred. Exception Nr. " << e << std::endl;
-							MessageManager::AddMessage(msg, message_t::ERROR_T);
-						}
-					}
-					ImGui::PopStyleColor();
-				}
-				szDrive[0]++;
-				uDriveMask >>= 1;
-			}
-		}
-		#endif // _WIN32
-	}
-	ImGui::EndChild();
-}
-#endif
