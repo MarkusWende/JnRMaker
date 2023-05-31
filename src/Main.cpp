@@ -31,7 +31,6 @@ int main(int, char**)
     MainLoopData data;
     Injector injector;
     auto logger = injector.GetLogger();
-    auto resources = injector.GetResources();
 
 #ifdef __EMSCRIPTEN_PTHREADS__
     logger->Log(log_t::DEBUG, "__EMSCRIPTEN_PTHREADS__ is enabled.");
@@ -75,6 +74,7 @@ int main(int, char**)
     //appGui = new Gui();
     //appGui = std::make_shared<Gui>();
     //auto appGui = injector.Create<Gui>(logger);
+    auto resources = injector.GetResources();
     data.gui = injector.Create<Gui>(logger, resources);
 
     // Scene

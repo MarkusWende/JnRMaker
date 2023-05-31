@@ -12,9 +12,9 @@
 class TileManager : public IManager<Tilemap> {
 public:
     TileManager(std::shared_ptr<ILogger> logger);
-    void Load(const std::string& name, const std::string& tilemapFIle);
-    void Unload(const std::string& name) override;
-    std::shared_ptr<Tilemap> Get(const std::string& name) override;
+    void Load(const char* name, const char* tilemapFIle);
+    void Unload(const char* name) override;
+    std::shared_ptr<Tilemap> Get(const char* name) override;
 
 private:
     std::shared_ptr<UILogger> ui_logger_;

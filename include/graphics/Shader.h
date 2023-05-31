@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include <GL/glew.h>
+#include <GL/glew.h>    // Initialize with glewInit()
 
 #ifdef __EMSCRIPTEN__
 #define GLM_FORCE_PURE
@@ -21,7 +21,7 @@ class Shader
 {
 public:
 	// State
-	GLuint ID;
+	//GLuint ID;
 	// Constructor
 	Shader() { }
 	// Sets the current shader as active
@@ -42,6 +42,8 @@ public:
 private:
 	// Checks if compilation or linking failed and if so, print the error logs
 	void    checkCompileErrors(GLuint object, std::string type);
+
+	GLuint id_;
 };
 
 #endif

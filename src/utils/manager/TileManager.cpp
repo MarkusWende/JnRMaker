@@ -6,19 +6,19 @@ TileManager::TileManager(std::shared_ptr<ILogger> logger)
 }
 
 void
-TileManager::Load(const std::string& name, const std::string& tilemapFIle)
+TileManager::Load(const char* name, const char* tilemapFIle)
 {
-    ui_logger_->Log(log_t::DEBUG, "Loading tilemap: %s", name.c_str());
+    ui_logger_->Log(log_t::DEBUG, "Loading tilemap: %s", name);
 }
 
 void
-TileManager::Unload(const std::string& name)
+TileManager::Unload(const char* name)
 {
-    ui_logger_->Log(log_t::DEBUG, "Unloading tilemap: %s", name.c_str());
+    ui_logger_->Log(log_t::DEBUG, "Unloading tilemap: %s", name);
 }
 
 std::shared_ptr<Tilemap>
-TileManager::Get(const std::string& name)
+TileManager::Get(const char* name)
 {
     // Implementation to retrieve the tilemap_ by name
     auto it = tilemap_.find(name);

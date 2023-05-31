@@ -581,35 +581,42 @@ void Gui::DrawTabMessages()
 
 						auto msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
 						auto message = logs->at(it).msg.c_str();
+						std::stringstream ssMsg;
 
 						ImGui::SameLine(0, 5);
-						if (logs->at(it).type == log_t::ERROR_T)
+						switch (logs->at(it).type)
 						{
+						case log_t::ERROR_T:
 							msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
-							ImGui::TextColored(msgSymbolColor, "[ Error ]  %s", logs->at(it).msg.c_str());
-						}
-						else if (logs->at(it).type == log_t::INFO)
-						{
+							ssMsg << "[ Error ]  ";
+							break;
+						case log_t::INFO:
+							msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
+							ssMsg << "[ Info  ]  ";
+							break;
+						case log_t::WARNING:
+							msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
+							ssMsg << "[Warning]  ";
+							break;
+						case log_t::DEBUG:
+							ssMsg << "[ Debug ]  ";
+							break;
+						case log_t::DEBUG_WS:
+							ssMsg << "[ Debug ]  ";
+							break;
+
+						default:
 							msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
 							ImGui::TextColored(msgSymbolColor, "[ Info  ]  %s", logs->at(it).msg.c_str());
+							break;
 						}
-						else if (logs->at(it).type == log_t::WARNING)
-						{
-							msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
-							ImGui::TextColored(msgSymbolColor, "[Warning]  %s", logs->at(it).msg.c_str());
+
+						ssMsg << message;
+						ImGui::PushStyleColor(ImGuiCol_Text, msgSymbolColor);
+						if (ImGui::Selectable(ssMsg.str().c_str(), false, ImGuiSelectableFlags_AllowDoubleClick)) {
+							PasteToSystemClipboard(ssMsg.str().c_str());
 						}
-						else if (logs->at(it).type == log_t::DEBUG)
-						{
-							ImGui::PushStyleColor(ImGuiCol_Text, msgSymbolColor);
-							if (ImGui::Selectable(message, false, ImGuiSelectableFlags_AllowDoubleClick)) {
-								PasteToSystemClipboard(message);
-							}
-							ImGui::PopStyleColor();
-						}
-						else if (logs->at(it).type == log_t::DEBUG_WS)
-						{
-							ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", logs->at(it).msg.c_str());
-						}
+						ImGui::PopStyleColor();
 					}
 				}
 			}
