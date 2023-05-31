@@ -40,3 +40,6 @@ JnRMaker
 
 cert.pem
 key.pem
+
+# Ignore script files on Windows
+*.sh platform-windows
