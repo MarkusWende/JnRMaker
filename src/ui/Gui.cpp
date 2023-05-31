@@ -251,7 +251,7 @@ GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 		{
 			//if (!scene->IsMapNull())
 			{
-				GLfloat yOff = 45;
+				GLfloat yOff = 47;
 				GLfloat xOff = 3;
 
 				/*
@@ -340,7 +340,7 @@ GLvoid Gui::DrawWindowView(std::shared_ptr<Scene> scene)
 GLvoid Gui::DrawWindowSettings(std::shared_ptr<Scene> scene)
 {
 	ImGuiStyle* style = &ImGui::GetStyle();
-	ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize));
+	ImGui::SetNextWindowSize(ImVec2(window_sidebar_right_.w + style->WindowBorderSize, window_sidebar_right_.h + style->WindowBorderSize - statusbar_height_ + 2.0f));
 	ImGui::SetNextWindowPos(ImVec2((float)window_scene_.w, (float)main_menubar_height_));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
 	ImGui::Begin("SideBarRight", NULL, 	ImGuiWindowFlags_NoTitleBar |
@@ -516,7 +516,7 @@ void Gui::DrawTabSprites()
 
 void Gui::DrawWindowExplorer(std::shared_ptr<Scene> scene)
 {
-	ImGui::SetNextWindowSize(ImVec2((float)window_messages_.w, (float)window_messages_.h));
+	ImGui::SetNextWindowSize(ImVec2((float)window_messages_.w, (float)window_messages_.h - statusbar_height_));
 	ImGui::SetNextWindowPos(ImVec2(0.0f, (float)window_scene_.h + (float)main_menubar_height_));
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 5.0f));
 
@@ -557,7 +557,7 @@ void Gui::DrawTabMessages()
 
 		// BeginChild: MessageList
 		ImGui::SetCursorPos(ImVec2(5.f, 30.f));
-		ImGui::BeginChild("##MessageList", ImVec2(0, (float)window_messages_.h - 60.0f), false, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::BeginChild("##MessageList", ImVec2(0, (float)window_messages_.h - 60.0f - statusbar_height_), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 		if (ui_logger_)
 		{	
@@ -771,7 +771,7 @@ void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 				Tilemap* tilemap = TilemapManager::Get(scene->GetActiveTilemap());
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
 
-				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f), true, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f - statusbar_height_), true, ImGuiWindowFlags_HorizontalScrollbar);
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 				GLuint i = 0;
@@ -900,6 +900,7 @@ GLvoid Gui::init()
 	window_sidebar_right_.hPercent = window_scene_.hPercent;
 
 	main_menubar_height_ = 23;
+	statusbar_height_ = 50.0f;
 	ImGuiStyle& style = ImGui::GetStyle();
 	style.DisplaySafeAreaPadding = ImVec2(0.0f, 0.0f);
 
