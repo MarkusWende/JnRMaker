@@ -25,16 +25,33 @@
  * https://github.com/MarkusWende
  */
 
-
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif // __EMSCRIPTEN__
+#include <clip.h>
 #include "Gui.h"
 #include "IconsFontAwesome6.h"
 
 #define DEVELOPMENT
 
+void PasteToSystemClipboard(const char* text)
+{
+#ifdef __EMSCRIPTEN__
+    EM_ASM_({
+        const text = UTF8ToString($0);
+        navigator.clipboard.writeText(text).catch(function(error) {
+            console.error('Failed to write text to clipboard:', error);
+        });
+    }, text);
+#else
+	clip::set_text(text);
+#endif
+}
+
 Gui::Gui(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources)
 {
 	ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
-	resources_ = std::dynamic_pointer_cast<Resources>(resources);
+	resources_ = resources;
 	init();
 	customGuiStyle();
 
@@ -575,7 +592,8 @@ void Gui::DrawTabMessages()
 						ImGui::SameLine(0, 2);
 						ImGui::TextColored(ImVec4(1, 1, 1, 1), ":\t");
 
-						ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
+						auto msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
+						auto message = logs->at(it).msg.c_str();
 
 						ImGui::SameLine(0, 5);
 						if (logs->at(it).type == log_t::ERROR_T)
@@ -595,7 +613,11 @@ void Gui::DrawTabMessages()
 						}
 						else if (logs->at(it).type == log_t::DEBUG)
 						{
-							ImGui::TextColored(msgSymbolColor, "[ Debug ]  %s", logs->at(it).msg.c_str());
+							ImGui::PushStyleColor(ImGuiCol_Text, msgSymbolColor);
+							if (ImGui::Selectable(message, false, ImGuiSelectableFlags_AllowDoubleClick)) {
+								PasteToSystemClipboard(message);
+							}
+							ImGui::PopStyleColor();
 						}
 						else if (logs->at(it).type == log_t::DEBUG_WS)
 						{

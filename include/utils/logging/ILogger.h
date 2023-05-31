@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 /**
  * @brief Enumeration for log types.
@@ -60,4 +61,5 @@ public:
     virtual ~ILogger() {}
     virtual LogMessage Log(log_t type, const char* format, ...) = 0;
     virtual LogMessage Log(const char* format, ...) = 0;
+    virtual std::shared_ptr<std::vector<LogMessage>> GetLogs() = 0;
 };

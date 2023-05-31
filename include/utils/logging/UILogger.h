@@ -21,7 +21,7 @@ public:
     UILogger();
     LogMessage Log(log_t type, const char* format, ...) override;
     LogMessage Log(const char* format, ...) override;
-    std::shared_ptr<std::vector<LogMessage>> GetLogs() const { return std::make_shared<std::vector<LogMessage>>(logs_); };
+    std::shared_ptr<std::vector<LogMessage>> GetLogs() override { return std::make_shared<std::vector<LogMessage>>(logs_); };
 
 private:
     std::vector<LogMessage> logs_;               /**< Contains all messages, that are shared at the moment. */

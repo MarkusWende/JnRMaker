@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShaderManager.h"
+#include "TileManager.h"
 #include "UILogger.h"
 
 class Resources
@@ -10,7 +11,7 @@ public:
     {
         ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
         shader_ = std::make_shared<ShaderManager>(logger);
-        ui_logger_->Log("Loading shader..");
+
 #ifdef __EMSCRIPTEN__
         shader_->Load("line", "resources/shaders/es/line.vert", "resources/shaders/es/line.frag");
         shader_->Load("llayer", "resources/shaders/es/level_layer.vert", "resources/shaders/es/level_layer.frag");
@@ -30,6 +31,7 @@ public:
 
 private:
     std::shared_ptr<ShaderManager> shader_;
+    std::shared_ptr<TileManager> tilemaps_;
     std::shared_ptr<UILogger> ui_logger_;
 
 };

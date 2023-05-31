@@ -31,7 +31,7 @@
 Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, GLuint width, GLuint height)
 {
     ui_logger_ = std::dynamic_pointer_cast<UILogger>(logger);
-	resources_ = std::dynamic_pointer_cast<Resources>(resources);
+	resources_ = resources;
 
     width_ = width;
     height_ = height;

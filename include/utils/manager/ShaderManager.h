@@ -9,13 +9,14 @@
 #include "UILogger.h"
 #include "Shader.h"
 
-class ShaderManager : public IManager {
+class ShaderManager : public IManager<Shader>
+{
 public:
     ShaderManager(std::shared_ptr<ILogger> logger);
-    void Load(const std::string& name);
     void Load(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
     void Load(const std::string& name, const std::string& vertexShaderFile, const std::string& fragmentShaderFile, const std::string& geometryShaderFile);
     void Unload(const std::string& name) override;
+    std::shared_ptr<Shader> Get(const std::string& name) override;
 
 private:
     std::shared_ptr<UILogger> ui_logger_;
