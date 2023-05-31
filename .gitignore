@@ -38,10 +38,5 @@ log.txt
 # executable
 JnRMaker
 
-# build scripts
-desktop-linux/build.sh
-emscripten/build.sh
-emscripten/cmake-post-build.sh
-
 cert.pem
 key.pem
