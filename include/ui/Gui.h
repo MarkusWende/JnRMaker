@@ -76,6 +76,8 @@ struct GuiWindow
 #endif
 
 enum class gui_state_t {
+	GUI_MINIMIZE = 3,
+	GUI_MAXIMIZE = 2,
     GUI_ACTIVE = 1,
     GUI_CLOSE = 0
 };
@@ -168,6 +170,8 @@ public:
 	void ShowBackendCheckerWindow();
 
     GLboolean IsOpen() { return state_ == gui_state_t::GUI_ACTIVE ? 1 : 0; };
+	GLboolean IsMinimized() { return state_ == gui_state_t::GUI_MINIMIZE ? 1 : 0; };
+	GLboolean IsMaximized() { return state_ == gui_state_t::GUI_MAXIMIZE ? 1 : 0; };
     GLvoid Close() { state_ = gui_state_t::GUI_CLOSE; };
 
 private:

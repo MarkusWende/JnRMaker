@@ -225,6 +225,63 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
             ImGui::EndMenu();
         }
 
+		// char menuSymbol[250] = ICON_FA_BUG;
+		// ImVec4 menuSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
+		// ImGui::PushFont(icons_13_);
+        // ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 20.0f, 0.0f));
+		// if(ImGui::Button(ICON_FA_XMARK))
+		// {
+		// 	//state_ = gui_state_t::GUI_CLOSE;
+
+
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
+		ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		ImGuiStyle& style = ImGui::GetStyle();
+		auto marker_min = ImVec2(ImGui::GetWindowSize().x - main_menubar_height_, 0.0f);
+		auto marker_max = ImVec2(ImGui::GetWindowSize().x, main_menubar_height_);
+		//draw_list->AddRectFilled(marker_min, marker_max, ImGui::GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 0.0f)));
+		ImGui::PushFont(icons_13_);
+		auto bgColor = ImGui::ColorConvertU32ToFloat4(ImGui::GetColorU32(ImGuiCol_WindowBg));
+		bgColor.w = 1.0f;
+		auto hoveredItem = -1;
+
+		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
+		if (ImGui::Selectable(ICON_FA_XMARK, nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+			state_ = gui_state_t::GUI_CLOSE;
+		if (ImGui::IsItemHovered())
+		{
+			draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
+			hoveredItem = 2;
+		}
+
+		marker_min.x -= main_menubar_height_;
+		marker_max.x -= main_menubar_height_;
+		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
+		if (ImGui::Selectable(ICON_FA_SQUARE, nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+			state_ = gui_state_t::GUI_MAXIMIZE;
+		if (ImGui::IsItemHovered() && (hoveredItem == -1))
+		{
+			draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
+			hoveredItem = 2;
+		}
+
+		ImGui::PopFont();
+
+		marker_min.x -= main_menubar_height_;
+		marker_max.x -= main_menubar_height_;
+		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
+		if (ImGui::Selectable("_", nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+			state_ = gui_state_t::GUI_MINIMIZE;
+		if (ImGui::IsItemHovered() && (hoveredItem == -1))
+			draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
+
+		ImGui::PopStyleColor(3);
+		ImGui::PopStyleVar();
+
 		ImGui::EndMainMenuBar();
 	}
 }
@@ -636,7 +693,7 @@ void Gui::DrawWindowStatusbar()
 	ImGui::SetNextWindowPos(ImVec2(0, screenHeight - 30.0f));
     ImGui::SetNextWindowSize(ImVec2(windowWidth, 30.0f));
 
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 8.0f));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 5.0f));
 
 	ImGui::Begin("Statusbar", NULL,	ImGuiWindowFlags_NoTitleBar |
                                     ImGuiWindowFlags_NoCollapse |
@@ -644,7 +701,7 @@ void Gui::DrawWindowStatusbar()
 									ImGuiWindowFlags_NoResize   |
 									ImGuiWindowFlags_NoScrollbar);
 
-	ImGui::SetCursorPos(ImVec2(5.f, 5.f));
+	ImGui::SetCursorPos(ImVec2(5.f, 8.f));
 	ImGui::BeginChild("##StatusMessage", ImVec2(windowWidth/3.0f, 0), false);
 
 	static float startTime = 0.0f;
@@ -668,14 +725,13 @@ void Gui::DrawWindowStatusbar()
 		auto logs = ui_logger_->GetStatusLogs();
 		if (logs->begin() != logs->end())
 		{
-			auto msgSymbolColor = ImVec4(0.0f, 0.85f, 0.0f, 1.0f);
 			auto message = logs->front().msg.c_str();
 			ImVec2 textSize = ImGui::CalcTextSize(message);
 			ImVec2 startPos = ImGui::GetCursorScreenPos();
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
 			drawList->AddRectFilled(ImVec2(startPos.x, startPos.y), ImVec2(startPos.x + textSize.x + 6.0f, startPos.y + textSize.y + 4.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, fadeAlpha)), 2.0f);
 			ImGui::SetCursorPos(ImVec2(3.f, 2.f));
-			ImGui::TextColored(msgSymbolColor, "%s", message);
+			ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(ImGui::GetColorU32(ImGuiCol_WindowBg)), "%s", message);
 		}
 	}
 

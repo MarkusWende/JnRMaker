@@ -92,6 +92,14 @@ int main(int, char**)
     while (data.gui->IsOpen())
     {
         main_loop(&data);
+        if (data.gui->IsMinimized())
+        {
+            SDL_Event event;
+            event.type = SDL_WINDOWEVENT;
+            event.window.event = SDL_WINDOWEVENT_MINIMIZED;
+            event.window.windowID = SDL_GetWindowID(appWindow->GetWindow());
+            SDL_PushEvent(&event);
+        }
     }
 
     // Cleanup
@@ -135,6 +143,17 @@ static void main_loop(void* arg)
             data->gui->Close();
         if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(currWindow))
             data->gui->Close();
+        if (event.type == SDL_WINDOWEVENT)
+        {
+            if (event.window.event == SDL_WINDOWEVENT_MINIMIZED)
+            {
+                SDL_MinimizeWindow(currWindow);
+            }
+            else if (event.window.event == SDL_WINDOWEVENT_MAXIMIZED)
+            {
+                SDL_MaximizeWindow(currWindow);
+            }
+        }
     }
 
     if (ProjectManager::GetStatus() == project_status_t::SAVE)
