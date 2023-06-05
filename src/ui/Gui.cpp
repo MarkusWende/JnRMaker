@@ -225,16 +225,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
             ImGui::EndMenu();
         }
 
-		// char menuSymbol[250] = ICON_FA_BUG;
-		// ImVec4 menuSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
-		// ImGui::PushFont(icons_13_);
-        // ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x - 20.0f, 0.0f));
-		// if(ImGui::Button(ICON_FA_XMARK))
-		// {
-		// 	//state_ = gui_state_t::GUI_CLOSE;
-
-
-
+#ifdef _WIN32
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 0));
 		ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -246,7 +237,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 		//draw_list->AddRectFilled(marker_min, marker_max, ImGui::GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		ImGui::PushFont(icons_13_);
 		auto bgColor = ImGui::ColorConvertU32ToFloat4(ImGui::GetColorU32(ImGuiCol_WindowBg));
-		bgColor.w = 1.0f;
+		bgColor.w = 0.5f;
 		auto hoveredItem = -1;
 
 		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
@@ -258,30 +249,30 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 			hoveredItem = 2;
 		}
 
-		marker_min.x -= main_menubar_height_;
-		marker_max.x -= main_menubar_height_;
-		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
-		if (ImGui::Selectable(ICON_FA_SQUARE, nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
-			state_ = gui_state_t::GUI_MAXIMIZE;
-		if (ImGui::IsItemHovered() && (hoveredItem == -1))
-		{
-			draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
-			hoveredItem = 2;
-		}
+		// marker_min.x -= main_menubar_height_;
+		// marker_max.x -= main_menubar_height_;
+		// ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
+		// if (ImGui::Selectable(ICON_FA_SQUARE, nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+		// 	state_ = gui_state_t::GUI_MAXIMIZE;
+		// if (ImGui::IsItemHovered() && (hoveredItem == -1))
+		// {
+		// 	draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
+		// 	hoveredItem = 2;
+		// }
 
 		ImGui::PopFont();
 
-		marker_min.x -= main_menubar_height_;
-		marker_max.x -= main_menubar_height_;
-		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
-		if (ImGui::Selectable("_", nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
-			state_ = gui_state_t::GUI_MINIMIZE;
-		if (ImGui::IsItemHovered() && (hoveredItem == -1))
-			draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
+		// marker_min.x -= main_menubar_height_;
+		// marker_max.x -= main_menubar_height_;
+		// ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
+		// if (ImGui::Selectable("_", nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+		// 	state_ = gui_state_t::GUI_MINIMIZE;
+		// if (ImGui::IsItemHovered() && (hoveredItem == -1))
+		// 	draw_list->AddRectFilled(marker_min, marker_max, ImGui::ColorConvertFloat4ToU32(bgColor));
 
 		ImGui::PopStyleColor(3);
 		ImGui::PopStyleVar();
-
+#endif
 		ImGui::EndMainMenuBar();
 	}
 }
