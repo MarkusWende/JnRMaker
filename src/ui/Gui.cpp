@@ -231,9 +231,8 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 		ImDrawList* draw_list = ImGui::GetWindowDrawList();
-		ImGuiStyle& style = ImGui::GetStyle();
-		auto marker_min = ImVec2(ImGui::GetWindowSize().x - main_menubar_height_, 0.0f);
-		auto marker_max = ImVec2(ImGui::GetWindowSize().x, main_menubar_height_);
+		auto marker_min = ImVec2(ImGui::GetWindowSize().x - static_cast<float>(main_menubar_height_), 0.0f);
+		auto marker_max = ImVec2(ImGui::GetWindowSize().x, static_cast<float>(main_menubar_height_));
 		//draw_list->AddRectFilled(marker_min, marker_max, ImGui::GetColorU32(ImVec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		ImGui::PushFont(icons_13_);
 		auto bgColor = ImGui::ColorConvertU32ToFloat4(ImGui::GetColorU32(ImGuiCol_WindowBg));
@@ -241,7 +240,8 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 		auto hoveredItem = -1;
 
 		ImGui::SetCursorPos(ImVec2(marker_min.x + 5.0f, 0.0f));
-		if (ImGui::Selectable(ICON_FA_XMARK, nullptr, ImGuiSelectableFlags_None, ImVec2(main_menubar_height_, main_menubar_height_)))
+		static auto dummy = false;
+		if (ImGui::Selectable(ICON_FA_XMARK, &dummy, ImGuiSelectableFlags_None, ImVec2(static_cast<float>(main_menubar_height_), static_cast<float>(main_menubar_height_))))
 			state_ = gui_state_t::GUI_CLOSE;
 		if (ImGui::IsItemHovered())
 		{
