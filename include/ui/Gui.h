@@ -153,6 +153,8 @@ public:
 
     void DrawPopupMessages();
 
+	void DrawWindowStatusbar();
+
     /**
 	 * @brief Draw the message tab.
 	 * @return Bool Void.

@@ -99,6 +99,7 @@ void Gui::Draw(std::shared_ptr<Scene> scene)
 	DrawWindowView(scene);
 	DrawWindowExplorer(scene);
 	DrawWindowSettings(scene);
+	DrawWindowStatusbar();
 	DrawPopupMessages();
 
 	if (show_demo_imgui_)
@@ -223,10 +224,6 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 
             ImGui::EndMenu();
         }
-
-		ImGuiIO& io = ImGui::GetIO();
-		ImGui::SetCursorPosX(io.DisplaySize.x - 50.0f);
-		ImGui::Text("%.1f FPS", io.Framerate);
 
 		ImGui::EndMainMenuBar();
 	}
@@ -615,6 +612,7 @@ void Gui::DrawTabMessages()
 						ImGui::PushStyleColor(ImGuiCol_Text, msgSymbolColor);
 						if (ImGui::Selectable(ssMsg.str().c_str(), false, ImGuiSelectableFlags_AllowDoubleClick)) {
 							PasteToSystemClipboard(ssMsg.str().c_str());
+							ui_logger_->LogStatus("Text copied. Use Ctrl+V to paste.");
 						}
 						ImGui::PopStyleColor();
 					}
@@ -627,6 +625,72 @@ void Gui::DrawTabMessages()
 		ImGui::SetScrollHereY(1.0f);
 		ImGui::EndTabItem();
 	}
+}
+
+void Gui::DrawWindowStatusbar()
+{
+	ImGuiIO& io = ImGui::GetIO();
+    float screenHeight = io.DisplaySize.y;
+    float windowWidth = io.DisplaySize.x;
+
+	ImGui::SetNextWindowPos(ImVec2(0, screenHeight - 30.0f));
+    ImGui::SetNextWindowSize(ImVec2(windowWidth, 30.0f));
+
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5.0f, 8.0f));
+
+	ImGui::Begin("Statusbar", NULL,	ImGuiWindowFlags_NoTitleBar |
+                                    ImGuiWindowFlags_NoCollapse |
+                                    ImGuiWindowFlags_NoDocking  |
+									ImGuiWindowFlags_NoResize   |
+									ImGuiWindowFlags_NoScrollbar);
+
+	ImGui::SetCursorPos(ImVec2(5.f, 5.f));
+	ImGui::BeginChild("##StatusMessage", ImVec2(windowWidth/3.0f, 0), false);
+
+	static float startTime = 0.0f;
+	float fadeDuration = 2.0f;  // Fade duration in seconds
+
+	if (ui_logger_->IsNewStatus())
+	{
+		startTime = ImGui::GetTime();
+	}
+
+	float currentTime = ImGui::GetTime();
+	float elapsed = currentTime - startTime;
+	float fadeAlpha = 1.0f - (elapsed / fadeDuration);
+	if (fadeAlpha < 0.0f)
+		fadeAlpha = 0.0f;
+	else if (fadeAlpha > 1.0f)
+		fadeAlpha = 1.0f;
+
+	if (ui_logger_)
+	{	
+		auto logs = ui_logger_->GetStatusLogs();
+		if (logs->begin() != logs->end())
+		{
+			auto msgSymbolColor = ImVec4(0.0f, 0.85f, 0.0f, 1.0f);
+			auto message = logs->front().msg.c_str();
+			ImVec2 textSize = ImGui::CalcTextSize(message);
+			ImVec2 startPos = ImGui::GetCursorScreenPos();
+			ImDrawList* drawList = ImGui::GetWindowDrawList();
+			drawList->AddRectFilled(ImVec2(startPos.x, startPos.y), ImVec2(startPos.x + textSize.x + 6.0f, startPos.y + textSize.y + 4.0f), ImGui::ColorConvertFloat4ToU32(ImVec4(1.0f, 1.0f, 1.0f, fadeAlpha)), 2.0f);
+			ImGui::SetCursorPos(ImVec2(3.f, 2.f));
+			ImGui::TextColored(msgSymbolColor, "%s", message);
+		}
+	}
+
+	// EndChild: MessageList
+	ImGui::EndChild();
+	ImGui::SetCursorPos(ImVec2(windowWidth - 70.f, 8.f));
+	ImGui::BeginChild("##FPS", ImVec2(70, 20.f), false);
+
+	ImGui::Text("%.1f FPS", io.Framerate);
+
+	// EndChild: MessageList
+	ImGui::EndChild();
+
+	ImGui::End();
+	ImGui::PopStyleVar();
 }
 
 void Gui::DrawPopupMessages()
