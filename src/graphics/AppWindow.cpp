@@ -159,7 +159,6 @@ AppWindow::CreateSDLWindow()
         logger_->Log(log_t::DEBUG ,"%s", msg.str().c_str());
     }
 
-    screenHeight -= (windowBorderSizeTop + windowBorderSizeBottom);
     SDL_SetWindowBordered(window_, SDL_FALSE);
     SDL_SetWindowPosition(window_, windowRect.x, screenHeight - windowRect.h);
     SDL_SetWindowSize(window_, windowRect.w, windowRect.h - (windowBorderSizeTop + windowBorderSizeBottom) - 10);
