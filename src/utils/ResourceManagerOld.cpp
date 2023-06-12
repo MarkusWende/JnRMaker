@@ -36,17 +36,6 @@ std::map<std::string, TextureArray> ResourceManagerOld::TextureArrays;
 std::map<std::string, Framebuffer> ResourceManagerOld::Framebuffers;
 std::map<std::string, Shader> ResourceManagerOld::Shaders;
 
-Shader ResourceManagerOld::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
-{
-    // Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
-    // return Shaders[name];
-}
-
-Shader ResourceManagerOld::GetShader(std::string name)
-{
-    // return Shaders[name];
-}
-
 Texture2D ResourceManagerOld::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
@@ -395,60 +384,4 @@ Framebuffer ResourceManagerOld::generateFramebuffer(std::shared_ptr<ILogger> log
     fb.Generate(width, height, type);
 
     return fb;
-}
-
-Shader ResourceManagerOld::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile)
-{
-//     // 1. Retrieve the vertex/fragment source code from filePath
-//     std::string vertexCode;
-//     std::string fragmentCode;
-//     std::string geometryCode;
-//     try
-//     {
-//         // Open files
-//         std::ifstream vertexShaderFile(vShaderFile);
-//         std::ifstream fragmentShaderFile(fShaderFile);
-//         std::stringstream vShaderStream, fShaderStream;
-//         // Read file's buffer contents into streams
-//         vShaderStream << vertexShaderFile.rdbuf();
-//         fShaderStream << fragmentShaderFile.rdbuf();
-//         // close file handlers
-//         vertexShaderFile.close();
-//         fragmentShaderFile.close();
-//         // Convert stream into string
-//         vertexCode = vShaderStream.str();
-//         fragmentCode = fShaderStream.str();
-//         // If geometry shader path is present, also load a geometry shader
-//         if (gShaderFile != nullptr)
-//         {
-//             std::ifstream geometryShaderFile(gShaderFile);
-//             std::stringstream gShaderStream;
-//             gShaderStream << geometryShaderFile.rdbuf();
-//             geometryShaderFile.close();
-//             geometryCode = gShaderStream.str();
-//         }
-//     }
-//     catch (...)
-//     {
-//         FILE *stream;
-// #if _WIN32
-//         freopen_s(&stream, "log.txt", "w", stdout);
-//         fprintf(stream, "\tFailed to read shader files\n");
-//         fclose(stream);
-// #elif __linux__
-//         stream = fopen("./log.txt", "w");
-//         fprintf(stream, "\tFailed to read shader files\n");
-//         fclose(stream);
-// #else
-//         (void)stream;
-// #endif
-//         delete stream;
-//     }
-//     const GLchar *vShaderCode = vertexCode.c_str();
-//     const GLchar *fShaderCode = fragmentCode.c_str();
-//     const GLchar *gShaderCode = geometryCode.c_str();
-//     // 2. Now create shader object from source code
-//     Shader shader;
-//     shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
-//     return shader;
 }

@@ -67,14 +67,14 @@ public:
      * @param name Resource name of the shader.
      * @return Shader Return the shader object.
      */
-  static Shader   LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
+  //static Shader   LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
 
   /**
    * @brief Retrieves a stored shader.
    * @param name Resource name of the shader.
    * @return Shader Return the shader object.
    */
-  static Shader GetShader(std::string name);
+  //static Shader GetShader(std::string name);
 
   /**
     * @brief Loads (and generates) a texture from file.
@@ -204,7 +204,7 @@ private:
      * @param gShaderFile Filename of the geometry shader.
      * @return Shader Return the shader object.
      */
-  static Shader loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile = nullptr);
+  //static Shader loadShaderFromFile(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile = nullptr);
 };
 
 #endif
