@@ -31,6 +31,8 @@
 //#define GLEW_STATIC
 #include <GL/glew.h>
 
+#include "UILogger.h"
+
 /**
  * @brief Defines an OpenGL framebuffer object with a bound texture.
  */
@@ -75,6 +77,7 @@ public:
 	void Delete();
 
 private:
+	//std::shared_ptr<UILogger> 				ui_logger_;
 	GLuint id_;										/**< Holds the ID of the framebuffer and is used for all framebuffer operations to reference to this particlar framebuffer. */
 	GLuint tex_id_;									/**< Holds the ID of the bound texture and is used for all texture operations to reference to this particlar texture. */
 	GLuint width_;									/**< Width in pixels of the texture and framebuffer. */

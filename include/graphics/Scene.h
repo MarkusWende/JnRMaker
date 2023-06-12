@@ -38,7 +38,6 @@
 #include "EntityObject.h"
 #include "EntityPlayer.h"
 #include "EntityWorldLayer.h"
-#include "MessageManager.h"
 #include "TilemapManager.h"
 #include "ProjectManager.h"
 #include "PrimitiveCube.h"

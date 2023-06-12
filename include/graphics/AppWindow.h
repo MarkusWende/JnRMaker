@@ -34,7 +34,6 @@
 #include "imgui_impl_opengl3.h"
 
 #include <string>
-#include "MessageManager.h"
 #include "UILogger.h"
 
 #include <GL/glew.h>    // Initialize with glewInit()

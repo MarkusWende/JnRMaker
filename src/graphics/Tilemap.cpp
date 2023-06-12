@@ -49,7 +49,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
     {
         std::stringstream msg;
         msg << stbi_failure_reason();
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
         return;
     }
 
@@ -61,7 +61,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
     {
         std::stringstream msg;
         msg << "Image is bigger than 80MB.";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
         return;
     }
 
@@ -69,13 +69,13 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
     {
         std::stringstream msg;
         msg << stbi_failure_reason();
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
     }
     else
     {
         std::stringstream msg;
         msg << "Width: " << width << "\tHeight: " << height;
-        MessageManager::AddMessage(msg, message_t::DEBUG);
+        //ui_logger_->Log(log_t::DEBUG, "%s", msg.str().c_str());
 
         ResourceManagerOld::CreateTextureArray(img, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, GL_TRUE, name_);
 
@@ -127,7 +127,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
     {
         std::stringstream msg;
         msg << stbi_failure_reason() << ": " << file;
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
     }
     else
     {
@@ -140,7 +140,7 @@ Tilemap::Tilemap(std::string name, glm::vec2 spriteSize, glm::vec2 spriteScale, 
         {
             std::stringstream msg;
             msg << "Tilemap: channels are not right!";
-            MessageManager::AddMessage(msg, message_t::ERROR_T);
+            //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
         }
 
         ResourceManagerOld::CreateTextureArray(image, width, height, (GLuint)sprite_size_.x, (GLuint)sprite_size_.y, alpha, name_);
@@ -357,7 +357,7 @@ GLvoid Tilemap::AddTile(const std::string spriteName, GLuint spriteTexID)
     {
         std::stringstream msg;
         msg << "Tilemap is not expandable.";
-        MessageManager::AddMessage(msg, message_t::ERROR_T);
+        //ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
     }
     
 }

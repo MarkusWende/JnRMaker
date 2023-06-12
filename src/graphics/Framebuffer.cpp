@@ -22,7 +22,6 @@
 
 #include "Framebuffer.h"
 #include "TimeHelper.h"
-#include "MessageManager.h"
 
 
 Framebuffer::Framebuffer()
@@ -78,23 +77,24 @@ void Framebuffer::Generate(GLuint width, GLuint height, GLenum type)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
 		msg << "Framebuffer successful initialized. ID: " << id_ << "\tWidth: " << width_ << "\tHeight: " << height_;
-		MessageManager::AddMessage(msg, message_t::DEBUG);
+		//ui_logger_->Log(log_t::DEBUG, "%s", msg.str().c_str());
 	}
 	else
 	{
 		msg << "Framebuffer could not be initialized: " << glGetError();
-		MessageManager::AddMessage(msg, message_t::ERROR_T);
+		//ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
 	}
 #endif
 	
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
 	{
-		MessageManager::Log("Framebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u", id_, width_, height_);
+		//ui_logger_->Log("Framebuffer successful initialized. ID: %u\tWidth: %u\tHeight: %u", id_, width_, height_);
 	}
 	else
 	{
-		MessageManager::Log("[Error]: Framebuffer could not be initialized.");
+		//ui_logger_->Log("[Error]: Framebuffer could not be initialized.");
+		
 	}
 
 	// Unbind texture

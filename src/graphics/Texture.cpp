@@ -45,8 +45,8 @@ void Texture2D::Delete()
 
 
 // Class TextureCM
-TextureCM::TextureCM()
-	: Width(0), Height(0), Internal_Format(GL_RGBA), Image_Format(GL_RGBA), Wrap_S(GL_CLAMP_TO_EDGE), Wrap_T(GL_CLAMP_TO_EDGE), Wrap_R(GL_CLAMP_TO_EDGE), Filter_Min(GL_NEAREST), Filter_Mag(GL_NEAREST)
+TextureCM::TextureCM(std::shared_ptr<ILogger> logger)
+	: ui_logger_(std::dynamic_pointer_cast<UILogger>(logger)), Width(0), Height(0), Internal_Format(GL_RGBA), Image_Format(GL_RGBA), Wrap_S(GL_CLAMP_TO_EDGE), Wrap_T(GL_CLAMP_TO_EDGE), Wrap_R(GL_CLAMP_TO_EDGE), Filter_Min(GL_NEAREST), Filter_Mag(GL_NEAREST)
 {
 	glGenTextures(1, &this->ID);
 }
@@ -72,7 +72,7 @@ void TextureCM::Generate(std::vector<std::string>* faces)
 		{
 			std::stringstream msg;
 			msg << "Cubemap tex failed to load at path: " << faces->at(i) << "\treason: " << stbi_failure_reason();
-			MessageManager::AddMessage(msg, message_t::ERROR_T);
+			ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
 			stbi_image_free(image);
 		}
 	}

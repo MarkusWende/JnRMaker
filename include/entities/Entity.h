@@ -37,7 +37,6 @@
 #include <glm/gtx/intersect.hpp>
 
 #include "ResourceManagerOld.h"
-#include "MessageManager.h"
 #include "ProjectManager.h"
 
 #include "UILogger.h"

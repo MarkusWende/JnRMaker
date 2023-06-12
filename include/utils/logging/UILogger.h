@@ -23,6 +23,8 @@ public:
     LogMessage Log(log_t type, const char* format, ...) override;
     LogMessage LogStatus(const char* format, ...);
     LogMessage LogStatus(log_t type, const char* format, ...);
+    LogMessage Popup(const char* format, ...);
+    LogMessage Popup(log_t type, const char* format, ...);
 
     std::shared_ptr<std::vector<LogMessage>> GetLogs() override { return std::make_shared<std::vector<LogMessage>>(logs_); };
     std::shared_ptr<std::vector<LogMessage>> GetStatusLogs();

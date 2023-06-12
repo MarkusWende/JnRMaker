@@ -56,20 +56,20 @@ Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resourc
     //chdir(fs::current_path().parent_path().string().c_str());
     //std::cout << fs::current_path().parent_path().string().c_str();
 
-#ifdef __EMSCRIPTEN__
-    ResourceManagerOld::LoadShader("resources/shaders/es/line.vert", "resources/shaders/es/line.frag",  nullptr, "line");
-    ResourceManagerOld::LoadShader("resources/shaders/es/level_layer.vert", "resources/shaders/es/level_layer.frag",  nullptr, "llayer");
-    ResourceManagerOld::LoadShader("resources/shaders/es/scene.vert", "resources/shaders/es/scene.frag", nullptr, "scene");
-    ResourceManagerOld::LoadShader("resources/shaders/es/solid.vert", "resources/shaders/es/solid.frag", nullptr, "solid");
-    ResourceManagerOld::LoadShader("resources/shaders/es/sprite.vert", "resources/shaders/es/sprite.frag", nullptr, "sprite");
-#else
-    ResourceManagerOld::LoadShader("resources/shaders/scene.vert", "resources/shaders/scene.frag", nullptr, "scene");
-    ResourceManagerOld::LoadShader("resources/shaders/solid.vert", "resources/shaders/solid.frag", nullptr, "solid");
-    ResourceManagerOld::LoadShader("resources/shaders/sprite.vert", "resources/shaders/sprite.frag", nullptr, "sprite");
-    ResourceManagerOld::LoadShader("resources/shaders/line.vert", "resources/shaders/line.frag",  nullptr, "line");
-    ResourceManagerOld::LoadShader("resources/shaders/level_layer.vert", "resources/shaders/level_layer.frag",  nullptr, "llayer");
-    //ResourceManagerOld::LoadShader("resources/shaders/tile.vert", "resources/shaders/tile.frag", nullptr, "tile");
-#endif
+// #ifdef __EMSCRIPTEN__
+//     ResourceManagerOld::LoadShader("resources/shaders/es/line.vert", "resources/shaders/es/line.frag",  nullptr, "line");
+//     ResourceManagerOld::LoadShader("resources/shaders/es/level_layer.vert", "resources/shaders/es/level_layer.frag",  nullptr, "llayer");
+//     ResourceManagerOld::LoadShader("resources/shaders/es/scene.vert", "resources/shaders/es/scene.frag", nullptr, "scene");
+//     ResourceManagerOld::LoadShader("resources/shaders/es/solid.vert", "resources/shaders/es/solid.frag", nullptr, "solid");
+//     ResourceManagerOld::LoadShader("resources/shaders/es/sprite.vert", "resources/shaders/es/sprite.frag", nullptr, "sprite");
+// #else
+//     ResourceManagerOld::LoadShader("resources/shaders/scene.vert", "resources/shaders/scene.frag", nullptr, "scene");
+//     ResourceManagerOld::LoadShader("resources/shaders/solid.vert", "resources/shaders/solid.frag", nullptr, "solid");
+//     ResourceManagerOld::LoadShader("resources/shaders/sprite.vert", "resources/shaders/sprite.frag", nullptr, "sprite");
+//     ResourceManagerOld::LoadShader("resources/shaders/line.vert", "resources/shaders/line.frag",  nullptr, "line");
+//     ResourceManagerOld::LoadShader("resources/shaders/level_layer.vert", "resources/shaders/level_layer.frag",  nullptr, "llayer");
+//     //ResourceManagerOld::LoadShader("resources/shaders/tile.vert", "resources/shaders/tile.frag", nullptr, "tile");
+// #endif
     // Testing
     TilemapManager::Add("resources/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "resources/assets/tiles/game-tiles_cut.png");
 
@@ -89,9 +89,9 @@ Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resourc
     // Create framebuffers
     //ResourceManagerOld::CreateRenderTexture(width_, height_, "viewport");
     //generateGrid();
-    ResourceManagerOld::CreateFramebuffer("scene", width_, height_, GL_TEXTURE_2D);
+    ResourceManagerOld::CreateFramebuffer(logger, "scene", width_, height_, GL_TEXTURE_2D);
     //ResourceManagerOld::CreateFramebuffer("minimap", width_, height_);
-    ResourceManagerOld::CreateFramebuffer("imguiScene", width_, height_, GL_TEXTURE_2D);
+    ResourceManagerOld::CreateFramebuffer(logger, "imguiScene", width_, height_, GL_TEXTURE_2D);
 
     float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
        // positions   // texCoords
@@ -178,7 +178,7 @@ GLvoid Scene::ResizeLevel(GLuint width, GLuint height)
     {
         std::stringstream msg;
         msg << "There is no level to resize..";
-        MessageManager::AddMessage(msg, message_t::WARNING);
+        ui_logger_->Log(log_t::WARNING, "%s", msg.str().c_str());
     }
     else
     {

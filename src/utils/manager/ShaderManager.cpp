@@ -89,7 +89,7 @@ ShaderManager::loadShaderFromFile(const char* vShaderFile, const char* fShaderFi
     auto fShaderCode = fragmentCode.c_str();
     auto gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
-    std::shared_ptr<Shader> shader = std::make_shared<Shader>();
+    std::shared_ptr<Shader> shader = std::make_shared<Shader>(ui_logger_);
     shader->Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
     return shader;
 }

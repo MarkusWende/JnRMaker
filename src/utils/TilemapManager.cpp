@@ -41,7 +41,8 @@ GLvoid TilemapManager::Add(std::string name, glm::vec2 size, glm::vec2 scale, st
     {
         std::stringstream msg;
         msg << "Tilemap with this name: " << name << " already exist.";
-        MessageManager::AddMessage(msg, message_t::WARNING);
+        //MessageManager::AddMessage(msg, log_t::WARNING);
+        //std::dynamic_pointer_cast<UILogger>(logger)->Popup(log_t::WARNING, "%s", msg.str().c_str());
     }
 }
 
@@ -55,7 +56,8 @@ GLvoid TilemapManager::Add(std::string name, glm::vec2 size, glm::vec2 scale, co
     {
         std::stringstream msg;
         msg << "Tilemap with this name: " << name << " already exist.";
-        MessageManager::AddMessage(msg, message_t::WARNING, true);
+        //MessageManager::AddMessage(msg, log_t_t::WARNING, true);
+        //std::dynamic_pointer_cast<UILogger>(logger)->Popup(log_t::WARNING, "%s", msg.str().c_str());
     }
 }
 

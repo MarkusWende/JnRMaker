@@ -15,7 +15,6 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <glm/gtx/intersect.hpp>
 
-#include "MessageManager.h"
 #include "ResourceManagerOld.h"
 #include "TimeHelper.h"
 

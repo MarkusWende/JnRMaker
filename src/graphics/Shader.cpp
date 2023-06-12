@@ -7,7 +7,6 @@
 ** option) any later version.
 ******************************************************************/
 #include "Shader.h"
-#include "MessageManager.h"
 
 #include <iostream>
 
@@ -135,7 +134,7 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 #ifdef __EMSCRIPTEN__
 			std::stringstream msg;
 			msg << "Compile-time error. Type: " << type << "\tinfo: " << infoLog;
-			MessageManager::AddMessage(msg, message_t::ERROR_T);
+			ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
 #endif
 #ifdef _WIN32
 			FILE* stream;
@@ -160,7 +159,7 @@ void Shader::checkCompileErrors(GLuint object, std::string type)
 #ifdef __EMSCRIPTEN__
 			std::stringstream msg;
 			msg << "Link-time error. Type: " << type << "\tinfo: " << infoLog;
-			MessageManager::AddMessage(msg, message_t::ERROR_T);
+			//MessageManager::AddMessage(msg, message_t::ERROR_T);
 #endif
 #ifdef _WIN32
 			FILE* stream;

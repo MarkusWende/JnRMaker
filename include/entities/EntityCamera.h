@@ -43,7 +43,6 @@
 //#include <SFML/Graphics/View.hpp>
 //#include <SFML/Graphics/RenderTexture.hpp>
 
-#include "MessageManager.h"
 #include "ResourceManagerOld.h"
 #include "Entity.h"
 #include "PrimitiveCube.h"
@@ -246,8 +245,8 @@ public:
 		else
 		{
 			std::stringstream msg;
-			msg << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
-			MessageManager::AddMessage(msg, message_t::ERROR_T);
+			ui_logger_ << "xOff: " << xoffset << "\tyOff: " << yoffset << "\n";
+			ui_logger_->Log(log_t::ERROR_T, "%s", msg.str().c_str());
 		}
 	}
 

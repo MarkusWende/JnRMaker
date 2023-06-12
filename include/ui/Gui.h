@@ -33,7 +33,6 @@
 
 #include "ResourceManagerOld.h"
 #include "ProjectManager.h"
-#include "MessageManager.h"
 #include "TilemapManager.h"
 #include "Scene.h"
 #include "imgui.h"

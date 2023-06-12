@@ -6,7 +6,6 @@
 #include "Gui.h"
 #include "ProjectManager.h"
 #include "ResourceManagerOld.h"
-#include "MessageManager.h"
 #include "Scene.h"
 #include "Events.h"
 #include "Injector.h"

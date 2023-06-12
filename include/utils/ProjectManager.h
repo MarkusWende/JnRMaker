@@ -49,8 +49,16 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <nlohmann/json.hpp>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/fetch.h>
+#include <emscripten/websocket.h>
+#include <emscripten/bind.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/val.h>
+#endif
+
 #include "TimeHelper.h"
-#include "MessageManager.h"
 
 #define MAX_STORED_SAVE_FILES 20               /**< Defines the maximal number of save files to be stored. */
 

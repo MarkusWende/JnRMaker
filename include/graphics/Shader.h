@@ -13,6 +13,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "UILogger.h"
+
 
 // General purpsoe shader object. Compiles from file, generates
 // compile/link-time error messages and hosts several utility 
@@ -23,7 +25,7 @@ public:
 	// State
 	//GLuint ID;
 	// Constructor
-	Shader() { }
+	Shader(std::shared_ptr<ILogger> logger) : ui_logger_(std::dynamic_pointer_cast<UILogger>(logger)) { };
 	// Sets the current shader as active
 	Shader& Use();
 	// Compiles the shader from given source code
@@ -40,6 +42,7 @@ public:
 	void    SetMatrix4(const GLchar* name, const glm::mat4& matrix, GLboolean useShader = false);
 	void    SetBool(const GLchar* name, GLboolean value, GLboolean useShader = false);
 private:
+	std::shared_ptr<UILogger> 			ui_logger_;
 	// Checks if compilation or linking failed and if so, print the error logs
 	void    checkCompileErrors(GLuint object, std::string type);
 

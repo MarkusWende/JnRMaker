@@ -38,9 +38,9 @@
 #else
 
 #endif
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 
-#include "MessageManager.h"
+#include "UILogger.h"
 
 // Texture2D is able to store and configure a texture in OpenGL.
 // It also hosts utility functions for easy management.
@@ -88,11 +88,13 @@ public:
 	GLuint Filter_Min; // Filtering mode if texture pixels < screen pixels
 	GLuint Filter_Mag; // Filtering mode if texture pixels > screen pixels
 	// Constructor (sets default texture modes)
-	TextureCM();
+	TextureCM(std::shared_ptr<ILogger> logger);
 	// Generates texture from image data
 	void Generate(std::vector<std::string>* faces);
 	// Binds the texture as the current active GL_TEXTURE_2D texture object
 	void Bind() const;
+private:
+	std::shared_ptr<UILogger> 			ui_logger_;
 };
 
 class TextureCL

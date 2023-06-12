@@ -137,7 +137,7 @@ public:
      * @param height Height of the framebuffer.
      * @return Framebuffer Return the framebuffer object.
      */
-  static Framebuffer CreateFramebuffer(std::string name, GLuint width, GLuint height, GLenum type);
+  static Framebuffer CreateFramebuffer(std::shared_ptr<ILogger> logger, std::string name, GLuint width, GLuint height, GLenum type);
 
 //   /**
 //    * @brief Delete framebuffer by name.
@@ -195,7 +195,7 @@ private:
      * @param height Height of the framebuffer.
      * @return Framebuffer Return the framebuffer object.
      */
-  static Framebuffer generateFramebuffer(GLuint width, GLuint height, GLenum type);
+  static Framebuffer generateFramebuffer(std::shared_ptr<ILogger> logger, GLuint width, GLuint height, GLenum type);
 
   /**
      * @brief Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.

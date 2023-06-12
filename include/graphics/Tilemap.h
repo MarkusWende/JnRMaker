@@ -112,7 +112,7 @@ private:
     //GLvoid loadTilemapFromTexture();
 
     //GLvoid createTextureArray();
- 
+    //std::shared_ptr<UILogger> 			ui_logger_;
     //std::map<std::string, std::shared_ptr<Texture2D>>   tilemap_textures_;
     std::map<GLuint, std::string>                       tilemap_ids_;
     //TextureArray    tilemap_tex_array_;

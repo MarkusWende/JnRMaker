@@ -167,7 +167,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test info text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::INFO, true);
+					ui_logger_->Popup(log_t::INFO, "%s", msg.str().c_str());
                 }
 
                 if (ImGui::MenuItem("Test Warning"))
@@ -175,7 +175,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test warning text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::WARNING, true);
+					ui_logger_->Popup(log_t::WARNING, "%s", msg.str().c_str());
                 }
 
                 if (ImGui::MenuItem("Test Error"))
@@ -183,7 +183,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test error text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::ERROR_T, true);
+					ui_logger_->Popup(log_t::ERROR_T, "%s", msg.str().c_str());
                 }
 
                 if (ImGui::MenuItem("Test Debug"))
@@ -191,7 +191,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
                     // Test messages
                     std::stringstream msg;
                     msg << "Thats a test debug text." << std::endl;
-                    MessageManager::AddMessage(msg, message_t::DEBUG, true);
+					ui_logger_->Popup(log_t::DEBUG, "%s", msg.str().c_str());
                 }
                 ImGui::EndMenu();
             }
@@ -742,26 +742,25 @@ void Gui::DrawWindowStatusbar()
 
 void Gui::DrawPopupMessages()
 {
-	std::vector<Message>* ptrMessages;
-	ptrMessages = MessageManager::GetMessages();
-	if (ptrMessages->size() > 0)
+	auto logs = ui_logger_->GetLogs();
+	if (logs->size() > 0)
 	{
-        for (size_t it = 0; it < ptrMessages->size(); it++)
+        for (size_t it = 0; it < logs->size(); it++)
         {
 #ifndef DEVELOPMENT
-            if (ptrMessages->at(it).type == message_t::DEBUG)
+            if (logs->at(it).type == message_t::DEBUG)
                 continue;
 #endif 
             //std::string word;
-            //std::stringstream ss(ptrMessages->at(it).msg);
+            //std::stringstream ss(logs->at(it).msg);
             //char msgChr[250] = "";
             char msgSymbol[250] = ICON_FA_BUG;
             std::stringstream popupID;
-            popupID << "##" << ptrMessages->at(it).timeinfo.c_str() << ":" << ptrMessages->at(it).msg.c_str();
+            popupID << "##" << logs->at(it).timeinfo.c_str() << ":" << logs->at(it).msg.c_str();
             ImVec4 msgSymbolColor = ImVec4(0.42f, 0.85f, 1.0f, 1.0f);
 
             ImGui::SameLine(0, 5);
-            if (ptrMessages->at(it).type == message_t::ERROR_T)
+            if (logs->at(it).type == log_t::ERROR_T)
             {
                 msgSymbolColor = ImVec4(1.0f, 0.3f, 0.3f, 1.0f);
 #if defined(_WIN32)
@@ -770,7 +769,7 @@ void Gui::DrawPopupMessages()
                 std::strcpy(msgSymbol, ICON_FA_XMARK);
 #endif
             }
-            else if (ptrMessages->at(it).type == message_t::INFO)
+            else if (logs->at(it).type == log_t::INFO)
             {
                 msgSymbolColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);
 #if defined(_WIN32)
@@ -779,7 +778,7 @@ void Gui::DrawPopupMessages()
                 std::strcpy(msgSymbol, ICON_FA_CIRCLE_EXCLAMATION);
 #endif
             }
-            else if (ptrMessages->at(it).type == message_t::WARNING)
+            else if (logs->at(it).type == log_t::WARNING)
             {
                 msgSymbolColor = ImVec4(0.92f, 0.56f, 0.9f, 1.0f);
 #if defined(_WIN32)
@@ -790,11 +789,11 @@ void Gui::DrawPopupMessages()
             }
 
             static int numPopups = 0;
-            if (ptrMessages->at(it).popup && !numPopups)
+            if (logs->at(it).popup && !numPopups)
             {
                 ImGui::OpenPopup(popupID.str().c_str());
                 numPopups++;
-                ptrMessages->at(it).popup = false;
+                logs->at(it).popup = false;
             }
 
             // Always center this window when appearing
@@ -809,7 +808,7 @@ void Gui::DrawPopupMessages()
                 ImGui::PopFont();
                 ImVec2 popupPos = ImGui::GetCursorPos();
                 ImGui::SetCursorPos(ImVec2(popupPos.x + 10.0f, popupPos.y + 15.0f));
-                ImGui::Text("%s\n", ptrMessages->at(it).msg.c_str());
+                ImGui::Text("%s\n", logs->at(it).msg.c_str());
                 ImGui::Text("  ");
 
                 ImGui::Separator();
@@ -818,7 +817,7 @@ void Gui::DrawPopupMessages()
                 if (ImGui::Button("OK", ImVec2(120.0f, 0.0f)))
                 { 
                     numPopups--;
-                    ptrMessages->at(it).popup = false;
+                    logs->at(it).popup = false;
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::SetItemDefaultFocus();
