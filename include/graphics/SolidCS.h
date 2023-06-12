@@ -38,7 +38,7 @@
 class CoordinateSystem : public Solid
 {
 public:
-    CoordinateSystem(glm::vec3 offset = glm::vec3(0));				                                /**< Todo: */
+    CoordinateSystem(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, glm::vec3 offset = glm::vec3(0));				                                /**< Todo: */
 	//~CoordinateSystem() { };														/**< Destructor. */
 
 	/**

@@ -78,17 +78,17 @@ const float ZOOM_MIN = 1.0f;								/**< Minimal zoom level. Should not be lower
 /**
  * @brief An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL.
  */
-class Camera : public SceneEntity
+class Camera : public Entity
 {
 public:
 	/**
 	 * @brief Constructor for Camera.
 	 */
-	Camera(glm::vec3 offset = { 0.0f, 0.0f, 0.0f })// : SceneEntity()
+	Camera(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, glm::vec3 offset = { 0.0f, 0.0f, 0.0f }) : Entity(logger, resources)
 	{
 		center_ = offset;
 		entity_type_ = EntityType::CAMERA_ENTITY;
-		focus_model_ = std::unique_ptr<Cube>(new Cube("CameraFocusCube"));
+		focus_model_ = std::unique_ptr<Cube>(new Cube(logger, resources, "CameraFocusCube"));
 		focus_model_->Scale(glm::vec3(0.1f));
 		init();
 	}
@@ -328,17 +328,17 @@ public:
 	*/
 	GLvoid DrawCenter(glm::mat4 projection, glm::mat4 view)
 	{
-		ResourceManagerOld::GetShader("solid").Use();
-		ResourceManagerOld::GetShader("solid").SetMatrix4("projection", projection);
-		ResourceManagerOld::GetShader("solid").SetMatrix4("view", view);
-		ResourceManagerOld::GetShader("solid").SetVector3f("color", 1.0f, 1.0f, 1.0f);
-		ResourceManagerOld::GetShader("solid").SetFloat("alpha", 1.0f);
+		resources_->GetShader("solid")->Use();
+		resources_->GetShader("solid")->SetMatrix4("projection", projection);
+		resources_->GetShader("solid")->SetMatrix4("view", view);
+		resources_->GetShader("solid")->SetVector3f("color", 1.0f, 1.0f, 1.0f);
+		resources_->GetShader("solid")->SetFloat("alpha", 1.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, center_);
 		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, focus_model_->GetScale());
-		ResourceManagerOld::GetShader("solid").SetMatrix4("model", model);
+		resources_->GetShader("solid")->SetMatrix4("model", model);
 		focus_model_->Draw();
 	}
 

@@ -76,14 +76,14 @@ Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resourc
 
     //ResourceManagerOld::CreateRenderTexture(width_, height_, "viewport");
     //ResourceManagerOld::CreateRenderTexture(width_, height_, "minimap");
-    filter_.insert(std::make_pair("asdasd", new SceneEntity()));
+    filter_.insert(std::make_pair("asdasd", new Entity(logger, resources)));
 
-    e_solids_.insert(std::make_pair("TestCube", new Cube("TestCube", false)));
-    e_solids_.insert(std::make_pair("TestQuad", new Quad("TestQuad")));
+    e_solids_.insert(std::make_pair("TestCube", new Cube(logger, resources, "TestCube", false)));
+    e_solids_.insert(std::make_pair("TestQuad", new Quad(logger, resources, "TestQuad")));
     //e_solids_.insert(std::make_pair("TestGrid", new Grid("TestGrid", true)));
-    e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem(glm::vec3(0))));
+    e_cs_.insert(std::make_pair("MainCS", new CoordinateSystem(logger, resources, glm::vec3(0))));
 
-    e_cameras_.insert(std::make_pair("SceneCamera", new Camera()));
+    e_cameras_.insert(std::make_pair("SceneCamera", new Camera(logger, resources)));
     //e_cameras_["SceneCamera"]->SetState(CameraState::ORTHOGRAPHIC);
 
     // Create framebuffers
@@ -131,7 +131,7 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
     {
         e_grids_.clear();
     }
-    e_grids_.insert(std::make_pair("XYGrid", new Grid("XYGrid", true, width, height)));
+    e_grids_.insert(std::make_pair("XYGrid", new Grid(ui_logger_, resources_, "XYGrid", true, width, height)));
     map_width_ = width;
     map_height_ = height;
     sprite_size_ = spriteSize;
@@ -156,12 +156,12 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
     {
         e_level_layers_.clear();
     }
-    e_level_layers_.insert(std::make_pair("Tiles", new WorldLayer("Tiles", width, height, spriteSize, level_border_size_)));
+    e_level_layers_.insert(std::make_pair("Tiles", new WorldLayer(ui_logger_, resources_, "Tiles", width, height, spriteSize, level_border_size_)));
     active_tilemap_name_ = "Tiles";
 
     // Create default brush
     e_sprites_.clear();
-    e_sprites_.insert(std::make_pair("brush", new Sprite("brush", false, (GLuint)spriteSize.x, (GLuint)spriteSize.y)));
+    e_sprites_.insert(std::make_pair("brush", new Sprite(ui_logger_, resources_, "brush", false, (GLuint)spriteSize.x, (GLuint)spriteSize.y)));
     std::string keyBorderHash = ResourceManagerOld::GetNameHash("Tiles", "r0c1");
     e_sprites_.find("brush")->second->AssignTextureID(ResourceManagerOld::GetTexture(keyBorderHash.c_str()).ID);
     active_sprite_name_ = keyBorderHash.c_str();
@@ -616,7 +616,8 @@ GLvoid Scene::Render()
     //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-    ResourceManagerOld::GetShader("scene").Use();
+    //ResourceManagerOld::GetShader("scene").Use();
+    resources_->GetShader("scene")->Use();
     glBindVertexArray(vao_);
     glBindTexture(GL_TEXTURE_2D, ResourceManagerOld::GetFramebuffer("scene").GetTextureID());
     glDrawArrays(GL_TRIANGLES, 0, 6);

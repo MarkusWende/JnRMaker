@@ -31,7 +31,7 @@
 class Line : public Primitive
 {
 public:
-	Line(std::string meshName = "line", glm::vec3 begin = { 0.0f, 0.0f, 0.0f }, glm::vec3 end = { 0.0f, 0.0f, 0.0f });	/**< Constructor. A vector with start and end coordinate {0,0,0} by default. */
+	Line(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName = "line", glm::vec3 begin = { 0.0f, 0.0f, 0.0f }, glm::vec3 end = { 0.0f, 0.0f, 0.0f });	/**< Constructor. A vector with start and end coordinate {0,0,0} by default. */
 	~Line() { };															/**< Destructor. */
 
 	/**

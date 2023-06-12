@@ -24,7 +24,7 @@
   // PUBLIC:
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Solid::Solid()
+Solid::Solid(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources) : Entity(logger, resources)
 {
 	layer_ = layer_t::FORE;
 	name_ = "Solid";
@@ -43,7 +43,7 @@ Solid::Solid()
 	roll_ = 0.0f;
 }
 
-Solid::Solid(GLuint id, std::string name, layer_t layer)                            //!< constructor
+Solid::Solid(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, GLuint id, std::string name, layer_t layer) : Entity(logger, resources)
 {
 	layer_ = layer;
 	name_ = name;

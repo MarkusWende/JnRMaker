@@ -32,14 +32,14 @@
   // PUBLIC:
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CoordinateSystem::CoordinateSystem(glm::vec3 offset) : Solid()
+CoordinateSystem::CoordinateSystem(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, glm::vec3 offset) : Solid(logger, resources)
 {
 	center_ = offset;
 	layer_ = layer_t::FORE;
 
-	axis_.insert(std::make_pair("X",  new Line("X",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f))));
-	axis_.insert(std::make_pair("Y",  new Line("Y",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f))));
-	axis_.insert(std::make_pair("Z",  new Line("Z",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f))));
+	axis_.insert(std::make_pair("X",  new Line(logger, resources, "X",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f))));
+	axis_.insert(std::make_pair("Y",  new Line(logger, resources, "Y",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f))));
+	axis_.insert(std::make_pair("Z",  new Line(logger, resources, "Z",  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f))));
 	//axis_.insert(std::make_pair("nX", new Line("nX", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f))));
 	//axis_.insert(std::make_pair("nY", new Line("nY", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f))));
 	//axis_.insert(std::make_pair("nZ", new Line("nZ", glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f))));
@@ -65,36 +65,36 @@ CoordinateSystem::CoordinateSystem(glm::vec3 offset) : Solid()
 
 GLvoid CoordinateSystem::Draw(glm::mat4 projection, glm::mat4 view)
 {
-	ResourceManagerOld::GetShader("line").Use();
-	ResourceManagerOld::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	ResourceManagerOld::GetShader("line").SetMatrix4("view", view);
+	resources_->GetShader("line")->Use();
+	resources_->GetShader("line")->SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	resources_->GetShader("line")->SetMatrix4("view", view);
 	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	model = glm::translate(model, center_);
 	model = glm::rotate(model, roll_, glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, yaw_, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, pitch_, glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, scale_);
-	ResourceManagerOld::GetShader("line").SetMatrix4("model", model);
-	ResourceManagerOld::GetShader("line").SetVector2f("u_resolution", glm::vec2(resolution_.x, resolution_.y));
+	resources_->GetShader("line")->SetMatrix4("model", model);
+	resources_->GetShader("line")->SetVector2f("u_resolution", glm::vec2(resolution_.x, resolution_.y));
 	// positive axis
-	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 0.0f);
+	resources_->GetShader("line")->SetFloat("u_dashSize", 10.0f);
+	resources_->GetShader("line")->SetFloat("u_gapSize", 0.0f);
 	glLineWidth(2.0f);
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["X"]->GetColor(), axis_["X"]->GetAlpha() });
+	resources_->GetShader("line")->SetVector4f("color", { axis_["X"]->GetColor(), axis_["X"]->GetAlpha() });
 	axis_["X"]->Draw();
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["Y"]->GetColor(), axis_["Y"]->GetAlpha() });
+	resources_->GetShader("line")->SetVector4f("color", { axis_["Y"]->GetColor(), axis_["Y"]->GetAlpha() });
 	axis_["Y"]->Draw();
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["Z"]->GetColor(), axis_["Z"]->GetAlpha() });
+	resources_->GetShader("line")->SetVector4f("color", { axis_["Z"]->GetColor(), axis_["Z"]->GetAlpha() });
 	axis_["Z"]->Draw();
 	// negative axis
 	/*
-	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 10.0f);
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nX"]->GetColor(), axis_["nX"]->GetAlpha() });
+	resources_->GetShader("line")->SetFloat("u_dashSize", 10.0f);
+	resources_->GetShader("line")->SetFloat("u_gapSize", 10.0f);
+	resources_->GetShader("line")->SetVector4f("color", { axis_["nX"]->GetColor(), axis_["nX"]->GetAlpha() });
 	axis_["nX"]->Draw();
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nY"]->GetColor(), axis_["nY"]->GetAlpha() });
+	resources_->GetShader("line")->SetVector4f("color", { axis_["nY"]->GetColor(), axis_["nY"]->GetAlpha() });
 	axis_["nY"]->Draw();
-	ResourceManagerOld::GetShader("line").SetVector4f("color", { axis_["nZ"]->GetColor(), axis_["nZ"]->GetAlpha() });
+	resources_->GetShader("line")->SetVector4f("color", { axis_["nZ"]->GetColor(), axis_["nZ"]->GetAlpha() });
 	axis_["nZ"]->Draw();
 	*/
 	glLineWidth(1.0f);

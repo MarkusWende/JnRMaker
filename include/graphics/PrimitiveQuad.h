@@ -32,7 +32,7 @@
 class Quad : public Primitive
 {
 public:
-	Quad(std::string meshName = "Quad");		/**< Constructor. Smooth shading by default. */
+	Quad(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName = "Quad");		/**< Constructor. Smooth shading by default. */
     ~Quad() {}														/**< Destructor. */
 
 private:

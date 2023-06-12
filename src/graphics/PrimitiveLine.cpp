@@ -32,7 +32,7 @@
 // PUBLIC:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Line::Line(std::string meshName, glm::vec3 begin, glm::vec3 end) : Primitive(meshName)
+Line::Line(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName, glm::vec3 begin, glm::vec3 end) : Primitive(logger, resources, meshName)
 {
 	addMesh(meshName);
 	VertexNew v0, v1;

@@ -32,7 +32,7 @@
 class Cube : public Primitive
 {
 public:
-	Cube(std::string meshName = "Cube", GLboolean smooth=false);		/**< Constructor. Smooth shading by default. */
+	Cube(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName = "Cube", GLboolean smooth=false);		/**< Constructor. Smooth shading by default. */
     //~Cube() {}														/**< Destructor. */
 
 	/**

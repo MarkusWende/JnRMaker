@@ -36,11 +36,11 @@
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */
-class WorldLayer : public SceneEntity
+class WorldLayer : public Entity
 {
 public:
-	WorldLayer();
-	WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize);                            //!< constructor
+	WorldLayer(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources);
+	WorldLayer(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize);                            //!< constructor
     ~WorldLayer();                                               //!< destructor
 
     GLuint GetHeight() {return height_;};

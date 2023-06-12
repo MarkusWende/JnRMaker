@@ -32,7 +32,7 @@
  // PUBLIC:
  /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Cube::Cube(std::string meshName, GLboolean smooth) : Primitive(meshName)
+Cube::Cube(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName, GLboolean smooth) : Primitive(logger, resources, meshName)
 {
 	addMesh(meshName);
 	smooth_ = smooth;

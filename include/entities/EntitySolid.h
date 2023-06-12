@@ -44,11 +44,11 @@ enum class layer_t {
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.
  */
-class Solid : public SceneEntity
+class Solid : public Entity
 {
 public:
-	Solid();
-	Solid(GLuint id, std::string name, layer_t layer);                            //!< constructor
+	Solid(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources);
+	Solid(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, GLuint id, std::string name, layer_t layer);                            //!< constructor
 
     ~Solid() { };                                               //!< destructor
 

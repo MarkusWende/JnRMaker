@@ -32,7 +32,7 @@
  // PUBLIC:
  /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Sprite::Sprite(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
+Sprite::Sprite(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName, GLboolean smooth, GLuint width, GLuint height) : Solid(logger, resources)
 {
     (void)smooth;
     name_ = meshName;
@@ -43,7 +43,7 @@ Sprite::Sprite(std::string meshName, GLboolean smooth, GLuint width, GLuint heig
 
     std::stringstream key;
     key << meshName << "_Quad" << scale_.x;
-    quad_ = std::unique_ptr<Quad>(new Quad(meshName.c_str()));
+    quad_ = std::unique_ptr<Quad>(new Quad(logger, resources, meshName.c_str()));
 }
 
 
@@ -52,18 +52,18 @@ GLvoid Sprite::Draw(glm::mat4 projection, glm::mat4 view)
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, center_);
     model = glm::scale(model, scale_);
-    ResourceManagerOld::GetShader("sprite").Use();
-    ResourceManagerOld::GetShader("sprite").SetMatrix4("projection", projection);
-    ResourceManagerOld::GetShader("sprite").SetMatrix4("view", view);
-    ResourceManagerOld::GetShader("sprite").SetMatrix4("model", model);
-    ResourceManagerOld::GetShader("sprite").SetVector3f("dirLight.direction", 5.0f, 5.0f, 20.0f);
-    ResourceManagerOld::GetShader("sprite").SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
-    ResourceManagerOld::GetShader("sprite").SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-    ResourceManagerOld::GetShader("sprite").SetVector3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
-    ResourceManagerOld::GetShader("sprite").SetFloat("material.shininess", 640.0f);
-    ResourceManagerOld::GetShader("sprite").SetVector3f("color", 1.0f, 1.0f, 1.0f);
-    ResourceManagerOld::GetShader("sprite").SetFloat("alpha", 1.0f);
-    ResourceManagerOld::GetShader("sprite").SetInteger("material.diffuse", 0);
+    resources_->GetShader("sprite")->Use();
+    resources_->GetShader("sprite")->SetMatrix4("projection", projection);
+    resources_->GetShader("sprite")->SetMatrix4("view", view);
+    resources_->GetShader("sprite")->SetMatrix4("model", model);
+    resources_->GetShader("sprite")->SetVector3f("dirLight.direction", 5.0f, 5.0f, 20.0f);
+    resources_->GetShader("sprite")->SetVector3f("dirLight.ambient", 0.5f, 0.5f, 0.5f);
+    resources_->GetShader("sprite")->SetVector3f("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+    resources_->GetShader("sprite")->SetVector3f("dirLight.specular", 0.5f, 0.5f, 0.5f);
+    resources_->GetShader("sprite")->SetFloat("material.shininess", 640.0f);
+    resources_->GetShader("sprite")->SetVector3f("color", 1.0f, 1.0f, 1.0f);
+    resources_->GetShader("sprite")->SetFloat("alpha", 1.0f);
+    resources_->GetShader("sprite")->SetInteger("material.diffuse", 0);
     glBindTexture(GL_TEXTURE_2D, texture_id_);
     quad_->Draw();
 }

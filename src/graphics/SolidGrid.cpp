@@ -25,7 +25,7 @@
  // PUBLIC:
  /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Grid::Grid(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
+Grid::Grid(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName, GLboolean smooth, GLuint width, GLuint height) : Solid(logger, resources)
 {
 	addMesh(meshName);
 	name_ = meshName;
@@ -43,20 +43,20 @@ Grid::Grid(std::string meshName, GLboolean smooth, GLuint width, GLuint height)
 
 GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 {
-	ResourceManagerOld::GetShader("line").Use();
-	ResourceManagerOld::GetShader("line").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-	ResourceManagerOld::GetShader("line").SetMatrix4("view", view);
+	resources_->GetShader("line")->Use();
+	resources_->GetShader("line")->SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+	resources_->GetShader("line")->SetMatrix4("view", view);
 	glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 	model = glm::translate(model, center_);
 	model = glm::rotate(model, glm::radians(roll_), glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(yaw_), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, glm::radians(pitch_), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, scale_);
-	ResourceManagerOld::GetShader("line").SetMatrix4("model", model);
-	ResourceManagerOld::GetShader("line").SetVector2f("u_resolution", glm::vec2(1, 1));
+	resources_->GetShader("line")->SetMatrix4("model", model);
+	resources_->GetShader("line")->SetVector2f("u_resolution", glm::vec2(1, 1));
 	// positive axis
-	ResourceManagerOld::GetShader("line").SetFloat("u_dashSize", 10.0f);
-	ResourceManagerOld::GetShader("line").SetFloat("u_gapSize", 0.0f);
+	resources_->GetShader("line")->SetFloat("u_dashSize", 10.0f);
+	resources_->GetShader("line")->SetFloat("u_gapSize", 0.0f);
 #ifndef __EMSCRIPTEN__
 	glEnable(GL_LINE_SMOOTH);
 #endif
@@ -65,7 +65,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
-		ResourceManagerOld::GetShader("line").SetVector4f("color", { color_, alpha_ });
+		resources_->GetShader("line")->SetVector4f("color", { color_, alpha_ });
 		axis_h_[key.str()]->Draw();
 		i = i + 1.0f;
 	}
@@ -74,7 +74,7 @@ GLvoid Grid::Draw(glm::mat4 projection, glm::mat4 view)
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
-		ResourceManagerOld::GetShader("line").SetVector4f("color", { color_, alpha_ });
+		resources_->GetShader("line")->SetVector4f("color", { color_, alpha_ });
 		axis_v_[key.str()]->Draw();
 		i = i + 1.0f;
 	}
@@ -91,7 +91,7 @@ GLvoid Grid::build()
 	{
 		std::stringstream key;
 		key << "axis_h_" << i;
-		axis_h_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3(0.0f, i, 0.0f) * scale_, glm::vec3((GLfloat)width_, i, 0.0f) * scale_)));
+		axis_h_.insert(std::make_pair(key.str(), new Line(ui_logger_, resources_, key.str(), glm::vec3(0.0f, i, 0.0f) * scale_, glm::vec3((GLfloat)width_, i, 0.0f) * scale_)));
 		axis_h_[key.str()]->SetColor({1.0f, 1.0f, 1.0f});
 		axis_h_[key.str()]->SetAlpha(1.0f);
 		i = i + 1.0f;
@@ -101,7 +101,7 @@ GLvoid Grid::build()
 	{
 		std::stringstream key;
 		key << "axis_v_" << i;
-		axis_v_.insert(std::make_pair(key.str(), new Line(key.str(), glm::vec3(i, 0.0f, 0.0f) * scale_, glm::vec3(i, (GLfloat)height_, 0.0f) * scale_)));
+		axis_v_.insert(std::make_pair(key.str(), new Line(ui_logger_, resources_, key.str(), glm::vec3(i, 0.0f, 0.0f) * scale_, glm::vec3(i, (GLfloat)height_, 0.0f) * scale_)));
 		axis_v_[key.str()]->SetColor({ 1.0f, 1.0f, 1.0f });
 		axis_v_[key.str()]->SetAlpha(1.0f);
 		i = i + 1.0f;

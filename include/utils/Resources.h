@@ -29,6 +29,8 @@ public:
     };
     ~Resources() {};
 
+    std::shared_ptr<Shader> GetShader(const char* name) { return shader_->Get(name); };
+
 private:
     std::shared_ptr<ShaderManager> shader_;
     std::shared_ptr<TileManager> tilemaps_;

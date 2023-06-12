@@ -40,6 +40,9 @@
 #include "MessageManager.h"
 #include "ProjectManager.h"
 
+#include "UILogger.h"
+#include "Resources.h"
+
 enum class EntityType {
 	LIGHT_ENTITY,
 	SOLID_ENTITY,
@@ -62,21 +65,25 @@ enum class EntityMovementDirection {
 /**
 * @brief 
 */
-class SceneEntity
+class Entity
 {
 public:
-																		/**< Constructor. */
-	explicit SceneEntity() : entity_type_(EntityType::DEFAULT_ENTITY),
-		center_(glm::vec3(0.0f, 0.0f, 0.0f))
+	/**< Constructor. */
+	Entity(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources) :	ui_logger_(std::dynamic_pointer_cast<UILogger>(logger)),
+																									resources_(resources),
+																									entity_type_(EntityType::DEFAULT_ENTITY),
+																									center_(glm::vec3(0.0f, 0.0f, 0.0f))
 	{ };													
 	
-	~SceneEntity() { };									/**< Destructor. */
+	~Entity() { };									/**< Destructor. */
 
 	GLvoid Move(glm::vec3 pos) { center_ = pos; };
 
 	glm::vec3	GetCenter() { return center_; }													/**< @brief Get the center of the solid. @return glm::vec3 The center as a 3d vector. */
 
 protected:
+	std::shared_ptr<UILogger> 			ui_logger_;
+	std::shared_ptr<Resources>			resources_;
 	EntityType	entity_type_;
 	//glm::vec3	position;						/**< Entity position in a cartesian coordinate system. */
 	glm::vec3   center_;							/**< @brief The center of the solid. */

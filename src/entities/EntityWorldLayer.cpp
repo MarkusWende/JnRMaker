@@ -30,12 +30,12 @@
 
 // PUBLIC:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-WorldLayer::WorldLayer()
+WorldLayer::WorldLayer(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources) : Entity(logger, resources)
 {
 
 }
 
-WorldLayer::WorldLayer(std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize)
+WorldLayer::WorldLayer(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string name, GLuint width, GLuint height, glm::vec2 spriteSize, GLuint borderSize) : Entity(logger, resources)
 {
     name_ = name;
     width_ = width;
@@ -117,12 +117,12 @@ GLvoid WorldLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 
 GLvoid WorldLayer::Draw(glm::mat4 projection, glm::mat4 view)
 {
-    ResourceManagerOld::GetShader("llayer").Use();
-    ResourceManagerOld::GetShader("llayer").SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    ResourceManagerOld::GetShader("llayer").SetMatrix4("view", view);
+    resources_->GetShader("llayer")->Use();
+    resources_->GetShader("llayer")->SetMatrix4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+    resources_->GetShader("llayer")->SetMatrix4("view", view);
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     //model = glm::translate(model, center_);
-    ResourceManagerOld::GetShader("llayer").SetMatrix4("model", model);
+    resources_->GetShader("llayer")->SetMatrix4("model", model);
     //tilemap_->GetTexArray().Bind();
     //TilemapManager::GetTilemap(name_)->GetTexArray().Bind();
     ResourceManagerOld::GetTextureArray(name_).Bind();

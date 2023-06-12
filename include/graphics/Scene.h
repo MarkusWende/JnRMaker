@@ -182,7 +182,7 @@ private:
 	GLuint							vao_;
 	GLuint											current_tile_id_;
 
-	std::map<std::string, std::unique_ptr<SceneEntity>> filter_;
+	std::map<std::string, std::unique_ptr<Entity>> filter_;
 	std::shared_ptr<UILogger> 			ui_logger_;
 	std::shared_ptr<Resources>			resources_;
 

@@ -33,7 +33,7 @@
 class Primitive : public Solid
 {
 public:
-	Primitive(std::string name) : Solid(0,  name, layer_t::FORE) {};										/**< Constructor. */
+	Primitive(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string name) : Solid(logger, resources, 0,  name, layer_t::FORE) {};										/**< Constructor. */
 	//~Primitive() { };													/**< Destructor. */
 
 	/**

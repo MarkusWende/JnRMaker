@@ -25,7 +25,7 @@
  // PUBLIC:
  /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Quad::Quad(std::string meshName) : Primitive(meshName)
+Quad::Quad(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resources, std::string meshName) : Primitive(logger, resources, meshName)
 {
 	addMesh(meshName);
 	smooth_ = false;
