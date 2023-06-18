@@ -9,7 +9,7 @@ public:
     virtual ~IManager() {}
     // Variadic template for Load with arbitrary number of parameters
     template<typename... Args>
-    void Load(const char* name, const char* file, Args&&... args)
+    void Load(const char* name, Args&&... args)
     {
         // Implementation specific to the derived class
         // You can use the provided arguments (args) as needed

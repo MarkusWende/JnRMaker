@@ -122,10 +122,12 @@ add_library(
     ${MAIN_SOURCE_DIR}/ui/Gui.cpp
     ${MAIN_SOURCE_DIR}/utils/logging/UILogger.cpp
     ${MAIN_SOURCE_DIR}/utils/manager/ShaderManager.cpp
+    ${MAIN_SOURCE_DIR}/utils/manager/TileManager.cpp
     ${MAIN_SOURCE_DIR}/utils/Injector.cpp
     ${MAIN_SOURCE_DIR}/utils/MessageManager.cpp
     ${MAIN_SOURCE_DIR}/utils/ProjectManager.cpp
     ${MAIN_SOURCE_DIR}/utils/ResourceManagerOld.cpp
+    ${MAIN_SOURCE_DIR}/utils/Resources.cpp
     ${MAIN_SOURCE_DIR}/utils/TilemapManager.cpp
 )
 

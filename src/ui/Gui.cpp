@@ -829,9 +829,11 @@ void Gui::DrawPopupMessages()
 
 void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 {
-	if (!TilemapManager::IsEmpty())
+	std::shared_ptr<std::vector<std::string>> tileMenagerKeysPtr = resources_->GetTileManagerKeys();
+
+	// Check if the shared pointer is valid
+	if (tileMenagerKeysPtr)
 	{
-		//ImGuiStyle* style = &ImGui::GetStyle();
 		if (ImGui::BeginTabItem("Tiles"))
 		{
 			static ImGuiTableFlags flags1 = 
@@ -855,17 +857,19 @@ void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 
 				static int selected = 0;
 				int index = 0;
-				for (auto const& [key, val] : TilemapManager::Tilemaps)
+				// Dereference the shared pointer to access the underlying vector
+    			auto tileMenagerKeys = *tileMenagerKeysPtr;
+				for (const auto& key : tileMenagerKeys)
 				{
 					if(key != "")
 					{
 						ImGui::PushID(key.c_str());
 						char label[128];
-#ifdef _WIN32
+	#ifdef _WIN32
 						sprintf_s(label, "%s", key.c_str());
-#else
+	#else
 						sprintf(label, "%s", key.c_str());
-#endif
+	#endif
 						if (ImGui::Selectable(label, selected == index))
 						{
 							scene->SetActiveTilemap(key);
@@ -878,15 +882,17 @@ void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 
 				ImGui::TableSetColumnIndex(1);
 				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-				Tilemap* tilemap = TilemapManager::Get(scene->GetActiveTilemap());
+				auto tilemap = resources_->GetTilemap(scene->GetActiveTilemap().c_str());
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
+				ui_logger_->Log("tilemap->NumRows(): %d", tilemap->NumRows());
+				return;
 
 				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f - statusbar_height_), true, ImGuiWindowFlags_HorizontalScrollbar);
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 
 				GLuint i = 0;
 				ImGuiListClipper clipper;
-        		clipper.Begin(tilemap->NumRows());
+				clipper.Begin(tilemap->NumRows());
 
 				while (clipper.Step())
 				{

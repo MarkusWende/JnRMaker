@@ -34,7 +34,7 @@ std::map<std::string, TextureArray> ResourceManagerOld::TextureArrays;
 // std::map<std::string, TextureAtlas> ResourceManagerOld::TextureAtlases;
 // std::map<std::string, std::unique_ptr<sf::RenderTexture>> ResourceManagerOld::RenderTextures;
 std::map<std::string, Framebuffer> ResourceManagerOld::Framebuffers;
-std::map<std::string, Shader> ResourceManagerOld::Shaders;
+//std::map<std::string, Shader> ResourceManagerOld::Shaders;
 
 Texture2D ResourceManagerOld::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
 {

@@ -57,7 +57,7 @@ public:
   static std::map<std::string, TextureArray> TextureArrays;							/**< Texture vector. Stores every texture used in the application. */
   //static std::map<std::string, std::unique_ptr<sf::RenderTexture>> RenderTextures;    /**< Contains all SFML render textures. */
   static std::map<std::string, Framebuffer>	Framebuffers;						        /**< Framebuffer vector. Stores every framebuffer used in the application. */
-  static std::map<std::string, Shader>		Shaders;							/**< Shader vector. Stores every shader used in the application. */
+  //static std::map<std::string, Shader>		Shaders;							/**< Shader vector. Stores every shader used in the application. */
 
   /**
      * @brief Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.
