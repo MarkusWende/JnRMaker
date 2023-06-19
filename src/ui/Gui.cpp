@@ -147,7 +147,7 @@ GLvoid Gui::DrawMenuMain(std::shared_ptr<Scene> scene)
 			if (ImGui::MenuItem("Open"))
 			{
 				// Open new tilemap
-				ProjectManager::OpenTilemap();
+				resources_->AddTilemap();
 			}
             if(ImGui::MenuItem("Save"))
             {
@@ -872,7 +872,7 @@ void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 	#endif
 						if (ImGui::Selectable(label, selected == index))
 						{
-							scene->SetActiveTilemap(key);
+							resources_->SetActiveTilemap(key.c_str());
 							selected = index;
 						}
 						ImGui::PopID();
@@ -882,10 +882,8 @@ void Gui::DrawTabTileExplorer(std::shared_ptr<Scene> scene)
 
 				ImGui::TableSetColumnIndex(1);
 				static glm::vec2 tileButtonScale = glm::vec2(2.0f, 2.0f);
-				auto tilemap = resources_->GetTilemap(scene->GetActiveTilemap().c_str());
+				auto tilemap = resources_->GetActiveTilemap();
 				std::vector<std::string> tilemapHashes = tilemap->GetHashs();
-				ui_logger_->Log("tilemap->NumRows(): %d", tilemap->NumRows());
-				return;
 
 				ImGui::BeginChild("##TileSelector", ImVec2(0,(float)window_messages_.h - 100.0f - statusbar_height_), true, ImGuiWindowFlags_HorizontalScrollbar);
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));

@@ -38,7 +38,6 @@
 #include "EntityObject.h"
 #include "EntityPlayer.h"
 #include "EntityWorldLayer.h"
-#include "TilemapManager.h"
 #include "ProjectManager.h"
 #include "PrimitiveCube.h"
 #include "SolidGrid.h"
@@ -100,7 +99,7 @@ public:
 
 	GLvoid SetMouseOverScene(GLboolean status) { mouse_over_scene_ = status; };
 	//GLvoid SetAddSpriteFlag() { add_sprite_flag_ = true; };
-	GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
+	//GLvoid SetActiveTilemap(std::string name) { active_tilemap_name_ = name; };
 	GLvoid SetActiveSprite(std::string name) { active_sprite_name_ = name; };
 	GLvoid SetActiveLayer(layer_t layer) { active_layer_ = layer; };
 	GLvoid SetMousePosition(glm::vec2 pos) { mouse_position_ = pos; };
@@ -119,7 +118,7 @@ public:
 	glm::vec2 GetSpriteScale() { return sprite_scale_; };
 	Camera* GetCamera(std::string cameraName) { return e_cameras_.find(cameraName)->second.get(); };
 	Sprite* GetSprite(std::string spriteName) { return e_sprites_.find(spriteName)->second.get(); };
-	std::string GetActiveTilemap() { return active_tilemap_name_; };
+	//std::string GetActiveTilemap() { return active_tilemap_name_; };
 	std::string GetActiveSprite() { return active_sprite_name_; };
 
 	void save() const
@@ -156,7 +155,7 @@ private:
 	Player											e_player_;
 	GLuint											width_;			/**< Height of the map in pixels. */
 	GLuint											height_;			/**< Height of the map in pixels. */
-	std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
+	// std::string     								active_tilemap_name_;		/**< Name of the tilemap which is currently displayed. */
 	std::string     								active_sprite_name_;		/**< Name (key) of the sprite which is currently selected. */
 	//std::vector<sf::Vertex> 						grid_;
 	GLboolean										add_sprite_flag_;

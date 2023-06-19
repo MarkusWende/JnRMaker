@@ -1,5 +1,5 @@
 mergeInto(LibraryManager.library, {
-    getLocalTilemapFile: async function() {
+    getLocalTilemapFile: async function(tileManagerInstance) {
         const pickerOpts = {
             types: [
                 {
@@ -20,10 +20,10 @@ mergeInto(LibraryManager.library, {
             const [handle] = await window.showOpenFilePicker(pickerOpts);
             file = await handle.getFile();
             contents = await file.arrayBuffer();
-            Module.openTilemapFile(file.name, file.type, contents, contents.byteLength);
+            tileManagerInstance.LoadTilemap(file.name, file.type, contents, contents.byteLength);
             //result = Module.ccall("int_sqrt", null, ["string", "array", "number"], [file.name, uint8View, contents.byteLength])
 
-            //Module.msgDebug(file);
+            Module.msgDebug("Das ist ein Test..");
             console.log(file);
             
             return 0;

@@ -65,7 +65,6 @@
 
 #ifdef __EMSCRIPTEN__
 extern "C" {
-    extern int getLocalTilemapFile();
     extern int saveJSONFile();
     extern int viewFullscreen();
 }
@@ -131,7 +130,7 @@ public:
     static void AddSaveObject(std::string key, std::string data);
     static void SaveCreate();
     static void SaveWrite();
-    static void OpenTilemap();
+    //static void OpenTilemap();
 
 private:
     ProjectManager() { };                             //!< constructor

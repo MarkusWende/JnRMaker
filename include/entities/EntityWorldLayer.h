@@ -30,8 +30,6 @@
 #define LEVEL_LAYER_H
 
 #include "Entity.h"
-#include "TilemapManager.h"
-
 
 /**
  * @brief Solid class represents a solid object. Solids are visible object in the rendered scene.

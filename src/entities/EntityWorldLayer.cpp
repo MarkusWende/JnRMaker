@@ -72,7 +72,8 @@ WorldLayer::WorldLayer(std::shared_ptr<ILogger> logger, std::shared_ptr<Resource
     //auto tiles = TilemapManager::GetTilemap(name_);
     //ResourceManagerOld::CreateTexture(emptyTile.data(), sizeof(emptyTile.data()), "border");
     //tiles->AddTile("border", ResourceManagerOld::GetTexture("border").ID);
-    TilemapManager::Add(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
+    //TilemapManager::Add(name_, tile_size_, tile_scale_, keyBorderPath.str().c_str());
+    resources_->AddTilemap(name_.c_str(), keyBorderPath.str().c_str(), tile_size_, tile_scale_);
     // ResourceManagerOld::LoadTexture(keyBorderPath.str().c_str(), true, hash_map_border_key_.c_str());
     // GLuint texID = ResourceManagerOld::GetTexture(hash_map_border_key_.c_str()).ID;
     // TilemapManager::GetTilemap(name_)->AddTile(hash_map_border_key_, texID);
@@ -90,7 +91,7 @@ WorldLayer::~WorldLayer()
 
 GLvoid WorldLayer::AddSprite(GLuint mapID, const std::string key, GLuint texID)
 {
-    auto tiles = TilemapManager::Get(name_);
+    auto tiles = resources_->GetTilemap(name_.c_str());
     auto tileHashes = tiles->GetHashs();
     //if (!tiles->HashExists(key))
     {

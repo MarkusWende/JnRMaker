@@ -71,7 +71,7 @@ Scene::Scene(std::shared_ptr<ILogger> logger, std::shared_ptr<Resources> resourc
 //     //ResourceManagerOld::LoadShader("resources/shaders/tile.vert", "resources/shaders/tile.frag", nullptr, "tile");
 // #endif
     // Testing
-    TilemapManager::Add("resources/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "resources/assets/tiles/game-tiles_cut.png");
+    //TilemapManager::Add("resources/assets/tiles/game-tiles_cut.png", { 16, 16 }, { 1.0f, 1.0f }, "resources/assets/tiles/game-tiles_cut.png");
 
 
     //ResourceManagerOld::CreateRenderTexture(width_, height_, "viewport");
@@ -157,7 +157,7 @@ GLvoid Scene::CreateLevel(GLuint width, GLuint height, glm::vec2 spriteSize, glm
         e_level_layers_.clear();
     }
     e_level_layers_.insert(std::make_pair("Tiles", new WorldLayer(ui_logger_, resources_, "Tiles", width, height, spriteSize, level_border_size_)));
-    active_tilemap_name_ = "Tiles";
+    // active_tilemap_name_ = "Tiles";
 
     // Create default brush
     e_sprites_.clear();

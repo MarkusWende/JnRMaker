@@ -28,27 +28,6 @@
 
 #include "MessageManager.h"
 
-#ifdef __EMSCRIPTEN__
-void msgErr(std::string const& msg)
-{
-    std::stringstream ss;
-    ss << msg;
-    MessageManager::AddMessage(ss, message_t::ERROR_T);
-}
-
-void msgDebug(std::string const& msg)
-{
-    std::stringstream ss;
-    ss << msg;
-    MessageManager::AddMessage(ss, message_t::DEBUG);
-}
-
-EMSCRIPTEN_BINDINGS(my_module) {
-    emscripten::function("msgErr", &msgErr);
-    emscripten::function("msgDebug", &msgDebug);
-}
-#endif
-
 // Instantiate static messages vector
 std::vector<Message> MessageManager::messages;
 bool MessageManager::is_new_session_;

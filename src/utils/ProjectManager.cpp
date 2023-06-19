@@ -33,64 +33,6 @@ std::string ProjectManager::name;
 project_status_t ProjectManager::status;
 std::vector<std::shared_ptr<SaveFile>> ProjectManager::SaveFiles;
 
-template<typename T, size_t sizeOfArray>
-constexpr size_t getElementCount(T (&)[sizeOfArray])
-{
-    return sizeOfArray;
-}
-
-#ifdef __EMSCRIPTEN__
-void openTilemapFile(std::string const& name, std::string const& type, emscripten::val data, int dataSize)
-#else
-void openTilemapFile(std::string const& name, std::string const& type, const char* data, int dataSize)
-#endif
-{
-    std::stringstream msg;
-
-    if ((type.compare("image/jpeg") == 0) || type.compare("image/png") == 0)
-    {
-        //ResourceManager::CreateTexture(rawData, dataSize, "loadedImage");
-		TimeHelper::tic();
-		std::string dataStr;
-#ifdef __EMSCRIPTEN__
-        dataStr = data.as<std::string>();
-#else
-
-#endif
-		auto chrs = dataStr.c_str();
-		auto uchrs = reinterpret_cast<unsigned char*>(const_cast<char*>(chrs));
-        //unsigned char* rawData = reinterpret_cast<unsigned char*>(&dataStr);
-        // const std::vector<unsigned char> rawArray = emscripten::vecFromJSArray<unsigned char>(data);
-        // const unsigned char* rawData = rawArray.data();
-        msg << "emscripten::vecFromJSArray" << TimeHelper::toc(1);
-        // MessageManager::AddMessage(msg, message_t::INFO);
-        TimeHelper::tic();
-		TilemapManager::Add(name, { 16.0f, 16.0f }, { 1.0f, 1.0f }, uchrs, dataSize);
-        msg << "ResourceManager::CreateTexture(): " << TimeHelper::toc(1);
-        // MessageManager::AddMessage(msg, message_t::INFO);
-    }
-    else
-    {
-        msg << name << " is not a supported format.";
-        // MessageManager::AddMessage(msg, message_t::ERROR_T);
-#ifdef __EMSCRIPTEN__
-        getLocalTilemapFile();
-#else
-
-#endif
-        return;
-    }
-    
-    msg << "Loaded: " << name << "\tType: " << type << "\tSize: " << ((float)dataSize/1024.0f) << "KB\n";
-    // MessageManager::AddMessage(msg, message_t::DEBUG);
-}
-#ifdef __EMSCRIPTEN__
-EMSCRIPTEN_BINDINGS(my_module)
-{
-    emscripten::function("openTilemapFile", &openTilemapFile);
-}
-#endif
-
 extern "C" {
 
 const char* getJSON()
@@ -236,32 +178,4 @@ void ProjectManager::SaveWrite()
 #endif
 
     //SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, j));
-}
-
-void ProjectManager::OpenTilemap()
-{
-#ifdef __EMSCRIPTEN__
-    getLocalTilemapFile();
-#else
-	nfdchar_t *outPath;
-    nfdfilteritem_t filterItem[1] = { { "Tilemap", "png" } };
-    nfdresult_t result = NFD_OpenDialog(&outPath, filterItem, 1, NULL);
-
-    std::stringstream msg;
-    if (result == NFD_OKAY)
-    {
-        TilemapManager::Add(outPath, { 16.0f, 16.0f }, { 1.0f, 1.0f }, outPath);
-        NFD_FreePath(outPath);
-    }
-    else if (result == NFD_CANCEL)
-    {
-        msg << "User pressed cancel.";
-        // MessageManager::AddMessage(msg, message_t::WARNING);
-    }
-    else 
-    {
-        msg << "Error: " << NFD_GetError();
-        // MessageManager::AddMessage(msg, message_t::ERROR_T);
-    }
-#endif
 }
