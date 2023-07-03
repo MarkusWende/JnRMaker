@@ -150,18 +150,18 @@ if (EMSCRIPTEN)
     SET(linkFlags "${linkFlags} -sWASM=1 -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4")
     SET(linkFlags "${linkFlags} -sUSE_WEBGL2=1 -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES3=1")
     SET(linkFlags "${linkFlags} -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_BOOST_HEADERS=1")
-    SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy")
+    SET(linkFlags "${linkFlags} -sINITIAL_MEMORY=300MB -lidbfs.js -lembind --no-heap-copy -sEXPORTED_FUNCTIONS=\"['_getJSON', '_main', '_getLocalTilemapFile', '_saveJSONFile', '_viewFullscreen']\" -sEXPORTED_RUNTIME_METHODS=\"['ccall','cwrap']\"")
     SET(linkFlags "${linkFlags} --preload-file ../../../resources@/resources")
 
-    SET(LINK_OPTIONS "-s EXPORTED_FUNCTIONS=\"['_getJSON', '_main', '_getLocalTilemapFile', '_saveJSONFile', '_viewFullscreen', '_msgDebug']\"")
-    SET(LINK_OPTIONS "${LINK_OPTIONS} -s EXPORTED_RUNTIME_METHODS=\"['ccall','cwrap']\"")
+    #SET(LINK_OPTIONS "-s EXPORTED_FUNCTIONS=\"['_getJSON', '_main', '_getLocalTilemapFile', '_saveJSONFile', '_viewFullscreen', '_msgDebug']\"")
+    #SET(LINK_OPTIONS "${LINK_OPTIONS} -s EXPORTED_RUNTIME_METHODS=['ccall','cwrap']")
 
     target_link_libraries(jnrmaker app imgui ${SDL2_LIBRARIES})
 
     # These properties specify what kind of Emscripten build to perform and are assigned to our 'jnrmaker' executable target.
     set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "${linkFlags}")
     #set_target_properties(jnrmaker PROPERTIES LINK_FLAGS "-g -sASSERTIONS=1 -Os -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=2 -sUSE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_BOOST_HEADERS=1 -s INITIAL_MEMORY=300MB -s EXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8 -s FETCH -lidbfs.js -lembind -sASYNCIFY --no-heap-copy --preload-file ../../data@/data --preload-file ../../src/shaders@/src/shaders")
-    target_link_options(jnrmaker PRIVATE ${LINK_OPTIONS})
+    #target_link_options(jnrmaker PRIVATE ${LINK_OPTIONS})
 
     message(STATUS "js libs '${libraryJsFiles}'")
     # To link .js files using the --js-library flag, use the following helper function.

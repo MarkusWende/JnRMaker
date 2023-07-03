@@ -23,7 +23,7 @@ mergeInto(LibraryManager.library, {
             tileManagerInstance.LoadTilemap(file.name, file.type, contents, contents.byteLength);
             //result = Module.ccall("int_sqrt", null, ["string", "array", "number"], [file.name, uint8View, contents.byteLength])
 
-            Module.msgDebug("Das ist ein Test..");
+            // Module.msgDebug("Das ist ein Test..");
             console.log(file);
             
             return 0;
@@ -49,6 +49,7 @@ mergeInto(LibraryManager.library, {
             //var blob = new Blob(myUint8Array, {type: "text/json"});
             //var string = new TextDecoder().decode(new Uint8Array(myUint8Array));
             // create a new handle
+            console.log(rawStr);
             handle = await window.showSaveFilePicker({
                 suggestedName: 'preset.json'
             });

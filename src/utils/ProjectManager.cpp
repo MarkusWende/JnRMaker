@@ -102,20 +102,29 @@ void ProjectManager::SaveCreate()
     answer.AddMember("everything", everything, allocator);
     d.AddMember("answer", answer, allocator);
 
-    int matrix[3][3] = {{1,2,3}, {4,5,6}, {7,8,9}};
-    rapidjson::StringBuffer matrixBuffer;
-    rapidjson::Writer<rapidjson::StringBuffer> matrixWriter(matrixBuffer);
-    matrixWriter.StartArray();
+    float array[512]; // Your large array of floats
+
+    // Populate the array with sample data
+    for (int i = 0; i < 512; ++i)
+    {
+        array[i] = i * 0.5f;
+    }
+
+    int matrix[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    rapidjson::Value tiles(rapidjson::kArrayType);
+
     for (size_t i = 0; i < 3; i++)
     {
+        rapidjson::Value row(rapidjson::kArrayType);
+
         for (size_t j = 0; j < 3; j++)
         {
-            matrixWriter.Int(matrix[i][j]);
+            row.PushBack(matrix[i][j], allocator);
         }
-    }
-    matrixWriter.EndArray();
 
-    rapidjson::Value tiles(matrixBuffer.GetString(), allocator);
+        tiles.PushBack(row, allocator);
+    }
+
     d.AddMember("tiles", tiles, allocator);
 
     // //d["object"] = { {"currency", "USD"}, {"value", 42.99} };
