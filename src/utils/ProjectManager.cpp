@@ -110,21 +110,26 @@ void ProjectManager::SaveCreate()
         array[i] = i * 0.5f;
     }
 
-    int matrix[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    rapidjson::Value tiles(rapidjson::kArrayType);
+    rapidjson::StringBuffer arrayBuffer;
+    rapidjson::Writer<rapidjson::StringBuffer> arrayWriter(arrayBuffer);
 
-    for (size_t i = 0; i < 3; i++)
+    arrayWriter.StartArray();
+
+    for (int i = 0; i < 512; ++i)
     {
-        rapidjson::Value row(rapidjson::kArrayType);
-
-        for (size_t j = 0; j < 3; j++)
+        arrayWriter.Double(array[i]);
+        // Check if 12 values have been written, then append a newline
+        if ((i + 1) % 12 == 0)
         {
-            row.PushBack(matrix[i][j], allocator);
+            arrayBuffer.Put('\n');
         }
-
-        tiles.PushBack(row, allocator);
     }
 
+    arrayWriter.EndArray();
+
+    rapidjson::Value tiles(rapidjson::kArrayType);
+    auto arrayString = arrayBuffer.GetString();
+    tiles.SetString(arrayString, arrayBuffer.GetSize(), allocator);
     d.AddMember("tiles", tiles, allocator);
 
     // //d["object"] = { {"currency", "USD"}, {"value", 42.99} };
@@ -141,6 +146,7 @@ void ProjectManager::SaveCreate()
     rapidjson::StringBuffer buffer;
     rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
     d.Accept(writer);
+    writer.SetFormatOptions(rapidjson::kFormatSingleLineArray);
     SaveFiles.emplace(SaveFiles.begin(), new SaveFile(timeinfo, buffer.GetString()));
 
     if (SaveFiles.size() > MAX_STORED_SAVE_FILES)

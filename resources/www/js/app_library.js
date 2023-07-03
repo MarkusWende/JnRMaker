@@ -49,7 +49,10 @@ mergeInto(LibraryManager.library, {
             //var blob = new Blob(myUint8Array, {type: "text/json"});
             //var string = new TextDecoder().decode(new Uint8Array(myUint8Array));
             // create a new handle
-            console.log(rawStr);
+            const stepOne = rawStr.replace(/"\[/g, '[\n\t\t');
+            const stepTwo = stepOne.replace(/\]"/g, '\n\t]');
+            const stepThree = stepTwo.replace(/\\n,/g, ',\n\t\t');
+            console.log(stepThree);
             handle = await window.showSaveFilePicker({
                 suggestedName: 'preset.json'
             });
@@ -57,7 +60,7 @@ mergeInto(LibraryManager.library, {
             // create a FileSystemWritableFileStream to write to
             const writableStream = await handle.createWritable();
 
-            await writableStream.write(rawStr);
+            await writableStream.write(stepThree);
             await writableStream.close();
 
             // write our file
